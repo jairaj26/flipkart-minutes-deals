@@ -4,6 +4,8 @@ A fast, lightweight, client-side browser bookmarklet that scans Flipkart Minutes
 
 Works smoothly on **PC, Mac, Android (Chrome/Edge), and iOS (Safari)**.
 
+👉 **[Launch the Live Web Installer](https://jairaj26.github.io/flipkart-minutes-deals/)** for 1-click drag & drop installation on PC or 1-tap copy on mobile!
+
 ---
 
 ## ✨ Features
@@ -24,15 +26,15 @@ Works smoothly on **PC, Mac, Android (Chrome/Edge), and iOS (Safari)**.
 
 ### 💻 On PC / Mac / Desktop (Chrome, Edge, Brave, Firefox, Safari)
 
-#### Option 1: 1-Click Drag & Drop (Easiest)
-1. Open [`Install_Bookmarklet.html`](Install_Bookmarklet.html) in your browser.
+#### Option 1: 1-Click Drag & Drop (Recommended)
+1. Open the **[⚡ Live Web Installer](https://jairaj26.github.io/flipkart-minutes-deals/)** in your browser *(or open `index.html` locally on your computer)*.
 2. Ensure your Bookmarks Bar is visible:
    - **Windows / Linux**: Press <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>
    - **Mac**: Press <kbd>Cmd</kbd> + <kbd>Shift</kbd> + <kbd>B</kbd>
 3. Drag the blue **⚡ Minutes Deals** button directly onto your Bookmarks Bar.
 4. Visit [flipkart.com](https://www.flipkart.com) and click the bookmark!
 
-#### Option 2: Manual Bookmark Creation
+#### Option 2: Direct Manual Bookmark Creation (Without opening installer)
 1. In your browser, create a new bookmark (or right-click your bookmarks bar $\rightarrow$ **Add Page**).
 2. Set the Name to: `⚡ Flipkart Deals`
 3. Set the URL to the following one-line loader script:
@@ -48,7 +50,7 @@ javascript:(function(){if(window.__FK_MINUTES_LOADING__)return;window.__FK_MINUT
 Mobile browsers don't allow drag-and-drop bookmarks. You can add the bookmarklet in under 1 minute:
 
 #### Step 1: Copy the One-Line Script
-Copy the script below to your clipboard:
+Visit the **[⚡ Mobile Installer Page](https://jairaj26.github.io/flipkart-minutes-deals/)** to copy with 1 tap, or copy the script below:
 
 ```javascript
 javascript:(function(){if(window.__FK_MINUTES_LOADING__)return;window.__FK_MINUTES_LOADING__=true;fetch('https://raw.githubusercontent.com/jairaj26/flipkart-minutes-deals/main/FKMinutes_Readable.js?t='+Date.now()).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}).then(function(c){window.__FK_MINUTES_LOADING__=false;(1,eval)(c);}).catch(function(e){window.__FK_MINUTES_LOADING__=false;alert('Flipkart Minutes Loader: Failed to load ('+e.message+')');});})();
@@ -97,10 +99,11 @@ javascript:(function(){if(window.__FK_MINUTES_LOADING__)return;window.__FK_MINUT
 ## 📂 Project Structure
 
 ```
+├── index.html                # Live GitHub Pages installer with 1-click drag & drop and mobile copy box
+├── Install_Bookmarklet.html  # Standalone installation page
 ├── FKMinutes_Readable.js     # Clean, unminified source code with detailed comments
 ├── FKMinutes.txt             # Pre-built self-contained bookmarklet
 ├── FKMinutes_Compact.txt     # Minified single-line bookmarklet
-├── Install_Bookmarklet.html  # Interactive installation page with 1-click drag & drop and mobile copy box
 └── README.md                 # Project documentation and setup guide
 ```
 
