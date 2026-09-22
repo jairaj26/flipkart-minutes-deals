@@ -2,9 +2,9 @@ name: Flipkart Minutes Deals Alert
 
 on:
   schedule:
-    # Runs at minute 30 UTC every hour (= minute 00 of every hour IST, UTC+5:30)
-    # E.g., 15:30 UTC = 21:00 IST, 16:30 UTC = 22:00 IST
-    - cron: '30 * * * *'
+    # Runs hourly from 06:01 AM to 23:01 PM IST (00:31 to 17:31 UTC, UTC+5:30)
+    # Dormant between 23:02 PM and 06:00 AM IST while Flipkart Minutes is shut down
+    - cron: '31 0-17 * * *'
   workflow_dispatch:
     inputs:
       min_discount:

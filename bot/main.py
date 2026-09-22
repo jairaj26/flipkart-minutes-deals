@@ -1,8 +1,9 @@
 import argparse
 import concurrent.futures
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 import json
 import os
+import re
 import sys
 import time
 
@@ -16,6 +17,25 @@ from . import config
 from .scraper import FlipkartScraper
 from .telegram import TelegramNotifier
 
+# Indian Standard Time (UTC+5:30)
+IST = timezone(timedelta(hours=5, minutes=30))
+
+# 7-day cooldown for unchanging prices (items with same price alert at most once a week)
+SEVEN_DAYS_SECONDS = 7 * 24 * 3600
+
+def get_deal_key(deal):
+    """
+    Derives a stable unique product identifier.
+    Extracts 'pid' (Product ID) from product URL if present; otherwise falls back to normalized title.
+    """
+    lnk = deal.get("link", "")
+    m = re.search(r"[?&]pid=([a-zA-Z0-9]+)", lnk)
+    if m:
+        return m.group(1).upper()
+    title = deal.get("title", "")
+    norm = re.sub(r"[^a-zA-Z0-9]", "", title.lower())
+    return norm or deal.get("id", "")
+
 def load_cache(cache_path):
     """Loads previously posted deals from cache."""
     if os.path.exists(cache_path):
@@ -27,41 +47,50 @@ def load_cache(cache_path):
     return {}
 
 def save_cache(cache, cache_path):
-    """Saves posted deals to cache, pruning records older than 7 days."""
+    """Saves posted deals to cache, pruning records older than 30 days."""
     os.makedirs(os.path.dirname(cache_path), exist_ok=True)
     now = time.time()
-    seven_days = 7 * 24 * 3600
+    retention_period = 30 * 24 * 3600  # 30 days retention
 
     pruned = {}
-    for uid, record in cache.items():
+    for key, record in cache.items():
         ts = record.get("timestamp", 0)
-        if now - ts < seven_days:
-            pruned[uid] = record
+        if now - ts < retention_period:
+            pruned[key] = record
 
     with open(cache_path, "w", encoding="utf-8") as f:
         json.dump(pruned, f, indent=2, ensure_ascii=False)
 
 def should_post_deal(deal, cache):
     """
-    Deduplication rules:
-    - If not in cache -> Post.
-    - If in cache, only re-post if selling price dropped further (fsp < cached_fsp)
-      OR if last posted more than 36 hours ago.
+    Weekly Deduplication Rules:
+    1. If never posted before -> Post it.
+    2. If posted before:
+       - If selling price dropped further (fsp < cached_fsp) -> Post immediately (price drop).
+       - If price is the same or higher:
+         * Check if 7 days (1 week) have passed since last post.
+         * If >= 7 days -> Post once for the new week.
+         * Otherwise -> Suppress (shows only once a week for items with unchanging prices).
     """
-    uid = deal["id"]
-    if uid not in cache:
+    key = get_deal_key(deal)
+    # Check by stable key or legacy deal id
+    cached = cache.get(key) or cache.get(deal.get("id"))
+    if not cached:
         return True
 
-    cached = cache[uid]
     cached_fsp = cached.get("fsp", float("inf"))
+
+    # 1. Price dropped further -> alert immediately
     if deal["fsp"] < cached_fsp:
         return True
 
+    # 2. Same or higher price -> check if 7 days (1 week) have passed
     now = time.time()
     last_posted = cached.get("timestamp", 0)
-    if (now - last_posted) > (36 * 3600):
+    if (now - last_posted) >= SEVEN_DAYS_SECONDS:
         return True
 
+    # Suppress repeat alert within the 7-day window
     return False
 
 def scan_worker(category_info, pincode):
@@ -79,8 +108,10 @@ def main():
     args = parser.parse_args()
 
     start_time = time.time()
+    ist_now = datetime.now(IST)
     print("=" * 60)
     print("⚡ Flipkart Minutes Deals Finder - Hourly Run")
+    print(f"⏰ Current IST Time: {ist_now.strftime('%Y-%m-%d %H:%M:%S')} IST")
     print(f"📍 Target Pincode: {args.pincode}")
     print(f"🔥 Min Discount: {args.min_discount}%")
     print(f"⚙️ Workers: {args.workers}")
@@ -142,24 +173,34 @@ def main():
     notifier = TelegramNotifier()
 
     new_alerts_sent = 0
+    suppressed_count = 0
     now = time.time()
 
     for deal in qualifying_deals:
+        key = get_deal_key(deal)
         if should_post_deal(deal, cache):
-            print(f"  🔥 NEW DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']})")
+            print(f"  🔥 NEW DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']}) [Key: {key}]")
             if not args.dry_run:
                 success = notifier.send_deal(deal)
                 if success:
-                    cache[deal["id"]] = {
+                    cache[key] = {
+                        "key": key,
+                        "title": deal["title"],
                         "fsp": deal["fsp"],
                         "mrp": deal["mrp"],
                         "discount": deal["discount"],
+                        "link": deal["link"],
                         "timestamp": now,
                         "date": datetime.now(timezone.utc).isoformat()
                     }
                     new_alerts_sent += 1
             else:
                 new_alerts_sent += 1
+        else:
+            suppressed_count += 1
+
+    if suppressed_count > 0:
+        print(f"[*] Suppressed {suppressed_count} deals already alerted within the past 7 days at same price.")
 
     if not args.dry_run:
         save_cache(cache, args.cache)
