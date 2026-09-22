@@ -134,26 +134,50 @@ def main():
     print("=" * 60)
 
     categories = config.CATEGORIES
-    print(f"[*] Starting concurrent scan across {len(categories)} leaf categories (Page 1 sorted by discount)...")
+    print(f"[*] Starting concurrent scan across {len(categories)} categories & subcategories (Page 1 sorted by discount)...")
 
     all_products = []
     seen_ids = set()
 
+    def normalize_cat_uri(u):
+        if not u:
+            return ""
+        # Remove sort parameter and protocol for dedup check
+        u = re.sub(r"^https?://[^/]+", "", u)
+        u = re.sub(r"[?&]sort=[^&]+", "", u)
+        return u.strip().rstrip("?")
+
+    visited_uris = {normalize_cat_uri(c["uri"]) for c in categories}
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
         future_to_cat = {executor.submit(scan_worker, cat, args.pincode): cat for cat in categories}
-        for future in concurrent.futures.as_completed(future_to_cat):
-            cat = future_to_cat[future]
-            try:
-                prods = future.result()
-                unique_added = 0
-                for p in prods:
-                    if p["id"] not in seen_ids:
-                        seen_ids.add(p["id"])
-                        all_products.append(p)
-                        unique_added += 1
-                print(f"  ✓ [{cat['name']}] Found {len(prods)} items ({unique_added} new)")
-            except Exception as e:
-                print(f"  ✗ [{cat['name']}] Failed: {e}")
+        while future_to_cat:
+            done, _ = concurrent.futures.wait(future_to_cat, return_when=concurrent.futures.FIRST_COMPLETED)
+            for future in done:
+                cat = future_to_cat.pop(future)
+                try:
+                    prods, discovered_subcats = future.result()
+                    unique_added = 0
+                    for p in prods:
+                        if p["id"] not in seen_ids:
+                            seen_ids.add(p["id"])
+                            all_products.append(p)
+                            unique_added += 1
+                    print(f"  ✓ [{cat['name']}] Found {len(prods)} items ({unique_added} new)")
+
+                    # Dynamically queue any unvisited subcategories discovered from side-rail navigation
+                    for sub in discovered_subcats:
+                        norm_sub = normalize_cat_uri(sub.get("uri", ""))
+                        if norm_sub and norm_sub not in visited_uris:
+                            visited_uris.add(norm_sub)
+                            sub_uri = sub["uri"]
+                            if "sort=discount" not in sub_uri:
+                                sub_uri += ("&" if "?" in sub_uri else "?") + "sort=discount"
+                            sub_copy = {"name": sub["name"], "uri": sub_uri}
+                            future_to_cat[executor.submit(scan_worker, sub_copy, args.pincode)] = sub_copy
+                            print(f"    ↳ Discovered subcategory: [{sub_copy['name']}]")
+                except Exception as e:
+                    print(f"  ✗ [{cat['name']}] Failed: {e}")
 
     elapsed_scan = time.time() - start_time
     print(f"[*] Scan complete in {elapsed_scan:.1f}s. Total unique items scraped: {len(all_products)}")

@@ -343,12 +343,77 @@ class FlipkartScraper:
             "oos": bool(is_oos)
         }
 
+    def extract_subcategories(self, json_data):
+        """Extracts subcategories from navigation widgets in the Rome API JSON."""
+        subcats = []
+        seen = set()
+        if not json_data:
+            return subcats
+
+        resp = json_data.get("RESPONSE", {})
+        slots = resp.get("slots", []) or json_data.get("slots", [])
+
+        clutter_terms = [
+            "diaper", "baby", "mobile", "cable", "case", "cover", "earphone", "headphone",
+            "speaker", "gadget", "appliance", "kitchen", "cookware", "toy", "stationery",
+            "electrical", "tool", "bedding", "furnishing", "fashion"
+        ]
+
+        def is_clutter(name, url):
+            text = (name + " " + url).lower()
+            return any(t in text for t in clutter_terms)
+
+        for s in slots:
+            w = s.get("widget", {})
+            wtype = w.get("type", "")
+            view_type = w.get("viewType", "")
+            wname = w.get("widgetName", "")
+            wdata = w.get("data", {})
+
+            # Format 1: STICKY_NAVIGATION_CARD_WIDGET
+            if wtype == "STICKY_NAVIGATION_CARD_WIDGET" or view_type == "CATEGORY_FILTER_VIEW":
+                comps = wdata.get("renderableComponents", [])
+                for c in comps:
+                    action = c.get("action", {})
+                    url = action.get("url") or action.get("originalUrl") or ""
+                    title = c.get("value", {}).get("contentTitle", {}).get("text") or action.get("tracking", {}).get("contentTitle") or ""
+                    if url and not is_clutter(title, url):
+                        s_url = sanitize_page_uri(url)
+                        if s_url not in seen:
+                            seen.add(s_url)
+                            subcats.append({"name": title.strip() or "Subcategory", "uri": s_url})
+
+            # Format 2: ATLAS_WIDGET with vertical-sticky-navigation-side-rail
+            if view_type == "vertical-sticky-navigation-side-rail" or "CATEGORY_FILTER_VIEW" in wname:
+                dls = wdata.get("dlsData", {})
+                for k, val in dls.items():
+                    if "scroll" in k or "horizontalListData" in k or "scrollToListData" in k:
+                        card_list = val.get("value", []) if isinstance(val, dict) else []
+                        if isinstance(card_list, list):
+                            for card in card_list:
+                                cval = card.get("value", {}) if isinstance(card, dict) else {}
+                                action = (cval.get("SelectionViewData_0", {}).get("action") or
+                                          cval.get("row_0", {}).get("action") or
+                                          cval.get("col_0", {}).get("action") or {})
+                                url = action.get("url") or action.get("originalUrl") or ""
+                                title = (cval.get("label_0", {}).get("value", {}).get("text") or
+                                         cval.get("trackerData_0", {}).get("tracking", {}).get("contentTitle") or
+                                         cval.get("trackerData_0", {}).get("tracking", {}).get("widgetContent") or "")
+                                if url and not is_clutter(title, url):
+                                    s_url = sanitize_page_uri(url)
+                                    if s_url not in seen:
+                                        seen.add(s_url)
+                                        subcats.append({"name": title.strip() or "Subcategory", "uri": s_url})
+
+        return subcats
+
     def fetch_category_deals(self, category_info):
-        """Fetches and parses Page 1 deals for a single category."""
+        """Fetches and parses Page 1 deals for a single category, and extracts side-rail subcategories."""
         uri = category_info.get("uri", "")
         cat_name = category_info.get("name", "Category")
         json_data = self.fetch_rome_page(uri)
         products = self.parse_products_from_json(json_data)
         for p in products:
             p["category"] = cat_name
-        return products
+        discovered_subcats = self.extract_subcategories(json_data)
+        return products, discovered_subcats
