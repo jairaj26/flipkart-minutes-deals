@@ -28,7 +28,7 @@ DEFAULT_HEADERS = {
     "referer": "https://www.flipkart.com/"
 }
 
-# Verified Leaf Subcategories & Aisle Targets (Where products actually live)
+# Verified Leaf Subcategories & Aisle Targets (28 Essential Grocery & Daily Essentials)
 CATEGORIES = [
     # Bakery & Biscuits
     { "name": "Biscuits & Cookies", "uri": "/hyperlocal/hloc/0613/pr?sid=hloc%2F0006%2F0613&marketplace=HYPERLOCAL&sort=discount" },
@@ -70,13 +70,5 @@ CATEGORIES = [
     { "name": "Bath & Grooming / Soaps", "uri": "/hyperlocal/Bath-Grooming/pr?sid=hloc%2F0013&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Hair Care & Shampoos", "uri": "/hyperlocal/Hair-Care/pr?sid=hloc%2F0044&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Beauty & Fragrances", "uri": "/hyperlocal/Beauty-Fragrances/pr?sid=hloc%2F0041&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Baby Care & Diapers", "uri": "/hyperlocal/Baby-Care/pr?sid=hloc%2F0001%2F0110&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Cleaning Essentials", "uri": "/hyperlocal/Cleaning-Essentials/pr?sid=hloc%2F0025&marketplace=HYPERLOCAL&sort=discount" },
-
-    # High-Discount Electronics & Lifestyle Aisles
-    { "name": "Mobiles & Accessories", "uri": "/hyperlocal/Mobiles/pr?sid=hloc%2F0002&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Earphones & Speakers", "uri": "/hyperlocal/Speakers-Earphone/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Electronics & Gadgets", "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Kitchen & Dining", "uri": "/hyperlocal/Kitchen/pr?sid=hloc%2F0048&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Home Appliances", "uri": "/hyperlocal/hloc/4002/pr?sid=hloc%2F0040%2F4002&marketplace=HYPERLOCAL&sort=discount" }
+    { "name": "Cleaning Essentials", "uri": "/hyperlocal/Cleaning-Essentials/pr?sid=hloc%2F0025&marketplace=HYPERLOCAL&sort=discount" }
 ]
