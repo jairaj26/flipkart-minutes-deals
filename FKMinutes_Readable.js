@@ -24,7 +24,7 @@ javascript:(function(){
     { name: "🥣 Cereals & Dry Fruits", uri: "/hyperlocal/Cereals-DryFruits/pr?sid=hloc%2F0019&marketplace=HYPERLOCAL", catId: "hloc/0019" },
     { name: "🍝 Instant & Frozen Food", uri: "/hyperlocal/Instant-FrozenFood/pr?sid=hloc%2F0020&marketplace=HYPERLOCAL", catId: "hloc/0020" },
     { name: "🥫 Sauces & Spreads", uri: "/hyperlocal/Sauces-Spreads/pr?sid=hloc%2F0021&marketplace=HYPERLOCAL", catId: "hloc/0021" },
-    { name: "🍫 Chocolates & Candies", uri: "/hyperlocal/Fruits/pr?sid=hloc%2F0065&marketplace=HYPERLOCAL", catId: "hloc/0065" },
+    { name: "🍫 Chocolates & Candies", uri: "/hyperlocal/hloc/6501/pr?sid=hloc%2F0065%2F6501&marketplace=HYPERLOCAL", catId: "hloc/0065" },
     { name: "🍨 Ice Cream & Desserts", uri: "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL", catId: "hloc/0034" },
     { name: "🍬 Sweets & Mithai", uri: "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL", catId: "hloc/0081/0806" },
     { name: "🌿 Paan Corner & Refreshments", uri: "/hyperlocal/hloc/4904/pr?sid=hloc%2F0049%2F4904&marketplace=HYPERLOCAL", catId: "hloc/0049/4904" },
@@ -33,14 +33,14 @@ javascript:(function(){
     { name: "💄 Beauty & Fragrances", uri: "/hyperlocal/Beauty-Fragrances/pr?sid=hloc%2F0041&marketplace=HYPERLOCAL", catId: "hloc/0041" },
     { name: "👶 Baby Care & Diapers", uri: "/hyperlocal/Baby-Care/pr?sid=hloc%2F0001%2F0110&marketplace=HYPERLOCAL", catId: "hloc/0001" },
     { name: "💊 Health & Pharma", uri: "/hyperlocal/Health-Pharma/pr?sid=hloc%2F0015&marketplace=HYPERLOCAL", catId: "hloc/0015" },
-    { name: "🌸 Feminine Hygiene", uri: "/hyperlocal/Fruits/pr?sid=hloc%2Fqbq2&marketplace=HYPERLOCAL", catId: "hloc/qbq2" },
-    { name: "🛡️ Sexual Wellness", uri: "/hyperlocal/Fruits/pr?sid=hloc%2Fzgt0&marketplace=HYPERLOCAL", catId: "hloc/zgt0" },
+    { name: "🌸 Feminine Hygiene", uri: "/hyperlocal/hloc/qbq2/pr?sid=hloc%2Fqbq2&marketplace=HYPERLOCAL", catId: "hloc/qbq2" },
+    { name: "🛡️ Sexual Wellness", uri: "/hyperlocal/hloc/zgt0/pr?sid=hloc%2Fzgt0&marketplace=HYPERLOCAL", catId: "hloc/zgt0" },
     { name: "🧹 Cleaning Essentials & Detergents", uri: "/hyperlocal/Cleaning-Essentials/pr?sid=hloc%2F0025&marketplace=HYPERLOCAL", catId: "hloc/0025" },
     { name: "🍳 Kitchen & Dining Essentials", uri: "/hyperlocal/Kitchen/pr?sid=hloc%2F0048&marketplace=HYPERLOCAL", catId: "hloc/0048" },
-    { name: "🛏️ Home Furnishing & Bedding", uri: "/hyperlocal/Toys-Games/pr?sid=hloc%2F0047&marketplace=HYPERLOCAL", catId: "hloc/0047" },
+    { name: "🛏️ Home Furnishing & Bedding", uri: "/hyperlocal/hloc/4701/pr?sid=hloc%2F0047%2F4701&marketplace=HYPERLOCAL", catId: "hloc/0047" },
     { name: "📚 School Supplies & Stationery", uri: "/hyperlocal/School-Supplies/pr?sid=hloc%2F0016&marketplace=HYPERLOCAL", catId: "hloc/0016" },
     { name: "🪛 Electricals & Tools", uri: "/hyperlocal/Electircals-Tools/pr?sid=hloc%2F0043&marketplace=HYPERLOCAL", catId: "hloc/0043" },
-    { name: "🪔 Pooja Needs & Agarbatti", uri: "/hyperlocal/Toys-Games/pr?sid=hloc%2F0082&marketplace=HYPERLOCAL", catId: "hloc/0082" },
+    { name: "🪔 Pooja Needs & Agarbatti", uri: "/hyperlocal/hloc/8201/pr?sid=hloc%2F0082%2F8201&marketplace=HYPERLOCAL", catId: "hloc/0082" },
     { name: "🐕 Pet Care & Pet Food", uri: "/hyperlocal/PetCare/pr?sid=hloc%2F0029&marketplace=HYPERLOCAL", catId: "hloc/0029" },
     { name: "🧸 Toys & Games", uri: "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL", catId: "hloc/0028" },
     { name: "🏸 Sports & Fitness", uri: "/hyperlocal/Sports-Fitness/pr?sid=hloc%2F0036&marketplace=HYPERLOCAL", catId: "hloc/0036" },
@@ -88,6 +88,12 @@ javascript:(function(){
       { title: "Brownies & Muffins", url: "/hyperlocal/hloc/flxv/pr?sid=hloc%2F0065%2Fflxv&marketplace=HYPERLOCAL" },
       { title: "Premium & Imported", url: "/hyperlocal/hloc/ztyr/pr?sid=hloc%2F0065%2Fztyr&marketplace=HYPERLOCAL" }
     ],
+    "hloc/0011": [
+      { title: "Tea", url: "/hyperlocal/hloc/1101/pr?sid=hloc%2F0011%2F1101&marketplace=HYPERLOCAL" },
+      { title: "Coffee", url: "/hyperlocal/hloc/1102/pr?sid=hloc%2F0011%2F1102&marketplace=HYPERLOCAL" },
+      { title: "Health & Nutrition Drinks", url: "/hyperlocal/hloc/1103/pr?sid=hloc%2F0011%2F1103&marketplace=HYPERLOCAL" },
+      { title: "Green & Herbal Tea", url: "/hyperlocal/hloc/1104/pr?sid=hloc%2F0011%2F1104&marketplace=HYPERLOCAL" }
+    ],
     "hloc/0003": [
       { title: "Atta & Flours", url: "/hyperlocal/hloc/0301/pr?sid=hloc%2F0003%2F0301&marketplace=HYPERLOCAL" },
       { title: "Rice & Rice Products", url: "/hyperlocal/hloc/0302/pr?sid=hloc%2F0003%2F0302&marketplace=HYPERLOCAL" },
@@ -105,14 +111,28 @@ javascript:(function(){
     ]
   };
 
+  /* Auto-detect active category if user is already browsing a Flipkart Minutes category */
+  var initialIdx = 0;
+  try {
+    var curUrl = window.location.href;
+    var sidMatch = curUrl.match(/sid=([^&]+)/i);
+    if (sidMatch) {
+      var decodedSid = decodeURIComponent(sidMatch[1]);
+      var matchIdx = CATEGORIES.findIndex(function(c){
+        return c.catId && (decodedSid === c.catId || decodedSid.startsWith(c.catId + "/") || c.catId.startsWith(decodedSid));
+      });
+      if (matchIdx !== -1) initialIdx = matchIdx;
+    }
+  } catch(e) {}
+
   var st = {
     mode: "IDLE",
     sort: "discount",
     searchQuery: "",
     items: [],
     seen: new Set(),
-    selectedMode: CATEGORIES[0].uri,
-    selectedCatId: CATEGORIES[0].catId,
+    selectedMode: CATEGORIES[initialIdx].uri,
+    selectedCatId: CATEGORIES[initialIdx].catId,
     hideOos: true,
     isCollapsed: false
   };
@@ -557,7 +577,7 @@ javascript:(function(){
       </div>
       <div class="fkd-row-2">
         <button class="fkd-cat-toggle" id="fkd-cat-toggle" type="button" title="Browse & select Flipkart Minutes categories">
-          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">${CATEGORIES[0].name}</span>
+          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">${CATEGORIES[initialIdx].name}</span>
           <span class="fkd-caret" id="fkd-cat-caret">▾</span>
         </button>
         <div id="fkd-cat-drawer" class="fkd-cat-drawer hidden"></div>
@@ -610,7 +630,7 @@ javascript:(function(){
   /* Render direct flat list of all verified categories inside drawer */
   CATEGORIES.forEach(function(item, idx){
     var itemEl = d.createElement("div");
-    itemEl.className = "fkd-cat-item" + (idx === 0 ? " active" : "");
+    itemEl.className = "fkd-cat-item" + (idx === initialIdx ? " active" : "");
     itemEl.textContent = item.name;
 
     itemEl.onclick = function(e) {
@@ -831,6 +851,11 @@ javascript:(function(){
         mrp = cleanMrp;
         disc = Math.round(((mrp - fsp) / mrp) * 100);
       }
+    }
+
+    /* Ensure deal links open directly in Flipkart Minutes */
+    if (lnk && !lnk.includes("marketplace=HYPERLOCAL")) {
+      lnk += (lnk.includes("?") ? "&" : "?") + "marketplace=HYPERLOCAL";
     }
 
     var uid = title + "_" + fsp;

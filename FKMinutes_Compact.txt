@@ -1,4 +1,5 @@
 javascript:(function(){
+/* Clean up existing instances */
 ['fk-deals-sidebar', 'fk-deals-pill', 'fk-deals-styles'].forEach(function(id){
 var el = document.getElementById(id);
 if (el) el.remove();
@@ -6,6 +7,7 @@ if (el) el.remove();
 var THEME = "#2563eb";
 var THEME_DARK = "#1d4ed8";
 var d = document;
+/* Flipkart Minutes Verified Category Catalog (Direct Flat List) */
 var CATEGORIES = [
 { name: "🍎 Fresh Fruits", uri: "/hyperlocal/Fruits/pr?sid=hloc%2F0071&marketplace=HYPERLOCAL", catId: "hloc/0071" },
 { name: "🥕 Fresh Vegetables", uri: "/hyperlocal/Vegetables/pr?sid=hloc%2F0072&marketplace=HYPERLOCAL", catId: "hloc/0072" },
@@ -20,7 +22,7 @@ var CATEGORIES = [
 { name: "🥣 Cereals & Dry Fruits", uri: "/hyperlocal/Cereals-DryFruits/pr?sid=hloc%2F0019&marketplace=HYPERLOCAL", catId: "hloc/0019" },
 { name: "🍝 Instant & Frozen Food", uri: "/hyperlocal/Instant-FrozenFood/pr?sid=hloc%2F0020&marketplace=HYPERLOCAL", catId: "hloc/0020" },
 { name: "🥫 Sauces & Spreads", uri: "/hyperlocal/Sauces-Spreads/pr?sid=hloc%2F0021&marketplace=HYPERLOCAL", catId: "hloc/0021" },
-{ name: "🍫 Chocolates & Candies", uri: "/hyperlocal/Fruits/pr?sid=hloc%2F0065&marketplace=HYPERLOCAL", catId: "hloc/0065" },
+{ name: "🍫 Chocolates & Candies", uri: "/hyperlocal/hloc/6501/pr?sid=hloc%2F0065%2F6501&marketplace=HYPERLOCAL", catId: "hloc/0065" },
 { name: "🍨 Ice Cream & Desserts", uri: "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL", catId: "hloc/0034" },
 { name: "🍬 Sweets & Mithai", uri: "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL", catId: "hloc/0081/0806" },
 { name: "🌿 Paan Corner & Refreshments", uri: "/hyperlocal/hloc/4904/pr?sid=hloc%2F0049%2F4904&marketplace=HYPERLOCAL", catId: "hloc/0049/4904" },
@@ -29,14 +31,14 @@ var CATEGORIES = [
 { name: "💄 Beauty & Fragrances", uri: "/hyperlocal/Beauty-Fragrances/pr?sid=hloc%2F0041&marketplace=HYPERLOCAL", catId: "hloc/0041" },
 { name: "👶 Baby Care & Diapers", uri: "/hyperlocal/Baby-Care/pr?sid=hloc%2F0001%2F0110&marketplace=HYPERLOCAL", catId: "hloc/0001" },
 { name: "💊 Health & Pharma", uri: "/hyperlocal/Health-Pharma/pr?sid=hloc%2F0015&marketplace=HYPERLOCAL", catId: "hloc/0015" },
-{ name: "🌸 Feminine Hygiene", uri: "/hyperlocal/Fruits/pr?sid=hloc%2Fqbq2&marketplace=HYPERLOCAL", catId: "hloc/qbq2" },
-{ name: "🛡️ Sexual Wellness", uri: "/hyperlocal/Fruits/pr?sid=hloc%2Fzgt0&marketplace=HYPERLOCAL", catId: "hloc/zgt0" },
+{ name: "🌸 Feminine Hygiene", uri: "/hyperlocal/hloc/qbq2/pr?sid=hloc%2Fqbq2&marketplace=HYPERLOCAL", catId: "hloc/qbq2" },
+{ name: "🛡️ Sexual Wellness", uri: "/hyperlocal/hloc/zgt0/pr?sid=hloc%2Fzgt0&marketplace=HYPERLOCAL", catId: "hloc/zgt0" },
 { name: "🧹 Cleaning Essentials & Detergents", uri: "/hyperlocal/Cleaning-Essentials/pr?sid=hloc%2F0025&marketplace=HYPERLOCAL", catId: "hloc/0025" },
 { name: "🍳 Kitchen & Dining Essentials", uri: "/hyperlocal/Kitchen/pr?sid=hloc%2F0048&marketplace=HYPERLOCAL", catId: "hloc/0048" },
-{ name: "🛏️ Home Furnishing & Bedding", uri: "/hyperlocal/Toys-Games/pr?sid=hloc%2F0047&marketplace=HYPERLOCAL", catId: "hloc/0047" },
+{ name: "🛏️ Home Furnishing & Bedding", uri: "/hyperlocal/hloc/4701/pr?sid=hloc%2F0047%2F4701&marketplace=HYPERLOCAL", catId: "hloc/0047" },
 { name: "📚 School Supplies & Stationery", uri: "/hyperlocal/School-Supplies/pr?sid=hloc%2F0016&marketplace=HYPERLOCAL", catId: "hloc/0016" },
 { name: "🪛 Electricals & Tools", uri: "/hyperlocal/Electircals-Tools/pr?sid=hloc%2F0043&marketplace=HYPERLOCAL", catId: "hloc/0043" },
-{ name: "🪔 Pooja Needs & Agarbatti", uri: "/hyperlocal/Toys-Games/pr?sid=hloc%2F0082&marketplace=HYPERLOCAL", catId: "hloc/0082" },
+{ name: "🪔 Pooja Needs & Agarbatti", uri: "/hyperlocal/hloc/8201/pr?sid=hloc%2F0082%2F8201&marketplace=HYPERLOCAL", catId: "hloc/0082" },
 { name: "🐕 Pet Care & Pet Food", uri: "/hyperlocal/PetCare/pr?sid=hloc%2F0029&marketplace=HYPERLOCAL", catId: "hloc/0029" },
 { name: "🧸 Toys & Games", uri: "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL", catId: "hloc/0028" },
 { name: "🏸 Sports & Fitness", uri: "/hyperlocal/Sports-Fitness/pr?sid=hloc%2F0036&marketplace=HYPERLOCAL", catId: "hloc/0036" },
@@ -46,6 +48,7 @@ var CATEGORIES = [
 { name: "🔌 Electronics & Gadgets", uri: "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL", catId: "hloc/0038" },
 { name: "🔌 Home Appliances", uri: "/hyperlocal/hloc/4002/pr?sid=hloc%2F0040%2F4002&marketplace=HYPERLOCAL", catId: "hloc/0040/4002" }
 ];
+/* Pre-mapped verified subcategories for instant reliable looping */
 var PRESET_SUBCATS = {
 "hloc/0006": [
 { title: "Biscuits & Cookies", url: "/hyperlocal/hloc/0613/pr?sid=hloc%2F0006%2F0613&marketplace=HYPERLOCAL" },
@@ -82,6 +85,12 @@ var PRESET_SUBCATS = {
 { title: "Brownies & Muffins", url: "/hyperlocal/hloc/flxv/pr?sid=hloc%2F0065%2Fflxv&marketplace=HYPERLOCAL" },
 { title: "Premium & Imported", url: "/hyperlocal/hloc/ztyr/pr?sid=hloc%2F0065%2Fztyr&marketplace=HYPERLOCAL" }
 ],
+"hloc/0011": [
+{ title: "Tea", url: "/hyperlocal/hloc/1101/pr?sid=hloc%2F0011%2F1101&marketplace=HYPERLOCAL" },
+{ title: "Coffee", url: "/hyperlocal/hloc/1102/pr?sid=hloc%2F0011%2F1102&marketplace=HYPERLOCAL" },
+{ title: "Health & Nutrition Drinks", url: "/hyperlocal/hloc/1103/pr?sid=hloc%2F0011%2F1103&marketplace=HYPERLOCAL" },
+{ title: "Green & Herbal Tea", url: "/hyperlocal/hloc/1104/pr?sid=hloc%2F0011%2F1104&marketplace=HYPERLOCAL" }
+],
 "hloc/0003": [
 { title: "Atta & Flours", url: "/hyperlocal/hloc/0301/pr?sid=hloc%2F0003%2F0301&marketplace=HYPERLOCAL" },
 { title: "Rice & Rice Products", url: "/hyperlocal/hloc/0302/pr?sid=hloc%2F0003%2F0302&marketplace=HYPERLOCAL" },
@@ -98,18 +107,32 @@ var PRESET_SUBCATS = {
 { title: "Spices & Masalas", url: "/hyperlocal/hloc/0903/pr?sid=hloc%2F0009%2F0903&marketplace=HYPERLOCAL" }
 ]
 };
+/* Auto-detect active category if user is already browsing a Flipkart Minutes category */
+var initialIdx = 0;
+try {
+var curUrl = window.location.href;
+var sidMatch = curUrl.match(/sid=([^&]+)/i);
+if (sidMatch) {
+var decodedSid = decodeURIComponent(sidMatch[1]);
+var matchIdx = CATEGORIES.findIndex(function(c){
+return c.catId && (decodedSid === c.catId || decodedSid.startsWith(c.catId + "/") || c.catId.startsWith(decodedSid));
+});
+if (matchIdx !== -1) initialIdx = matchIdx;
+}
+} catch(e) {}
 var st = {
 mode: "IDLE",
 sort: "discount",
 searchQuery: "",
 items: [],
 seen: new Set(),
-selectedMode: CATEGORIES[0].uri,
-selectedCatId: CATEGORIES[0].catId,
+selectedMode: CATEGORIES[initialIdx].uri,
+selectedCatId: CATEGORIES[initialIdx].catId,
 hideOos: true,
 isCollapsed: false
 };
 window.fkDealsStop = false;
+/* Helper function: Extract human-friendly product title from Flipkart canonical URL slug */
 function extractTitleFromUrl(url) {
 try {
 if (!url) return "";
@@ -123,6 +146,7 @@ return slug.replace(/\b[a-z]/g, function(c){ return c.toUpperCase(); });
 } catch(e) {}
 return "";
 }
+/* Inject Sidebar Styles */
 var style = d.createElement("style");
 style.id = "fk-deals-styles";
 style.textContent = `
@@ -328,6 +352,7 @@ background: #dbeafe;
 color: #1e40af;
 font-weight: 800;
 }
+/* Toolbar: Exact Equal-Sized Pills (flex: 1 1 0) */
 .fkd-toolbar {
 display: flex;
 gap: 6px;
@@ -379,6 +404,7 @@ color: #ffffff !important;
 border-color: #ef4444 !important;
 font-weight: 800;
 }
+/* Dedicated Full-Width Status Bar to avoid pill resizing */
 .fkd-status-bar {
 display: flex;
 align-items: center;
@@ -514,11 +540,13 @@ line-height: 1.6;
 }
 `;
 d.head.appendChild(style);
+/* Minimized Floating Pill */
 var pill = d.createElement("div");
 pill.id = "fk-deals-pill";
 pill.className = "hidden";
 pill.innerHTML = `<span>⚡ Minutes Deals</span><span class="fkd-badge" id="fkd-pill-count">0</span>`;
 d.body.appendChild(pill);
+/* Sidebar UI */
 var sb = d.createElement("div");
 sb.id = "fk-deals-sidebar";
 sb.innerHTML = `
@@ -539,7 +567,7 @@ sb.innerHTML = `
 </div>
 <div class="fkd-row-2">
 <button class="fkd-cat-toggle" id="fkd-cat-toggle" type="button" title="Browse & select Flipkart Minutes categories">
-<span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">${CATEGORIES[0].name}</span>
+<span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">${CATEGORIES[initialIdx].name}</span>
 <span class="fkd-caret" id="fkd-cat-caret">▾</span>
 </button>
 <div id="fkd-cat-drawer" class="fkd-cat-drawer hidden"></div>
@@ -560,6 +588,7 @@ sb.innerHTML = `
 </div>
 `;
 d.body.appendChild(sb);
+/* Element References */
 var catToggle = d.getElementById("fkd-cat-toggle");
 var catNameDisplay = d.getElementById("fkd-selected-cat-name");
 var catCaret = d.getElementById("fkd-cat-caret");
@@ -583,9 +612,10 @@ catToggle.onclick = function(e) {
 e.stopPropagation();
 toggleCatDrawer();
 };
+/* Render direct flat list of all verified categories inside drawer */
 CATEGORIES.forEach(function(item, idx){
 var itemEl = d.createElement("div");
-itemEl.className = "fkd-cat-item" + (idx === 0 ? " active" : "");
+itemEl.className = "fkd-cat-item" + (idx === initialIdx ? " active" : "");
 itemEl.textContent = item.name;
 itemEl.onclick = function(e) {
 e.stopPropagation();
@@ -596,6 +626,7 @@ st.selectedCatId = item.catId;
 catNameDisplay.textContent = item.name;
 if (inputSearch) inputSearch.value = "";
 st.searchQuery = "";
+/* User Requirement: Default option should be sort by discount on choosing category */
 st.sort = "discount";
 btnSortDisc.classList.add("active");
 btnSortPrice.classList.remove("active");
@@ -604,6 +635,7 @@ setStatus("Selected: " + item.name);
 };
 catDrawer.appendChild(itemEl);
 });
+/* Close drawer when clicking outside inside sidebar */
 sb.addEventListener("click", function(e){
 if (catDrawer && !catDrawer.contains(e.target) && !catToggle.contains(e.target)) {
 closeCatDrawer();
@@ -748,29 +780,38 @@ function addProduct(title, fsp, mrp, disc, img, lnk, isOos) {
 if (!fsp) return false;
 fsp = parseInt(fsp, 10);
 if (isNaN(fsp) || fsp <= 0) return false;
+/* Clean fallback for generic or missing title */
 if (!title || title === "Product" || title.length < 3) {
 var urlTitle = extractTitleFromUrl(lnk);
 title = urlTitle || title || "Product";
 }
 mrp = mrp ? parseInt(mrp, 10) : fsp;
 if (isNaN(mrp) || mrp <= 0) mrp = fsp;
+/* Selling price is ALWAYS <= MRP. If swapped, correct them */
 if (fsp > mrp) {
 var tmp = fsp;
 fsp = mrp;
 mrp = tmp;
 }
+/* If discount is present but fsp == mrp, compute selling price from discount */
 if (disc > 0 && disc < 100 && fsp === mrp) {
 fsp = Math.round(mrp * (1 - disc / 100));
 }
+/* Normalize discount percentage (0 to 99) */
 if (disc === undefined || isNaN(disc) || disc > 99 || disc < 0) {
 disc = (mrp > fsp) ? Math.round(((mrp - fsp) / mrp) * 100) : 0;
 }
+/* Bug Fix: Concatenated MRP and Discount (e.g. 750 MRP + 37% off = 75037) */
 if (mrp > fsp * 4 && disc > 0 && String(mrp).endsWith(String(disc))) {
 var cleanMrp = parseInt(String(mrp).slice(0, -String(disc).length), 10);
 if (cleanMrp >= fsp) {
 mrp = cleanMrp;
 disc = Math.round(((mrp - fsp) / mrp) * 100);
 }
+}
+/* Ensure deal links open directly in Flipkart Minutes */
+if (lnk && !lnk.includes("marketplace=HYPERLOCAL")) {
+lnk += (lnk.includes("?") ? "&" : "?") + "marketplace=HYPERLOCAL";
 }
 var uid = title + "_" + fsp;
 if (!st.seen.has(uid)) {
@@ -780,6 +821,7 @@ return true;
 }
 return false;
 }
+/* Parse products from Rome API JSON structure */
 function parseProducts(json) {
 var count = 0;
 if (!json) return count;
@@ -787,6 +829,7 @@ var slots = json.RESPONSE?.slots || json.slots || json.pageData?.slots || json.m
 slots.forEach(function(s){
 var w = s.widget || {};
 var wdata = w.data || {};
+/* 1. Standard Product Summaries */
 var comps = wdata.products || wdata.renderableComponents || [];
 comps.forEach(function(item){
 try {
@@ -807,6 +850,7 @@ var lnk = v.baseUrl ? ("https://www.flipkart.com" + v.baseUrl) : (v.smartUrl ? (
 var title = v.titles?.title || v.titles?.newTitle || v.titles?.superTitle || v.productTitle || extractTitleFromUrl(lnk) || "Product";
 var img = v.media?.images?.[0]?.url || v.images?.[0]?.url || "";
 img = img.replace("{@width}", "200").replace("{@height}", "200").replace("?q={@quality}", "?q=80");
+/* Determine Out of Stock status */
 var isOos = (v.availability?.displayState === "OUT_OF_STOCK") ||
 (v.productAction?.value?.enabled === false) ||
 (v.productAction?.value?.actionType === "NOTIFY_ME") ||
@@ -817,6 +861,7 @@ if (addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
 }
 } catch (e) {}
 });
+/* 2. DLS / Atlas Recommendation & Search Grid Widgets */
 var dls = wdata.dlsData || {};
 for (var k in dls) {
 if (k.indexOf("MRCSV") !== -1 || k.indexOf("carouselData") !== -1 || k.indexOf("gridData") !== -1 || k.indexOf("horizontalListData") !== -1) {
@@ -825,6 +870,7 @@ if (Array.isArray(cardList)) {
 cardList.forEach(function(cardWrapper){
 try {
 var cval = cardWrapper?.value || {};
+/* Case A: ATLAS Search & Grid Cards (snb_hl_text_0) */
 if (cval.snb_hl_text_0?.value) {
 var snbText = cval.snb_hl_text_0.value;
 var lnk = cval.col_0?.action?.url || cval.col_0?.action?.originalUrl || "";
@@ -866,6 +912,7 @@ img = img.replace("{@width}", "200").replace("{@height}", "200").replace("?q={@q
 if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
 return;
 }
+/* Case B: MRCSV / Product Cards */
 var pcard = null;
 for (var pk in cval) {
 if (pk.indexOf("product-card") !== -1 || pk.indexOf("productCard") !== -1) {
@@ -923,6 +970,7 @@ if (addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
 });
 return count;
 }
+/* Scrape items from DOM (WITHOUT SCROLLING) */
 function parseDomProducts(rootDoc) {
 var doc = rootDoc || document;
 var count = 0;
@@ -933,10 +981,12 @@ try {
 var href = a.getAttribute("href") || "";
 if (!href || href.includes("javascript:") || href.length < 5) return;
 if (!href.startsWith("http")) href = "https://www.flipkart.com" + href;
+/* Find outer card container */
 var card = a.closest('[data-id], [class*="card" i], [class*="product" i], [class*="grid" i], [class*="_1AtVbE"]') || a.parentElement;
 var cardKey = (card && card.getAttribute && card.getAttribute("data-id")) || href.split("?")[0];
 if (cardKey && processedCards.has(cardKey)) return;
 if (cardKey) processedCards.add(cardKey);
+/* Extract price elements specifically if present */
 var fsp = 0;
 var mrp = 0;
 var disc = 0;
@@ -955,10 +1005,13 @@ if (discEl) {
 var m3 = discEl.innerText.match(/\b([1-9][0-9]?)\s*%/);
 if (m3) disc = parseInt(m3[1], 10);
 }
+/* Fallback to text matching if specific classes were not found */
 if (!fsp) {
 var text = (card ? card.innerText : a.innerText) || "";
+/* Remove promotional "save extra ₹20" to avoid picking offer amounts as product price */
 text = text.replace(/save\s*(?:extra\s*)?(?:₹|\u20b9)\s*\d+/gi, "")
 .replace(/buy\s*\d+\s*(?:items|get|for)[^₹\n]*(?:₹|\u20b9)\s*\d+/gi, "");
+/* Pre-normalize text to separate adjacent price and discount digits */
 text = text.replace(/(?:₹|\u20b9)\s*([0-9,]+?)(\d{1,2})%\s*off/gi, "₹$1 $2% off")
 .replace(/([0-9])([0-9]{2}%)/g, "$1 $2")
 .replace(/(?:₹|\u20b9)\s*([0-9,]+)(?=[0-9]{2}%)/g, "₹$1 ");
@@ -980,8 +1033,10 @@ var discMatch = text.match(/\b([1-9][0-9]?)\s*%\s*off/i);
 if (discMatch) disc = parseInt(discMatch[1], 10);
 }
 }
+/* Image extraction */
 var imgEl = (card || a).querySelector('img[src*="rukminim"], img[src*="flixcart"], img');
 var img = imgEl ? (imgEl.src || imgEl.getAttribute("src") || "") : "";
+/* Multi-strategy Title Extraction */
 var title = "";
 var titleEl = (card || a).querySelector('[class*="title" i], [class*="name" i], [class*="pIpigb"], [class*="wjcEIp"], [class*="s1Q9rs"], [class*="_4rR01T"], [class*="_2Wk75y"]');
 if (titleEl && titleEl.innerText && titleEl.innerText.trim().length > 3) {
@@ -1012,6 +1067,7 @@ break;
 if (!title || title === "Product") {
 title = extractTitleFromUrl(href) || "Product";
 }
+/* Comprehensive Out-of-Stock Detection ("Currently unavailable", "Notify Me", etc.) */
 var isOos = /currently\s*unavailable|unavailable|out\s*of\s*stock|sold\s*out|notify\s*me/i.test((card ? card.innerText : a.innerText) || "") ||
 !!(card && card.querySelector('button[disabled], [class*="unavailable" i], [class*="outOfStock" i], [class*="notify" i], [aria-label*="notify" i]'));
 if (addProduct(title, fsp, mrp, disc, img, href, isOos)) count++;
@@ -1019,6 +1075,7 @@ if (addProduct(title, fsp, mrp, disc, img, href, isOos)) count++;
 });
 return count;
 }
+/* Safe URI sanitizer ensuring sid query parameter slashes are encoded as %2F */
 function sanitizePageUri(uri) {
 if (!uri) return "";
 var u = uri.startsWith("http") ? uri.replace(/^https?:\/\/[^\/]+/, "") : uri;
@@ -1026,11 +1083,13 @@ return u.replace(/([?&]sid=)([^&]+)/gi, function(match, prefix, val) {
 return prefix + val.replace(/\//g, "%2F");
 });
 }
+/* Get user agent header with required mobile token for Rome API WAF */
 function getXUserAgent() {
 var ua = navigator.userAgent || "";
 if (ua.includes("FKUA/msite")) return ua;
 return ua + " FKUA/msite/0.0.4/msite/Mobile";
 }
+/* Get active pincode dynamically from session state, cookies, or storage */
 function getActivePincode() {
 try {
 if (window.__INITIAL_STATE__) {
@@ -1053,6 +1112,7 @@ if (stored && /^[0-9]{6}$/.test(stored)) return parseInt(stored, 10);
 } catch(e) {}
 return 560032;
 }
+/* Extract active session & query context for Rome API */
 function getRequestContext() {
 var ctx = { type: "BROWSE_PAGE" };
 try {
@@ -1067,6 +1127,7 @@ if (rc?.sqid) ctx.sqid = rc.sqid;
 } catch(e) {}
 return ctx;
 }
+/* Fetch page data using Flipkart Rome API with automatic 302 redirection resolution */
 async function fetchRomePage(pageUri, redirectCount) {
 if (!pageUri) return null;
 redirectCount = redirectCount || 0;
@@ -1105,6 +1166,7 @@ credentials: "omit"
 });
 if (resp.ok) {
 var json = await resp.json();
+/* Handle internal 302 redirection (e.g. to /hyperlocal-preview-page) */
 var slots = json.RESPONSE?.slots || json.slots || [];
 var redir = json.RESPONSE?.pageMeta?.redirectionObject || json.pageMeta?.redirectionObject;
 if ((!slots || slots.length === 0) && redir && redir.url) {
@@ -1127,6 +1189,7 @@ return json;
 } catch(e) {}
 return null;
 }
+/* Fetch full HTML of any Flipkart page with session cookies (fallback) */
 async function fetchCategoryHtml(uri) {
 var cleanUri = sanitizePageUri(uri);
 var url = cleanUri.startsWith("http") ? cleanUri : ("https://www.flipkart.com" + cleanUri);
@@ -1141,6 +1204,7 @@ return await resp.text();
 return null;
 }
 }
+/* Extract __INITIAL_STATE__ JSON reliably without regex backtracking */
 function extractStateJsonFromHtml(html) {
 if (!html) return null;
 var startIdx = html.indexOf("window.__INITIAL_STATE__");
@@ -1157,9 +1221,11 @@ return JSON.parse(html.substring(jsonStart, jsonEnd + 1));
 return null;
 }
 }
+/* Parse products from raw HTML text (via __INITIAL_STATE__ + DOMParser) */
 function parseHtmlString(html) {
 var count = 0;
 if (!html) return 0;
+/* 1. Extract window.__INITIAL_STATE__ safely */
 try {
 var json = extractStateJsonFromHtml(html);
 if (json) {
@@ -1167,6 +1233,7 @@ var pData = json.multiWidgetState?.pageDataResponse || json.multiWidgetState || 
 count += parseProducts(pData);
 }
 } catch(e) {}
+/* 2. Also parse DOM with DOMParser as guaranteed fallback */
 try {
 var parser = new DOMParser();
 var doc = parser.parseFromString(html, "text/html");
@@ -1174,6 +1241,7 @@ count += parseDomProducts(doc);
 } catch(e) {}
 return count;
 }
+/* Unified page fetcher: Attempts Rome API first, with fallback to HTML if needed */
 async function fetchAndParsePage(uri) {
 if (!uri) return { count: 0 };
 var json = await fetchRomePage(uri);
@@ -1181,6 +1249,7 @@ if (json) {
 var c = parseProducts(json);
 if (c > 0) return { count: c, json: json };
 }
+/* Fallback to HTML if API returned 0 deals */
 var html = await fetchCategoryHtml(uri);
 if (html) {
 var c2 = parseHtmlString(html);
@@ -1188,6 +1257,7 @@ return { count: c2, html: html, json: json };
 }
 return { count: 0, json: json };
 }
+/* Extract subcategory links from Rome API JSON slots */
 function extractSubcategoriesFromJson(json) {
 var subcats = [];
 var seen = new Set();
@@ -1196,6 +1266,7 @@ var slots = json.RESPONSE?.slots || json.slots || json.pageData?.slots || json.m
 slots.forEach(function(s){
 var w = s.widget || {};
 var wdata = w.data || {};
+/* Format 1: STICKY_NAVIGATION_CARD_WIDGET */
 if (w.type === "STICKY_NAVIGATION_CARD_WIDGET" || w.viewType === "CATEGORY_FILTER_VIEW") {
 var comps = wdata.renderableComponents || [];
 comps.forEach(function(c){
@@ -1210,6 +1281,7 @@ subcats.push({ title: title.trim() || "Subcategory", url: sUrl });
 }
 });
 }
+/* Format 2: ATLAS_WIDGET with vertical-sticky-navigation-side-rail */
 if (w.viewType === "vertical-sticky-navigation-side-rail" || w.widgetName?.includes("CATEGORY_FILTER_VIEW") || w.widgetType?.includes("CATEGORY_FILTER_VIEW")) {
 var dls = wdata.dlsData || {};
 for (var k in dls) {
@@ -1236,10 +1308,12 @@ subcats.push({ title: title.trim() || "Subcategory", url: sUrl });
 });
 return subcats;
 }
+/* Extract subcategory links from category HTML (via __INITIAL_STATE__ + DOMParser + Regex) */
 function extractSubcategoriesFromHtml(html) {
 var subcats = [];
 var seen = new Set();
 if (!html) return subcats;
+/* A. Search inside window.__INITIAL_STATE__ JSON for navigation widgets */
 try {
 var json = extractStateJsonFromHtml(html);
 if (json) {
@@ -1248,6 +1322,7 @@ subcats = extractSubcategoriesFromJson(pData);
 if (subcats.length > 0) return subcats;
 }
 } catch(e) {}
+/* B. Search via DOMParser */
 try {
 var parser = new DOMParser();
 var doc = parser.parseFromString(html, "text/html");
@@ -1263,6 +1338,7 @@ subcats.push({ title: title, url: sUrl });
 }
 });
 } catch(e) {}
+/* C. Search via Regex for subcategory patterns */
 try {
 var urlMatches = html.matchAll(/\/hyperlocal\/hloc\/[a-z0-9]+\/pr\?sid=[^"&'\s]+/gi);
 for (var match of urlMatches) {
@@ -1275,6 +1351,7 @@ subcats.push({ title: "Subcategory", url: u });
 } catch(e) {}
 return subcats;
 }
+/* Search Flipkart Minutes via Rome API */
 async function startSearch(query) {
 if (!query || !query.trim()) {
 setStatus("Enter search keyword");
@@ -1296,6 +1373,7 @@ var sortParam = (st.sort === "discount") ? "&sort=discount" : "&sort=price_asc";
 var searchUri = "/hyperlocal/pr?q=" + encodeURIComponent(query) + "&marketplace=HYPERLOCAL&searchSourceContext=experience%3D&widgetUniqueId=1&sid=search.flipkart.com&as-show=on" + sortParam;
 await fetchAndParsePage(searchUri);
 renderGrid();
+/* Try Page 2 if still running and found items */
 if (st.mode === "RUN" && !window.fkDealsStop && st.items.length > 0) {
 setStatus(`Loading more "${query}"...`);
 var p2Uri = searchUri + "&page=2";
@@ -1306,22 +1384,27 @@ stopAll();
 var finalIn = st.items.filter(function(x){ return !x.oos; }).length;
 setStatus(`Search done! ${st.items.length} items (${finalIn} in stock)`);
 }
+/* Main Category & Subcategory Looping Engine (ZERO AUTO-SCROLL) */
 async function startCategoryFetch() {
 closeCatDrawer();
 window.fkDealsStop = false;
 st.mode = "RUN";
 btnFetch.textContent = "Stop ⏹";
 btnFetch.className = "fkd-pill fkd-pill-danger";
+/* 1. Clear items on new fetch so we don't display items from previous page */
 st.items = [];
 st.seen.clear();
 renderGrid();
 var targetUri = st.selectedMode;
 var catId = st.selectedCatId;
+/* Mode: Selected Category */
 setStatus("Loading category deals...");
+/* 2. Check pre-mapped subcategories first */
 var subcategories = [];
 if (PRESET_SUBCATS[catId]) {
 subcategories = PRESET_SUBCATS[catId].slice();
 }
+/* 3. If not pre-mapped, fetch category page to discover subcategories and parse Page 1 deals */
 if (!subcategories.length) {
 setStatus("Discovering deals & subcategories...");
 var p1Uri = targetUri + (targetUri.includes("?") ? "&" : "?") + "sort=discount";
@@ -1334,6 +1417,7 @@ if (!subcategories.length && pageRes.html) {
 subcategories = extractSubcategoriesFromHtml(pageRes.html);
 }
 }
+/* 4. If subcategories available, loop Page 1 for each */
 if (subcategories.length > 0) {
 setStatus(`Scanning ${subcategories.length} subcategories...`);
 for (var idx = 0; idx < subcategories.length; idx++) {
@@ -1349,6 +1433,7 @@ renderGrid();
 await new Promise(function(r){ setTimeout(r, 350); });
 }
 }
+/* 5. Multi-page: If no subcategories exist OR subcategories yielded 0 items, fetch pages of targetUri */
 if (st.items.length === 0 || subcategories.length === 0) {
 if (PRESET_SUBCATS[catId]) {
 setStatus("Fetching category deals...");
@@ -1371,5 +1456,6 @@ stopAll();
 var finalIn = st.items.filter(function(x){ return !x.oos; }).length;
 setStatus(`Done! Found ${st.items.length} (${finalIn} in stock)`);
 }
+/* Initialize */
 setStatus("Ready - Select a category or search");
 })();
