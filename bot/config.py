@@ -28,7 +28,7 @@ DEFAULT_HEADERS = {
     "referer": "https://www.flipkart.com/"
 }
 
-# Verified Leaf Subcategories & Aisle Targets (28 Essential Grocery & Daily Essentials)
+# Verified Leaf Subcategories (Where products actually live; no clutter like diapers/cases/kitchenware)
 CATEGORIES = [
     # Bakery & Biscuits
     { "name": "Biscuits & Cookies", "uri": "/hyperlocal/hloc/0613/pr?sid=hloc%2F0006%2F0613&marketplace=HYPERLOCAL&sort=discount" },
@@ -48,11 +48,15 @@ CATEGORIES = [
     { "name": "Dark Chocolate & Protein Bars", "uri": "/hyperlocal/hloc/tczo/pr?sid=hloc%2F0065%2Ftczo&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Sweets & Mithai", "uri": "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL&sort=discount" },
 
-    # Beverages & Dairy
+    # Beverages & Dairy (Split into exact leaf subcategories)
+    { "name": "Tea", "uri": "/hyperlocal/hloc/1101/pr?sid=hloc%2F0011%2F1101&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Coffee", "uri": "/hyperlocal/hloc/1102/pr?sid=hloc%2F0011%2F1102&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Health & Nutrition Drinks", "uri": "/hyperlocal/hloc/1103/pr?sid=hloc%2F0011%2F1103&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Green & Herbal Tea", "uri": "/hyperlocal/hloc/1104/pr?sid=hloc%2F0011%2F1104&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Soft Drinks & Soda", "uri": "/hyperlocal/hloc/0701/pr?sid=hloc%2F0007%2F0701&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Fruit Juices", "uri": "/hyperlocal/hloc/0702/pr?sid=hloc%2F0007%2F0702&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Energy & Sports Drinks", "uri": "/hyperlocal/hloc/0703/pr?sid=hloc%2F0007%2F0703&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Dairy, Bread & Eggs", "uri": "/hyperlocal/hloc/3002/pr?sid=hloc%2F0030%2F3002&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Tea, Coffee & Health Drinks", "uri": "/hyperlocal/Tea-Coffee-Milk-Drinks/pr?sid=hloc%2F0011&marketplace=HYPERLOCAL&sort=discount" },
 
     # Staples & Grocery
     { "name": "Atta & Flours", "uri": "/hyperlocal/hloc/0301/pr?sid=hloc%2F0003%2F0301&marketplace=HYPERLOCAL&sort=discount" },
