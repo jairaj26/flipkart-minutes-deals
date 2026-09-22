@@ -96,9 +96,60 @@ javascript:(function(){if(window.__FK_MINUTES_LOADING__)return;window.__FK_MINUT
 
 ---
 
+## 🤖 Hourly Telegram Deals Bot (GitHub Actions)
+
+An automated background bot that runs every hour on GitHub Actions, scans all 38 Flipkart Minutes categories concurrently using **5 worker threads**, deduplicates deals, and posts high-discount deals directly to your Telegram channel or group.
+
+### 📸 Sample Telegram Alert
+
+```html
+⚡ 60% OFF | ₹120 <strike>₹300</strike>
+
+📦 Cadbury Bournvita Chocolate Nutrition Drink (500g)
+🏷️ Tea, Coffee & Milk Drinks
+
+👉 Buy on Flipkart Minutes
+```
+
+### ⚙️ Setup Guide (2 Minutes)
+
+1. **Create a Telegram Bot:**
+   - Message [@BotFather](https://t.me/BotFather) on Telegram and type `/newbot`.
+   - Follow instructions to name your bot and copy the **HTTP API Token** (e.g. `123456789:ABCdefGhI...`).
+
+2. **Create a Channel / Group:**
+   - Create a new Telegram channel or group for deals.
+   - Add your bot as an **Administrator** with permission to post messages.
+   - Your `TELEGRAM_CHAT_ID` will be your channel username (e.g. `@my_minutes_deals`) or numeric ID.
+
+3. **Add GitHub Repository Secrets:**
+   - In this GitHub repository, go to **Settings** $\rightarrow$ **Secrets and variables** $\rightarrow$ **Actions**.
+   - Click **New repository secret** and add:
+     - `TELEGRAM_BOT_TOKEN`: Your token from `@BotFather`.
+     - `TELEGRAM_CHAT_ID`: Your channel username (e.g. `@my_minutes_deals`) or chat ID.
+     - `PINCODE`: *(Optional)* Target delivery pincode (defaults to `560032`).
+     - `MIN_DISCOUNT`: *(Optional)* Minimum discount % threshold (defaults to `50`).
+     - `FLIPKART_COOKIE`: *(Optional)* Your Flipkart browser cookie string to pin to a specific hyperlocal dark store.
+
+4. **Run or Test:**
+   - Go to the **Actions** tab $\rightarrow$ select **Flipkart Minutes Deals Alert** $\rightarrow$ click **Run workflow**.
+   - It will run automatically every hour (`cron: '0 * * * *'`), 24/7!
+
+---
+
 ## 📂 Project Structure
 
 ```
+├── .github/workflows/
+│   └── flipkart_deals.yml    # Hourly GitHub Actions cron workflow
+├── bot/
+│   ├── config.py             # Master categories & bot configuration
+│   ├── scraper.py            # Rome API client & product normalization
+│   ├── telegram.py           # Telegram Bot API client (photos + HTML alerts)
+│   ├── main.py               # 5-worker concurrent runner & deduplication
+│   └── requirements.txt      # Python dependencies (requests)
+├── data/
+│   └── posted_deals.json     # Cache file for deduplication
 ├── index.html                # Live GitHub Pages installer with 1-click drag & drop and mobile copy box
 ├── Install_Bookmarklet.html  # Standalone installation page
 ├── FKMinutes_Readable.js     # Clean, unminified source code with detailed comments
