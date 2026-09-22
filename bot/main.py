@@ -64,15 +64,10 @@ def should_post_deal(deal, cache):
 
     return False
 
-def scan_worker(task_item, pincode):
-    """Worker function to scrape a single category or search keyword."""
+def scan_worker(category_info, pincode):
+    """Worker function to scrape Page 1 of a single category."""
     scraper = FlipkartScraper(pincode=pincode)
-    task_type, payload = task_item
-    if task_type == "category":
-        return scraper.fetch_category_deals(payload)
-    elif task_type == "keyword":
-        return scraper.fetch_keyword_deals(payload)
-    return []
+    return scraper.fetch_category_deals(category_info)
 
 def main():
     parser = argparse.ArgumentParser(description="Flipkart Minutes Deals Scraper & Telegram Bot")
@@ -107,23 +102,16 @@ def main():
         print("🍪 Cookie: None provided (Running anonymous guest session)")
     print("=" * 60)
 
-    # Build task list: Categories + Keywords
-    tasks = []
-    for cat in config.CATEGORIES:
-        tasks.append(("category", cat))
-    for kw in config.KEYWORDS:
-        tasks.append(("keyword", kw))
-
-    print(f"[*] Starting concurrent scan across {len(config.CATEGORIES)} categories + {len(config.KEYWORDS)} deal keywords ({len(tasks)} total tasks)...")
+    categories = config.CATEGORIES
+    print(f"[*] Starting concurrent scan across {len(categories)} leaf categories (Page 1 sorted by discount)...")
 
     all_products = []
     seen_ids = set()
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
-        future_to_task = {executor.submit(scan_worker, task, args.pincode): task for task in tasks}
-        for future in concurrent.futures.as_completed(future_to_task):
-            task_type, payload = future_to_task[future]
-            task_label = payload["name"] if task_type == "category" else f"Search: {payload.title()}"
+        future_to_cat = {executor.submit(scan_worker, cat, args.pincode): cat for cat in categories}
+        for future in concurrent.futures.as_completed(future_to_cat):
+            cat = future_to_cat[future]
             try:
                 prods = future.result()
                 unique_added = 0
@@ -132,9 +120,9 @@ def main():
                         seen_ids.add(p["id"])
                         all_products.append(p)
                         unique_added += 1
-                print(f"  ✓ [{task_label}] Found {len(prods)} items ({unique_added} new)")
+                print(f"  ✓ [{cat['name']}] Found {len(prods)} items ({unique_added} new)")
             except Exception as e:
-                print(f"  ✗ [{task_label}] Failed: {e}")
+                print(f"  ✗ [{cat['name']}] Failed: {e}")
 
     elapsed_scan = time.time() - start_time
     print(f"[*] Scan complete in {elapsed_scan:.1f}s. Total unique items scraped: {len(all_products)}")
@@ -158,7 +146,7 @@ def main():
 
     for deal in qualifying_deals:
         if should_post_deal(deal, cache):
-            print(f"  🔥 NEW DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']}) [{deal.get('category', 'Deal')}]")
+            print(f"  🔥 NEW DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']})")
             if not args.dry_run:
                 success = notifier.send_deal(deal)
                 if success:

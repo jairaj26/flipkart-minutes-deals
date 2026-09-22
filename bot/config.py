@@ -7,7 +7,7 @@ TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 # Deal Filters & Settings
 DEFAULT_PINCODE = os.getenv("PINCODE", "560045").strip()
 FLIPKART_COOKIE = os.getenv("FLIPKART_COOKIE", "").strip()
-MIN_DISCOUNT = int(os.getenv("MIN_DISCOUNT", "50"))
+MIN_DISCOUNT = int(os.getenv("MIN_DISCOUNT", "70"))
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
 CACHE_FILE = os.getenv("CACHE_FILE", os.path.join("data", "posted_deals.json"))
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
@@ -79,20 +79,4 @@ CATEGORIES = [
     { "name": "Electronics & Gadgets", "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Kitchen & Dining", "uri": "/hyperlocal/Kitchen/pr?sid=hloc%2F0048&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Home Appliances", "uri": "/hyperlocal/hloc/4002/pr?sid=hloc%2F0040%2F4002&marketplace=HYPERLOCAL&sort=discount" }
-]
-
-# High-Discount Search Keywords (Targeting 70%+ deals on accessories, cables, wearables, etc.)
-KEYWORDS = [
-    "cable",
-    "smartwatch",
-    "cover",
-    "case",
-    "charger",
-    "earphones",
-    "headphones",
-    "powerbank",
-    "rakhi",
-    "chocolates",
-    "dry fruits",
-    "biscuits"
 ]

@@ -28,6 +28,54 @@ def sanitize_page_uri(uri):
         u = parsed.path + ("?" + parsed.query if parsed.query else "")
     return re.sub(r'([?&]sid=)([^&]+)', lambda m: m.group(1) + m.group(2).replace("/", "%2F"), u)
 
+def build_product_link(base_lnk, cval=None, stepper_action=None):
+    """
+    Constructs a complete Flipkart Minutes product link.
+    Ensures marketplace=HYPERLOCAL, lid (listingId), and shopId are attached
+    so opening the link routes directly to Flipkart Minutes.
+    """
+    if not base_lnk:
+        return ""
+    if not base_lnk.startswith("http"):
+        base_lnk = "https://www.flipkart.com" + base_lnk
+
+    cval = cval or {}
+    stepper_action = stepper_action or {}
+    stepper_params = stepper_action.get("params", {})
+    stepper_tracking = stepper_action.get("tracking", {})
+    col0_params = cval.get("col_0", {}).get("action", {}).get("params", {})
+    tracker_tracking = cval.get("trackerData_0", {}).get("tracking", {})
+
+    lid = (stepper_params.get("listingId") or
+           stepper_params.get("lid") or
+           stepper_tracking.get("lid") or
+           stepper_tracking.get("listingId") or
+           col0_params.get("listingId") or
+           col0_params.get("lid") or
+           tracker_tracking.get("lid") or
+           tracker_tracking.get("listingId") or "")
+
+    shop_id = (stepper_params.get("shopId") or
+               stepper_tracking.get("shopId") or
+               col0_params.get("shopId") or
+               tracker_tracking.get("shopId") or "")
+
+    parsed = urllib.parse.urlparse(base_lnk)
+    qs = urllib.parse.parse_qs(parsed.query)
+
+    # Always ensure marketplace is HYPERLOCAL so the link opens in Minutes
+    if "marketplace" not in qs:
+        qs["marketplace"] = ["HYPERLOCAL"]
+
+    if lid and "lid" not in qs:
+        qs["lid"] = [lid]
+
+    if shop_id and "shopId" not in qs:
+        qs["shopId"] = [shop_id]
+
+    new_query = urllib.parse.urlencode(qs, doseq=True)
+    return urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
+
 class FlipkartScraper:
     def __init__(self, pincode=None):
         self.pincode = int(pincode or config.DEFAULT_PINCODE)
@@ -159,7 +207,8 @@ class FlipkartScraper:
 
                         disc = pricing.get("totalDiscount", 0)
                         base_url = v.get("baseUrl") or v.get("smartUrl") or ""
-                        lnk = ("https://www.flipkart.com" + base_url) if base_url else ""
+                        raw_lnk = ("https://www.flipkart.com" + base_url) if base_url else ""
+                        lnk = build_product_link(raw_lnk, cval={"trackerData_0": {"tracking": {"lid": v.get("listingId")}}})
 
                         titles = v.get("titles", {})
                         title = (titles.get("title") or titles.get("newTitle") or titles.get("superTitle") or
@@ -182,7 +231,7 @@ class FlipkartScraper:
                 except Exception:
                     continue
 
-            # Check dlsData (MRCSV / carousels / grids)
+            # Check dlsData (MRCSV / carousels / grids) - Case A (snb_hl_text_0)
             dls = wdata.get("dlsData", {})
             for k, wrapper in dls.items():
                 if any(x in k for x in ("MRCSV", "carouselData", "gridData", "horizontalListData")):
@@ -196,9 +245,11 @@ class FlipkartScraper:
                             snb_text = cval.get("snb_hl_text_0", {}).get("value")
                             if snb_text:
                                 col0 = cval.get("col_0", {}).get("action", {})
-                                lnk = col0.get("url") or col0.get("originalUrl") or ""
-                                if lnk and not lnk.startswith("http"):
-                                    lnk = "https://www.flipkart.com" + lnk
+                                raw_lnk = col0.get("url") or col0.get("originalUrl") or ""
+                                stepper = cval.get("stepperData_0", {}).get("action", {})
+
+                                # Build complete Minutes product link with HYPERLOCAL, lid, and shopId
+                                lnk = build_product_link(raw_lnk, cval=cval, stepper_action=stepper)
 
                                 title = (snb_text.get("label_0", {}).get("value", {}).get("text") or
                                          snb_text.get("label_1", {}).get("value", {}).get("text") or
@@ -227,7 +278,6 @@ class FlipkartScraper:
                                 if m_disc:
                                     disc = int(m_disc.group(1))
 
-                                stepper = cval.get("stepperData_0", {}).get("action", {})
                                 if not fsp and stepper.get("params", {}).get("price"):
                                     fsp = int(stepper["params"]["price"])
                                 if not fsp and stepper.get("tracking", {}).get("fsp"):
@@ -241,69 +291,6 @@ class FlipkartScraper:
 
                                 img = col0.get("params", {}).get("imageUrl") or stepper.get("params", {}).get("productImage") or ""
                                 img = img.replace("{@width}", "400").replace("{@height}", "400").replace("?q={@quality}", "?q=80")
-
-                                prod = self._normalize_product(title, fsp, mrp, disc, img, lnk, is_oos)
-                                if prod and prod["id"] not in seen_uids:
-                                    seen_uids.add(prod["id"])
-                                    products.append(prod)
-                                continue
-
-                            # Case B: MRCSV / Product Cards (productCard / product-card)
-                            pcard = None
-                            for pk in cval:
-                                if "product-card" in pk or "productCard" in pk:
-                                    pcard = cval[pk].get("value", {}) if isinstance(cval[pk], dict) else {}
-                                    break
-
-                            if pcard:
-                                stepper_action = pcard.get("stepperData_0", {}).get("action", {})
-                                stepper_tracking = stepper_action.get("tracking", {})
-                                fsp = stepper_tracking.get("fsp") or stepper_action.get("params", {}).get("price")
-                                mrp = stepper_tracking.get("mrp")
-
-                                if not fsp and pcard.get("label_5", {}).get("value"):
-                                    l5 = pcard["label_5"]["value"]
-                                    l5_str = str(l5.get("UNLOCKED", {}).get("value", {}).get("text") or l5.get("LOCKED", {}).get("value", {}).get("text") or "") if isinstance(l5, dict) else str(l5)
-                                    m5 = re.search(r"\d+", l5_str)
-                                    if m5:
-                                        fsp = int(m5.group(0))
-
-                                if not mrp and pcard.get("label_4", {}).get("value"):
-                                    l4 = pcard["label_4"]["value"]
-                                    l4_str = str(l4.get("text", "")) if isinstance(l4, dict) else str(l4)
-                                    m4 = re.search(r"\d+", l4_str)
-                                    if m4:
-                                        mrp = int(m4.group(0))
-
-                                fsp = int(fsp) if fsp else 0
-                                mrp = int(mrp) if mrp else fsp
-
-                                b5 = pcard.get("box_5", {}).get("action", {}).get("url") or pcard.get("col_0", {}).get("action", {}).get("url") or pcard.get("box_0", {}).get("action", {}).get("url") or ""
-                                lnk = ("https://www.flipkart.com" + b5) if b5 and not b5.startswith("http") else b5
-
-                                title = (pcard.get("label_2", {}).get("value", {}).get("text") or
-                                         pcard.get("label_1", {}).get("value", {}).get("text") or
-                                         pcard.get("label_0", {}).get("value", {}).get("text") or
-                                         pcard.get("trackerData_0", {}).get("tracking", {}).get("contentTitle") or
-                                         extract_title_from_url(lnk) or "Product")
-
-                                disc = 0
-                                if pcard.get("label_15", {}).get("value"):
-                                    l15 = pcard["label_15"]["value"]
-                                    l15_str = str(l15.get("UNLOCKED", {}).get("value", {}).get("text") or l15.get("LOCKED", {}).get("value", {}).get("text") or "") if isinstance(l15, dict) else str(l15)
-                                    m_d = re.search(r"(\d+)%", l15_str)
-                                    if m_d:
-                                        disc = int(m_d.group(1))
-
-                                img = stepper_action.get("params", {}).get("productImage") or ""
-                                if not img:
-                                    img_obj = pcard.get("hp_reco_pmu_product-card_image_0", {}).get("value", {})
-                                    img = img_obj.get("image_0", {}).get("value", {}).get("dynamicImageUrl") or img_obj.get("video_0", {}).get("value", {}).get("dynamicImageUrl") or ""
-                                img = img.replace("{@width}", "400").replace("{@height}", "400").replace("?q={@quality}", "?q=80")
-
-                                is_oos = (stepper_action.get("enabled") is False or
-                                          pcard.get("button_0", {}).get("value", {}).get("actionType") == "NOTIFY_ME" or
-                                          bool(re.search(r"notify", pcard.get("button_0", {}).get("value", {}).get("text", ""), re.I)))
 
                                 prod = self._normalize_product(title, fsp, mrp, disc, img, lnk, is_oos)
                                 if prod and prod["id"] not in seen_uids:
@@ -357,21 +344,11 @@ class FlipkartScraper:
         }
 
     def fetch_category_deals(self, category_info):
-        """Fetches and parses all deals for a single category."""
+        """Fetches and parses Page 1 deals for a single category."""
         uri = category_info.get("uri", "")
         cat_name = category_info.get("name", "Category")
         json_data = self.fetch_rome_page(uri)
         products = self.parse_products_from_json(json_data)
         for p in products:
             p["category"] = cat_name
-        return products
-
-    def fetch_keyword_deals(self, keyword):
-        """Fetches and parses all deals for a search keyword."""
-        clean_kw = keyword.strip()
-        uri = f"/hyperlocal/pr?q={urllib.parse.quote(clean_kw)}&marketplace=HYPERLOCAL&searchSourceContext=experience%3D&widgetUniqueId=1&sid=search.flipkart.com&as-show=on&sort=discount"
-        json_data = self.fetch_rome_page(uri)
-        products = self.parse_products_from_json(json_data)
-        for p in products:
-            p["category"] = f"Search: {clean_kw.title()}"
         return products
