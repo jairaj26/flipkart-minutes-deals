@@ -64,15 +64,20 @@ def should_post_deal(deal, cache):
 
     return False
 
-def scan_worker(category_info, pincode):
-    """Worker function to scrape a single category."""
+def scan_worker(task_item, pincode):
+    """Worker function to scrape a single category or search keyword."""
     scraper = FlipkartScraper(pincode=pincode)
-    return scraper.fetch_category_deals(category_info)
+    task_type, payload = task_item
+    if task_type == "category":
+        return scraper.fetch_category_deals(payload)
+    elif task_type == "keyword":
+        return scraper.fetch_keyword_deals(payload)
+    return []
 
 def main():
     parser = argparse.ArgumentParser(description="Flipkart Minutes Deals Scraper & Telegram Bot")
     parser.add_argument("--dry-run", action="store_true", default=config.DRY_RUN, help="Print deals without posting to Telegram")
-    parser.add_argument("--pincode", default=config.DEFAULT_PINCODE, help="Target delivery pincode (default: 560032)")
+    parser.add_argument("--pincode", default=config.DEFAULT_PINCODE, help="Target delivery pincode (default: 560045)")
     parser.add_argument("--min-discount", type=int, default=config.MIN_DISCOUNT, help="Minimum discount percentage threshold")
     parser.add_argument("--workers", type=int, default=config.MAX_WORKERS, help="Number of concurrent worker threads")
     parser.add_argument("--cache", default=config.CACHE_FILE, help="Path to cache JSON file")
@@ -81,30 +86,58 @@ def main():
     start_time = time.time()
     print("=" * 60)
     print("⚡ Flipkart Minutes Deals Finder - Hourly Run")
-    print(f"📍 Pincode: {args.pincode}")
+    print(f"📍 Target Pincode: {args.pincode}")
     print(f"🔥 Min Discount: {args.min_discount}%")
     print(f"⚙️ Workers: {args.workers}")
     print(f"🛡️ Dry Run: {'YES (Alerts disabled)' if args.dry_run else 'NO (Live Telegram posting)'}")
+
+    # Inspect Cookie configuration
+    cookie_str = config.FLIPKART_COOKIE or ""
+    has_sn = "SN=" in cookie_str or "; SN=" in cookie_str
+    has_at = "at=" in cookie_str or "; at=" in cookie_str
+    has_s = "S=" in cookie_str or "; S=" in cookie_str
+
+    if cookie_str:
+        print(f"🍪 Cookie: Configured ({len(cookie_str)} chars) [SN: {'✓' if has_sn else '✗'}, at: {'✓' if has_at else '✗'}, S: {'✓' if has_s else '✗'}]")
+        if not (has_sn and has_at):
+            print("  ⚠️ WARNING: 'SN' or 'at' tokens are missing from FLIPKART_COOKIE!")
+            print("  ⚠️ If you copied from `document.cookie` in console, HttpOnly security tokens were excluded.")
+            print("  ⚠️ Please copy the Cookie directly from DevTools -> Network tab -> Request Headers -> Cookie.")
+    else:
+        print("🍪 Cookie: None provided (Running anonymous guest session)")
     print("=" * 60)
 
-    categories = config.CATEGORIES
-    total_cats = len(categories)
-    print(f"[*] Starting concurrent scan across {total_cats} categories...")
+    # Build task list: Categories + Keywords
+    tasks = []
+    for cat in config.CATEGORIES:
+        tasks.append(("category", cat))
+    for kw in config.KEYWORDS:
+        tasks.append(("keyword", kw))
+
+    print(f"[*] Starting concurrent scan across {len(config.CATEGORIES)} categories + {len(config.KEYWORDS)} deal keywords ({len(tasks)} total tasks)...")
 
     all_products = []
+    seen_ids = set()
+
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
-        future_to_cat = {executor.submit(scan_worker, cat, args.pincode): cat for cat in categories}
-        for future in concurrent.futures.as_completed(future_to_cat):
-            cat = future_to_cat[future]
+        future_to_task = {executor.submit(scan_worker, task, args.pincode): task for task in tasks}
+        for future in concurrent.futures.as_completed(future_to_task):
+            task_type, payload = future_to_task[future]
+            task_label = payload["name"] if task_type == "category" else f"Search: {payload.title()}"
             try:
                 prods = future.result()
-                all_products.extend(prods)
-                print(f"  ✓ [{cat['name']}] Found {len(prods)} products")
+                unique_added = 0
+                for p in prods:
+                    if p["id"] not in seen_ids:
+                        seen_ids.add(p["id"])
+                        all_products.append(p)
+                        unique_added += 1
+                print(f"  ✓ [{task_label}] Found {len(prods)} items ({unique_added} new)")
             except Exception as e:
-                print(f"  ✗ [{cat['name']}] Failed: {e}")
+                print(f"  ✗ [{task_label}] Failed: {e}")
 
     elapsed_scan = time.time() - start_time
-    print(f"[*] Scan complete in {elapsed_scan:.1f}s. Total items scraped: {len(all_products)}")
+    print(f"[*] Scan complete in {elapsed_scan:.1f}s. Total unique items scraped: {len(all_products)}")
 
     # Filter deals
     qualifying_deals = [
@@ -125,7 +158,7 @@ def main():
 
     for deal in qualifying_deals:
         if should_post_deal(deal, cache):
-            print(f"  🔥 NEW DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']})")
+            print(f"  🔥 NEW DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']}) [{deal.get('category', 'Deal')}]")
             if not args.dry_run:
                 success = notifier.send_deal(deal)
                 if success:

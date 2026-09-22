@@ -5,7 +5,7 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN", "").strip()
 TELEGRAM_CHAT_ID = os.getenv("TELEGRAM_CHAT_ID", "").strip()
 
 # Deal Filters & Settings
-DEFAULT_PINCODE = os.getenv("PINCODE", "560032").strip()
+DEFAULT_PINCODE = os.getenv("PINCODE", "560045").strip()
 FLIPKART_COOKIE = os.getenv("FLIPKART_COOKIE", "").strip()
 MIN_DISCOUNT = int(os.getenv("MIN_DISCOUNT", "50"))
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
@@ -23,47 +23,76 @@ DEFAULT_HEADERS = {
     "content-type": "application/json",
     "flipkart_secure": "true",
     "user-agent": USER_AGENT,
-    "x-user-agent": X_USER_AGENT
+    "x-user-agent": X_USER_AGENT,
+    "origin": "https://www.flipkart.com",
+    "referer": "https://www.flipkart.com/"
 }
 
-# 38 Master Verified Flipkart Minutes Departments
+# Verified Leaf Subcategories & Aisle Targets (Where products actually live)
 CATEGORIES = [
+    # Bakery & Biscuits
+    { "name": "Biscuits & Cookies", "uri": "/hyperlocal/hloc/0613/pr?sid=hloc%2F0006%2F0613&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Breads & Buns", "uri": "/hyperlocal/hloc/0601/pr?sid=hloc%2F0006%2F0601&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Cakes & Muffins", "uri": "/hyperlocal/hloc/0604/pr?sid=hloc%2F0006%2F0604&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Rusk & Khari", "uri": "/hyperlocal/hloc/0603/pr?sid=hloc%2F0006%2F0603&marketplace=HYPERLOCAL&sort=discount" },
+
+    # Chips & Snacks
+    { "name": "Chips", "uri": "/hyperlocal/hloc/1001/pr?sid=hloc%2F0010%2F1001&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Namkeens & Mixture", "uri": "/hyperlocal/hloc/1002/pr?sid=hloc%2F0010%2F1002&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Nachos & Healthy Snacks", "uri": "/hyperlocal/hloc/1003/pr?sid=hloc%2F0010%2F1003&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Roasted Nuts & Popcorn", "uri": "/hyperlocal/hloc/1004/pr?sid=hloc%2F0010%2F1004&marketplace=HYPERLOCAL&sort=discount" },
+
+    # Chocolates & Sweets
+    { "name": "Chocolates", "uri": "/hyperlocal/hloc/6501/pr?sid=hloc%2F0065%2F6501&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Chocolate Packs & Candies", "uri": "/hyperlocal/hloc/gwcg/pr?sid=hloc%2F0065%2Fgwcg&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Dark Chocolate & Protein Bars", "uri": "/hyperlocal/hloc/tczo/pr?sid=hloc%2F0065%2Ftczo&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Sweets & Mithai", "uri": "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL&sort=discount" },
+
+    # Beverages & Dairy
+    { "name": "Soft Drinks & Soda", "uri": "/hyperlocal/hloc/0701/pr?sid=hloc%2F0007%2F0701&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Fruit Juices", "uri": "/hyperlocal/hloc/0702/pr?sid=hloc%2F0007%2F0702&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Dairy, Bread & Eggs", "uri": "/hyperlocal/hloc/3002/pr?sid=hloc%2F0030%2F3002&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Tea, Coffee & Health Drinks", "uri": "/hyperlocal/Tea-Coffee-Milk-Drinks/pr?sid=hloc%2F0011&marketplace=HYPERLOCAL&sort=discount" },
+
+    # Staples & Grocery
+    { "name": "Atta & Flours", "uri": "/hyperlocal/hloc/0301/pr?sid=hloc%2F0003%2F0301&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Rice & Rice Products", "uri": "/hyperlocal/hloc/0302/pr?sid=hloc%2F0003%2F0302&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Dals & Pulses", "uri": "/hyperlocal/hloc/0303/pr?sid=hloc%2F0003%2F0303&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Edible Oils & Ghee", "uri": "/hyperlocal/hloc/0901/pr?sid=hloc%2F0009%2F0901&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Spices & Masalas", "uri": "/hyperlocal/hloc/0903/pr?sid=hloc%2F0009%2F0903&marketplace=HYPERLOCAL&sort=discount" },
+
+    # Fresh Produce & Meat
     { "name": "Fresh Fruits", "uri": "/hyperlocal/Fruits/pr?sid=hloc%2F0071&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Fresh Vegetables", "uri": "/hyperlocal/Vegetables/pr?sid=hloc%2F0072&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Atta, Rice & Dal", "uri": "/hyperlocal/Atta-Rice-Dal/pr?sid=hloc%2F0003&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Oil, Ghee & Masalas", "uri": "/hyperlocal/Oil-Ghee-Masala/pr?sid=hloc%2F0009&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Dairy, Bread & Eggs", "uri": "/hyperlocal/hloc/3002/pr?sid=hloc%2F0030%2F3002&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Chicken, Meat & Fish", "uri": "/hyperlocal/Chicken-Meat-Fish/pr?sid=hloc%2F0031&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Chips, Crisps & Namkeen", "uri": "/hyperlocal/Chips-Namkeen/pr?sid=hloc%2F0010&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Cold Drinks & Juices", "uri": "/hyperlocal/ColdDrinks-Juices/pr?sid=hloc%2F0007&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Bakery & Biscuits", "uri": "/hyperlocal/Bakery-Biscuits/pr?sid=hloc%2F0006&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Tea, Coffee & Milk Drinks", "uri": "/hyperlocal/Tea-Coffee-Milk-Drinks/pr?sid=hloc%2F0011&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Cereals & Dry Fruits", "uri": "/hyperlocal/Cereals-DryFruits/pr?sid=hloc%2F0019&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Instant & Frozen Food", "uri": "/hyperlocal/Instant-FrozenFood/pr?sid=hloc%2F0020&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Sauces & Spreads", "uri": "/hyperlocal/Sauces-Spreads/pr?sid=hloc%2F0021&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Chocolates & Candies", "uri": "/hyperlocal/Fruits/pr?sid=hloc%2F0065&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Ice Cream & Desserts", "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Sweets & Mithai", "uri": "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Paan Corner & Refreshments", "uri": "/hyperlocal/hloc/4904/pr?sid=hloc%2F0049%2F4904&marketplace=HYPERLOCAL&sort=discount" },
+
+    # Personal Care, Household & Hygiene
     { "name": "Bath & Grooming / Soaps", "uri": "/hyperlocal/Bath-Grooming/pr?sid=hloc%2F0013&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Hair Care & Shampoos", "uri": "/hyperlocal/Hair-Care/pr?sid=hloc%2F0044&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Beauty & Fragrances", "uri": "/hyperlocal/Beauty-Fragrances/pr?sid=hloc%2F0041&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Baby Care & Diapers", "uri": "/hyperlocal/Baby-Care/pr?sid=hloc%2F0001%2F0110&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Health & Pharma", "uri": "/hyperlocal/Health-Pharma/pr?sid=hloc%2F0015&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Feminine Hygiene", "uri": "/hyperlocal/Fruits/pr?sid=hloc%2Fqbq2&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Sexual Wellness", "uri": "/hyperlocal/Fruits/pr?sid=hloc%2Fzgt0&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Cleaning Essentials & Detergents", "uri": "/hyperlocal/Cleaning-Essentials/pr?sid=hloc%2F0025&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Kitchen & Dining Essentials", "uri": "/hyperlocal/Kitchen/pr?sid=hloc%2F0048&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Home Furnishing & Bedding", "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0047&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "School Supplies & Stationery", "uri": "/hyperlocal/School-Supplies/pr?sid=hloc%2F0016&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Electricals & Tools", "uri": "/hyperlocal/Electircals-Tools/pr?sid=hloc%2F0043&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Pooja Needs & Agarbatti", "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0082&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Pet Care & Pet Food", "uri": "/hyperlocal/PetCare/pr?sid=hloc%2F0029&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Toys & Games", "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Sports & Fitness", "uri": "/hyperlocal/Sports-Fitness/pr?sid=hloc%2F0036&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Fashion Accessories", "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Cleaning Essentials", "uri": "/hyperlocal/Cleaning-Essentials/pr?sid=hloc%2F0025&marketplace=HYPERLOCAL&sort=discount" },
+
+    # High-Discount Electronics & Lifestyle Aisles
     { "name": "Mobiles & Accessories", "uri": "/hyperlocal/Mobiles/pr?sid=hloc%2F0002&marketplace=HYPERLOCAL&sort=discount" },
-    { "name": "Speakers & Earphones", "uri": "/hyperlocal/Speakers-Earphone/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Earphones & Speakers", "uri": "/hyperlocal/Speakers-Earphone/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Electronics & Gadgets", "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Kitchen & Dining", "uri": "/hyperlocal/Kitchen/pr?sid=hloc%2F0048&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Home Appliances", "uri": "/hyperlocal/hloc/4002/pr?sid=hloc%2F0040%2F4002&marketplace=HYPERLOCAL&sort=discount" }
+]
+
+# High-Discount Search Keywords (Targeting 70%+ deals on accessories, cables, wearables, etc.)
+KEYWORDS = [
+    "cable",
+    "smartwatch",
+    "cover",
+    "case",
+    "charger",
+    "earphones",
+    "headphones",
+    "powerbank",
+    "rakhi",
+    "chocolates",
+    "dry fruits",
+    "biscuits"
 ]

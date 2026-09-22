@@ -13,7 +13,7 @@ on:
       pincode:
         description: 'Delivery Pincode'
         required: false
-        default: '560032'
+        default: '560045'
       dry_run:
         description: 'Dry run (do not post to Telegram)'
         required: false
@@ -53,7 +53,7 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          PINCODE: ${{ inputs.pincode || secrets.PINCODE || '560032' }}
+          PINCODE: ${{ inputs.pincode || secrets.PINCODE || '560045' }}
           MIN_DISCOUNT: ${{ inputs.min_discount || secrets.MIN_DISCOUNT || '50' }}
           FLIPKART_COOKIE: ${{ secrets.FLIPKART_COOKIE }}
           DRY_RUN: ${{ inputs.dry_run || 'false' }}
@@ -63,7 +63,7 @@ jobs:
 
       - name: Save Deals Cache
         if: always()
-        uses: actions/cache/save@v4
+        uses: actions/cache@v4
         with:
           path: data/posted_deals.json
           key: deals-cache-${{ github.run_id }}

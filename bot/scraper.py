@@ -18,6 +18,16 @@ def extract_title_from_url(url):
             return slug.title()
     return ""
 
+def sanitize_page_uri(uri):
+    """Encodes slashes inside the sid query parameter as %2F."""
+    if not uri:
+        return ""
+    u = uri
+    if u.startswith("http"):
+        parsed = urllib.parse.urlparse(u)
+        u = parsed.path + ("?" + parsed.query if parsed.query else "")
+    return re.sub(r'([?&]sid=)([^&]+)', lambda m: m.group(1) + m.group(2).replace("/", "%2F"), u)
+
 class FlipkartScraper:
     def __init__(self, pincode=None):
         self.pincode = int(pincode or config.DEFAULT_PINCODE)
@@ -26,23 +36,35 @@ class FlipkartScraper:
             "deliveryPincode": str(self.pincode),
             "pincode": str(self.pincode)
         }
-        if config.FLIPKART_COOKIE:
-            for item in config.FLIPKART_COOKIE.split(";"):
+
+        # Parse FLIPKART_COOKIE
+        raw_cookie = (config.FLIPKART_COOKIE or "").strip()
+        if raw_cookie.lower().startswith("cookie:"):
+            raw_cookie = raw_cookie[7:].strip()
+        raw_cookie = raw_cookie.strip(' "\'')
+
+        if raw_cookie:
+            for item in raw_cookie.split(";"):
                 item = item.strip()
                 if "=" in item:
                     k, v = item.split("=", 1)
                     self.session_cookies[k.strip()] = v.strip()
+
+        # If cookie has a specific pincode set and caller used default, align pincode with cookie
+        cookie_pc = self.session_cookies.get("snPincode") or self.session_cookies.get("deliveryPincode") or self.session_cookies.get("pincode")
+        if cookie_pc and re.match(r"^\d{6}$", cookie_pc):
+            if not pincode or str(pincode) == str(config.DEFAULT_PINCODE):
+                self.pincode = int(cookie_pc)
+                self.session_cookies["snPincode"] = cookie_pc
+                self.session_cookies["deliveryPincode"] = cookie_pc
+                self.session_cookies["pincode"] = cookie_pc
 
     def fetch_rome_page(self, page_uri, redirect_count=0):
         """Fetches a page from Rome API, automatically following 302 redirects."""
         if redirect_count > 3:
             return None
 
-        # Clean uri
-        clean_uri = page_uri
-        if clean_uri.startswith("http"):
-            parsed = urllib.parse.urlparse(clean_uri)
-            clean_uri = parsed.path + ("?" + parsed.query if parsed.query else "")
+        clean_uri = sanitize_page_uri(page_uri)
 
         payload = {
             "pageUri": clean_uri,
@@ -224,6 +246,69 @@ class FlipkartScraper:
                                 if prod and prod["id"] not in seen_uids:
                                     seen_uids.add(prod["id"])
                                     products.append(prod)
+                                continue
+
+                            # Case B: MRCSV / Product Cards (productCard / product-card)
+                            pcard = None
+                            for pk in cval:
+                                if "product-card" in pk or "productCard" in pk:
+                                    pcard = cval[pk].get("value", {}) if isinstance(cval[pk], dict) else {}
+                                    break
+
+                            if pcard:
+                                stepper_action = pcard.get("stepperData_0", {}).get("action", {})
+                                stepper_tracking = stepper_action.get("tracking", {})
+                                fsp = stepper_tracking.get("fsp") or stepper_action.get("params", {}).get("price")
+                                mrp = stepper_tracking.get("mrp")
+
+                                if not fsp and pcard.get("label_5", {}).get("value"):
+                                    l5 = pcard["label_5"]["value"]
+                                    l5_str = str(l5.get("UNLOCKED", {}).get("value", {}).get("text") or l5.get("LOCKED", {}).get("value", {}).get("text") or "") if isinstance(l5, dict) else str(l5)
+                                    m5 = re.search(r"\d+", l5_str)
+                                    if m5:
+                                        fsp = int(m5.group(0))
+
+                                if not mrp and pcard.get("label_4", {}).get("value"):
+                                    l4 = pcard["label_4"]["value"]
+                                    l4_str = str(l4.get("text", "")) if isinstance(l4, dict) else str(l4)
+                                    m4 = re.search(r"\d+", l4_str)
+                                    if m4:
+                                        mrp = int(m4.group(0))
+
+                                fsp = int(fsp) if fsp else 0
+                                mrp = int(mrp) if mrp else fsp
+
+                                b5 = pcard.get("box_5", {}).get("action", {}).get("url") or pcard.get("col_0", {}).get("action", {}).get("url") or pcard.get("box_0", {}).get("action", {}).get("url") or ""
+                                lnk = ("https://www.flipkart.com" + b5) if b5 and not b5.startswith("http") else b5
+
+                                title = (pcard.get("label_2", {}).get("value", {}).get("text") or
+                                         pcard.get("label_1", {}).get("value", {}).get("text") or
+                                         pcard.get("label_0", {}).get("value", {}).get("text") or
+                                         pcard.get("trackerData_0", {}).get("tracking", {}).get("contentTitle") or
+                                         extract_title_from_url(lnk) or "Product")
+
+                                disc = 0
+                                if pcard.get("label_15", {}).get("value"):
+                                    l15 = pcard["label_15"]["value"]
+                                    l15_str = str(l15.get("UNLOCKED", {}).get("value", {}).get("text") or l15.get("LOCKED", {}).get("value", {}).get("text") or "") if isinstance(l15, dict) else str(l15)
+                                    m_d = re.search(r"(\d+)%", l15_str)
+                                    if m_d:
+                                        disc = int(m_d.group(1))
+
+                                img = stepper_action.get("params", {}).get("productImage") or ""
+                                if not img:
+                                    img_obj = pcard.get("hp_reco_pmu_product-card_image_0", {}).get("value", {})
+                                    img = img_obj.get("image_0", {}).get("value", {}).get("dynamicImageUrl") or img_obj.get("video_0", {}).get("value", {}).get("dynamicImageUrl") or ""
+                                img = img.replace("{@width}", "400").replace("{@height}", "400").replace("?q={@quality}", "?q=80")
+
+                                is_oos = (stepper_action.get("enabled") is False or
+                                          pcard.get("button_0", {}).get("value", {}).get("actionType") == "NOTIFY_ME" or
+                                          bool(re.search(r"notify", pcard.get("button_0", {}).get("value", {}).get("text", ""), re.I)))
+
+                                prod = self._normalize_product(title, fsp, mrp, disc, img, lnk, is_oos)
+                                if prod and prod["id"] not in seen_uids:
+                                    seen_uids.add(prod["id"])
+                                    products.append(prod)
                         except Exception:
                             continue
         return products
@@ -279,4 +364,14 @@ class FlipkartScraper:
         products = self.parse_products_from_json(json_data)
         for p in products:
             p["category"] = cat_name
+        return products
+
+    def fetch_keyword_deals(self, keyword):
+        """Fetches and parses all deals for a search keyword."""
+        clean_kw = keyword.strip()
+        uri = f"/hyperlocal/pr?q={urllib.parse.quote(clean_kw)}&marketplace=HYPERLOCAL&searchSourceContext=experience%3D&widgetUniqueId=1&sid=search.flipkart.com&as-show=on&sort=discount"
+        json_data = self.fetch_rome_page(uri)
+        products = self.parse_products_from_json(json_data)
+        for p in products:
+            p["category"] = f"Search: {clean_kw.title()}"
         return products
