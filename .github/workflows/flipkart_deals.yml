@@ -2,7 +2,7 @@ name: Flipkart Minutes Deals Alert
 
 on:
   schedule:
-    # Runs hourly from 06:01 AM to 23:01 PM IST (00:31 to 17:31 UTC, UTC+5:30)
+    # Backup schedule: runs hourly from 06:01 AM to 23:01 PM IST (00:31 to 17:31 UTC, UTC+5:30)
     # Dormant between 23:02 PM and 06:00 AM IST while Flipkart Minutes is shut down
     - cron: '31 0-17 * * *'
   workflow_dispatch:
@@ -20,6 +20,8 @@ on:
         required: false
         default: 'false'
         type: boolean
+  repository_dispatch:
+    types: [hourly_deals_scan, flipkart_scan]
 
 jobs:
   scrape-and-alert:
@@ -54,8 +56,8 @@ jobs:
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-          PINCODE: ${{ inputs.pincode || secrets.PINCODE || '560045' }}
-          MIN_DISCOUNT: ${{ inputs.min_discount || secrets.MIN_DISCOUNT || '70' }}
+          PINCODE: ${{ github.event.client_payload.pincode || inputs.pincode || secrets.PINCODE || '560045' }}
+          MIN_DISCOUNT: ${{ github.event.client_payload.min_discount || inputs.min_discount || secrets.MIN_DISCOUNT || '70' }}
           FLIPKART_COOKIE: ${{ secrets.FLIPKART_COOKIE }}
           DRY_RUN: ${{ inputs.dry_run || 'false' }}
           MAX_WORKERS: '5'
