@@ -1,10 +1,8 @@
 name: Flipkart Minutes Deals Alert
 
 on:
-  schedule:
-    # Backup schedule: runs hourly from 06:01 AM to 23:01 PM IST (00:31 to 17:31 UTC, UTC+5:30)
-    # Dormant between 23:02 PM and 06:00 AM IST while Flipkart Minutes is shut down
-    - cron: '31 0-17 * * *'
+  repository_dispatch:
+    types: [hourly_deals_scan, flipkart_scan]
   workflow_dispatch:
     inputs:
       min_discount:
@@ -20,8 +18,6 @@ on:
         required: false
         default: 'false'
         type: boolean
-  repository_dispatch:
-    types: [hourly_deals_scan, flipkart_scan]
 
 jobs:
   scrape-and-alert:
@@ -45,7 +41,7 @@ jobs:
           pip install -r bot/requirements.txt
 
       - name: Restore Deals Cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: data/posted_deals.json
           key: deals-cache-${{ github.run_id }}
@@ -66,7 +62,7 @@ jobs:
 
       - name: Save Deals Cache
         if: always()
-        uses: actions/cache@v4
+        uses: actions/cache/save@v4
         with:
           path: data/posted_deals.json
           key: deals-cache-${{ github.run_id }}
