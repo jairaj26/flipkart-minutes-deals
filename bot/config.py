@@ -38,6 +38,7 @@ CATEGORIES = [
     { "name": "Rusk & Khari", "uri": "/hyperlocal/hloc/0603/pr?sid=hloc%2F0006%2F0603&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Cakes & Muffins", "uri": "/hyperlocal/hloc/0604/pr?sid=hloc%2F0006%2F0604&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Bakery Snacks", "uri": "/hyperlocal/hloc/0602/pr?sid=hloc%2F0006%2F0602&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Bakery & Biscuits Hub", "uri": "/hyperlocal/Bakery-Biscuits/pr?sid=hloc%2F0006&marketplace=HYPERLOCAL&sort=discount" },
 
     # ---------------------------------------------------------
     # 2. Chips, Crisps & Namkeen
@@ -53,6 +54,7 @@ CATEGORIES = [
     { "name": "Popcorn", "uri": "/hyperlocal/hloc/1005/pr?sid=hloc%2F0010%2F1005&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Papads & Fryums", "uri": "/hyperlocal/hloc/1006/pr?sid=hloc%2F0010%2F1006&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Premium & Gourmet Snacks", "uri": "/hyperlocal/hloc/nokv/pr?sid=hloc%2F0010%2Fnokv&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Chips, Crisps & Namkeen Hub", "uri": "/hyperlocal/Chips-Namkeen/pr?sid=hloc%2F0010&marketplace=HYPERLOCAL&sort=discount" },
 
     # ---------------------------------------------------------
     # 3. Chocolates & Candies
@@ -70,6 +72,7 @@ CATEGORIES = [
     { "name": "Fruit & Nut Chocolates", "uri": "/hyperlocal/hloc/skjg/pr?sid=hloc%2F0065%2Fskjg&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Brownies & Muffins", "uri": "/hyperlocal/hloc/flxv/pr?sid=hloc%2F0065%2Fflxv&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Premium & Imported Chocolates", "uri": "/hyperlocal/hloc/ztyr/pr?sid=hloc%2F0065%2Fztyr&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Chocolates & Candies Hub", "uri": "/hyperlocal/Chocolates-Candies/pr?sid=hloc%2F0065&marketplace=HYPERLOCAL&sort=discount" },
 
     # ---------------------------------------------------------
     # 4. Tea, Coffee & Health Drinks
@@ -78,6 +81,7 @@ CATEGORIES = [
     { "name": "Coffee", "uri": "/hyperlocal/hloc/1102/pr?sid=hloc%2F0011%2F1102&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Health & Nutrition Drinks", "uri": "/hyperlocal/hloc/1103/pr?sid=hloc%2F0011%2F1103&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Green & Herbal Tea", "uri": "/hyperlocal/hloc/1104/pr?sid=hloc%2F0011%2F1104&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Tea, Coffee & Health Drinks Hub", "uri": "/hyperlocal/Tea-Coffee-Milk-Drinks/pr?sid=hloc%2F0011&marketplace=HYPERLOCAL&sort=discount" },
 
     # ---------------------------------------------------------
     # 5. Cold Drinks & Juices
@@ -85,6 +89,7 @@ CATEGORIES = [
     { "name": "Soft Drinks & Soda", "uri": "/hyperlocal/hloc/0701/pr?sid=hloc%2F0007%2F0701&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Fruit Juices", "uri": "/hyperlocal/hloc/0702/pr?sid=hloc%2F0007%2F0702&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Energy & Sports Drinks", "uri": "/hyperlocal/hloc/0703/pr?sid=hloc%2F0007%2F0703&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Cold Drinks & Juices Hub", "uri": "/hyperlocal/ColdDrinks-Juices/pr?sid=hloc%2F0007&marketplace=HYPERLOCAL&sort=discount" },
 
     # ---------------------------------------------------------
     # 6. Atta, Rice, Dal & Staples
@@ -111,6 +116,7 @@ CATEGORIES = [
     # 9. Sweets, Mithai & Paan Corner
     # ---------------------------------------------------------
     { "name": "Sweets & Mithai", "uri": "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL&sort=discount" },
+    { "name": "Sweets & Mithai Hub", "uri": "/hyperlocal/Sweets-Mithai/pr?sid=hloc%2F0081&marketplace=HYPERLOCAL&sort=discount" },
     { "name": "Paan Corner & Refreshments", "uri": "/hyperlocal/hloc/4904/pr?sid=hloc%2F0049%2F4904&marketplace=HYPERLOCAL&sort=discount" },
 
     # ---------------------------------------------------------

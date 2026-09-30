@@ -1549,8 +1549,15 @@ javascript:(function(){
           subUri += (subUri.includes("?") ? "&" : "?") + "sort=discount";
         }
         setStatus(`[${idx+1}/${subcategories.length}] ${sub.title}...`);
-        await fetchAndParsePage(subUri);
+        var subRes = await fetchAndParsePage(subUri);
         renderGrid();
+
+        /* If subcategory page 1 has deals with high discount (>=65%), fetch Page 2 so 70%+ deals on page 2 are not missed */
+        if (st.mode === "RUN" && !window.fkDealsStop && subRes && subRes.count >= 12 && st.items.some(function(x){ return x.d >= 65; })) {
+          var p2Uri = subUri + (subUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
+          await fetchAndParsePage(p2Uri);
+          renderGrid();
+        }
         await new Promise(function(r){ setTimeout(r, 350); });
       }
     }

@@ -93,10 +93,10 @@ def should_post_deal(deal, cache):
     # Suppress repeat alert within the 7-day window
     return False
 
-def scan_worker(category_info, pincode):
-    """Worker function to scrape Page 1 of a single category."""
+def scan_worker(category_info, pincode, min_discount=None):
+    """Worker function to scrape deals for a single category with smart multi-page pagination."""
     scraper = FlipkartScraper(pincode=pincode)
-    return scraper.fetch_category_deals(category_info)
+    return scraper.fetch_category_deals(category_info, min_discount=min_discount, max_pages=3)
 
 def main():
     parser = argparse.ArgumentParser(description="Flipkart Minutes Deals Scraper & Telegram Bot")
@@ -134,7 +134,7 @@ def main():
     print("=" * 60)
 
     categories = config.CATEGORIES
-    print(f"[*] Starting concurrent scan across {len(categories)} categories & subcategories (Page 1 sorted by discount)...")
+    print(f"[*] Starting concurrent scan across {len(categories)} categories & subcategories (Smart Multi-Page sorted by discount)...")
 
     all_products = []
     seen_ids = set()
@@ -150,7 +150,7 @@ def main():
     visited_uris = {normalize_cat_uri(c["uri"]) for c in categories}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
-        future_to_cat = {executor.submit(scan_worker, cat, args.pincode): cat for cat in categories}
+        future_to_cat = {executor.submit(scan_worker, cat, args.pincode, args.min_discount): cat for cat in categories}
         while future_to_cat:
             done, _ = concurrent.futures.wait(future_to_cat, return_when=concurrent.futures.FIRST_COMPLETED)
             for future in done:
@@ -174,7 +174,7 @@ def main():
                             if "sort=discount" not in sub_uri:
                                 sub_uri += ("&" if "?" in sub_uri else "?") + "sort=discount"
                             sub_copy = {"name": sub["name"], "uri": sub_uri}
-                            future_to_cat[executor.submit(scan_worker, sub_copy, args.pincode)] = sub_copy
+                            future_to_cat[executor.submit(scan_worker, sub_copy, args.pincode, args.min_discount)] = sub_copy
                             print(f"    ↳ Discovered subcategory: [{sub_copy['name']}]")
                 except Exception as e:
                     print(f"  ✗ [{cat['name']}] Failed: {e}")

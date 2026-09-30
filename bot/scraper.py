@@ -28,6 +28,21 @@ def sanitize_page_uri(uri):
         u = parsed.path + ("?" + parsed.query if parsed.query else "")
     return re.sub(r'([?&]sid=)([^&]+)', lambda m: m.group(1) + m.group(2).replace("/", "%2F"), u)
 
+def build_page_uri(base_uri, page_num):
+    """Appends or updates the 'page' query parameter in a Flipkart Minutes page URI."""
+    if not base_uri:
+        return ""
+    parsed = urllib.parse.urlparse(base_uri)
+    qs = urllib.parse.parse_qs(parsed.query)
+    qs["page"] = [str(page_num)]
+    if "marketplace" not in qs:
+        qs["marketplace"] = ["HYPERLOCAL"]
+    if "sort" not in qs:
+        qs["sort"] = ["discount"]
+    new_query = urllib.parse.urlencode(qs, doseq=True)
+    res = urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
+    return sanitize_page_uri(res)
+
 def build_product_link(base_lnk, cval=None, stepper_action=None):
     """
     Constructs a complete Flipkart Minutes product link.
@@ -231,7 +246,7 @@ class FlipkartScraper:
                 except Exception:
                     continue
 
-            # Check dlsData (MRCSV / carousels / grids) - Case A (snb_hl_text_0)
+            # Check dlsData (MRCSV / carousels / grids) - Case A (snb_hl_text_0) & Case B (product-card)
             dls = wdata.get("dlsData", {})
             for k, wrapper in dls.items():
                 if any(x in k for x in ("MRCSV", "carouselData", "gridData", "horizontalListData")):
@@ -246,7 +261,8 @@ class FlipkartScraper:
                             if snb_text:
                                 col0 = cval.get("col_0", {}).get("action", {})
                                 raw_lnk = col0.get("url") or col0.get("originalUrl") or ""
-                                stepper = cval.get("stepperData_0", {}).get("action", {})
+                                stepper = (cval.get("stepperData_0", {}).get("action", {}) or
+                                           cval.get("snb_beauty_gmh_image_0", {}).get("value", {}).get("stepperData_0", {}).get("action", {}))
 
                                 # Build complete Minutes product link with HYPERLOCAL, lid, and shopId
                                 lnk = build_product_link(raw_lnk, cval=cval, stepper_action=stepper)
@@ -290,7 +306,80 @@ class FlipkartScraper:
                                           cval.get("action", {}).get("params", {}).get("isAvailable") is False)
 
                                 img = col0.get("params", {}).get("imageUrl") or stepper.get("params", {}).get("productImage") or ""
+                                if not img:
+                                    img_obj = cval.get("image_0", {}).get("value") or cval.get("snb_beauty_gmh_image_0", {}).get("value", {}).get("image_0", {}).get("value") or {}
+                                    if isinstance(img_obj, dict):
+                                        img = img_obj.get("params", {}).get("defaultValue") or img_obj.get("dynamicImageUrl") or img_obj.get("imageHack") or ""
                                 img = img.replace("{@width}", "400").replace("{@height}", "400").replace("?q={@quality}", "?q=80")
+
+                                prod = self._normalize_product(title, fsp, mrp, disc, img, lnk, is_oos)
+                                if prod and prod["id"] not in seen_uids:
+                                    seen_uids.add(prod["id"])
+                                    products.append(prod)
+                                continue
+
+                            # Case B: MRCSV / Product Cards (product-card / productCard / hp_reco_pmu_product-card)
+                            pcard = None
+                            for pk, pv in cval.items():
+                                if "product-card" in pk or "productCard" in pk:
+                                    pcard = pv.get("value", {}) if isinstance(pv, dict) else {}
+                                    break
+
+                            if pcard:
+                                stepper_action = pcard.get("stepperData_0", {}).get("action", {})
+                                stepper_tracking = stepper_action.get("tracking", {})
+                                fsp = 0
+                                if stepper_action.get("params", {}).get("price"):
+                                    fsp = int(stepper_action["params"]["price"])
+                                elif stepper_tracking.get("fsp"):
+                                    fsp = int(stepper_tracking["fsp"])
+
+                                mrp = int(stepper_tracking["mrp"]) if stepper_tracking.get("mrp") else fsp
+
+                                if not fsp and pcard.get("label_5", {}).get("value"):
+                                    l5 = pcard["label_5"]["value"]
+                                    l5_str = str(l5.get("UNLOCKED", {}).get("value", {}).get("text") or l5.get("LOCKED", {}).get("value", {}).get("text") or l5.get("text", "") if isinstance(l5, dict) else l5)
+                                    m_fsp = re.search(r"\d+", l5_str)
+                                    if m_fsp:
+                                        fsp = int(m_fsp.group(0))
+
+                                if mrp == fsp and pcard.get("label_4", {}).get("value"):
+                                    l4 = pcard["label_4"]["value"]
+                                    l4_str = str(l4.get("text", "") if isinstance(l4, dict) else l4)
+                                    m_mrp = re.search(r"\d+", l4_str)
+                                    if m_mrp:
+                                        mrp = int(m_mrp.group(0))
+
+                                disc = 0
+                                if pcard.get("label_15", {}).get("value"):
+                                    l15 = pcard["label_15"]["value"]
+                                    l15_str = str(l15.get("UNLOCKED", {}).get("value", {}).get("text") or l15.get("LOCKED", {}).get("value", {}).get("text") or l15.get("text", "") if isinstance(l15, dict) else l15)
+                                    m_disc = re.search(r"(\d+)%", l15_str)
+                                    if m_disc:
+                                        disc = int(m_disc.group(1))
+
+                                raw_lnk = (pcard.get("box_5", {}).get("action", {}).get("url") or
+                                           pcard.get("col_0", {}).get("action", {}).get("url") or
+                                           pcard.get("box_0", {}).get("action", {}).get("url") or "")
+                                lnk = build_product_link(raw_lnk, cval=pcard, stepper_action=stepper_action)
+
+                                title = (pcard.get("label_2", {}).get("value", {}).get("text") or
+                                         pcard.get("label_1", {}).get("value", {}).get("text") or
+                                         pcard.get("label_0", {}).get("value", {}).get("text") or
+                                         pcard.get("trackerData_0", {}).get("tracking", {}).get("contentTitle") or
+                                         extract_title_from_url(lnk) or "Product")
+
+                                img = stepper_action.get("params", {}).get("productImage") or ""
+                                if not img:
+                                    img_obj = pcard.get("hp_reco_pmu_product-card_image_0", {}).get("value", {})
+                                    img = (img_obj.get("image_0", {}).get("value", {}).get("dynamicImageUrl") or
+                                           img_obj.get("video_0", {}).get("value", {}).get("dynamicImageUrl") or "")
+                                img = img.replace("{@width}", "400").replace("{@height}", "400").replace("?q={@quality}", "?q=80")
+
+                                btn_text = pcard.get("button_0", {}).get("value", {}).get("text", "")
+                                is_oos = (stepper_action.get("enabled") is False or
+                                          pcard.get("button_0", {}).get("value", {}).get("actionType") == "NOTIFY_ME" or
+                                          (isinstance(btn_text, str) and "notify" in btn_text.lower()))
 
                                 prod = self._normalize_product(title, fsp, mrp, disc, img, lnk, is_oos)
                                 if prod and prod["id"] not in seen_uids:
@@ -407,13 +496,59 @@ class FlipkartScraper:
 
         return subcats
 
-    def fetch_category_deals(self, category_info):
-        """Fetches and parses Page 1 deals for a single category, and extracts side-rail subcategories."""
+    def fetch_category_deals(self, category_info, min_discount=None, max_pages=3):
+        """
+        Fetches and parses deals for a category across pages.
+        Uses smart discount-aware pagination:
+        If Page 1 contains qualifying deals (min discount on page 1 is >= min_discount,
+        or >= 12 items on page with >= min_discount), it automatically fetches Page 2 (and Page 3
+        if still qualifying), guaranteeing that items at 70%-74% discount pushed past Page 1
+        are never missed.
+        """
+        min_disc = int(min_discount if min_discount is not None else config.MIN_DISCOUNT)
         uri = category_info.get("uri", "")
         cat_name = category_info.get("name", "Category")
+
+        # Fetch Page 1
         json_data = self.fetch_rome_page(uri)
         products = self.parse_products_from_json(json_data)
+        discovered_subcats = self.extract_subcategories(json_data)
+
+        seen_uids = {p["id"] for p in products}
+
+        # Smart multi-page pagination
+        curr_page = 1
+        while curr_page < max_pages and products:
+            qualifying = [p for p in products if p.get("discount", 0) >= min_disc]
+            if not qualifying:
+                break
+
+            min_disc_found = min(p.get("discount", 0) for p in products)
+            if min_disc_found < min_disc and len(qualifying) < 12:
+                break
+
+            next_page = curr_page + 1
+            next_uri = build_page_uri(uri, next_page)
+            next_json = self.fetch_rome_page(next_uri)
+            if not next_json:
+                break
+
+            next_prods = self.parse_products_from_json(next_json)
+            if not next_prods:
+                break
+
+            new_count = 0
+            for p in next_prods:
+                if p["id"] not in seen_uids:
+                    seen_uids.add(p["id"])
+                    products.append(p)
+                    new_count += 1
+
+            if new_count == 0:
+                break
+
+            curr_page = next_page
+
         for p in products:
             p["category"] = cat_name
-        discovered_subcats = self.extract_subcategories(json_data)
         return products, discovered_subcats
