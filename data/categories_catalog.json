@@ -1,0 +1,746 @@
+{
+  "last_updated": "2026-10-02T09:45:59.026976",
+  "groups": {
+    "Staples": [
+      {
+        "name": "Dal & Pulses",
+        "group": "Staples",
+        "parent_code": "73z/bpe",
+        "category_code": "73z/bpe/3uv/",
+        "facets": [
+          "73z/bpe",
+          "73z/bpe/3uv/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/3uv/"
+      },
+      {
+        "name": "Ghee and Oils",
+        "group": "Staples",
+        "parent_code": "73z/bpe",
+        "category_code": "73z/bpe/4wu/",
+        "facets": [
+          "73z/bpe",
+          "73z/bpe/4wu/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/4wu/"
+      },
+      {
+        "name": "Atta and Flours",
+        "group": "Staples",
+        "parent_code": "73z/bpe",
+        "category_code": "73z/bpe/9da/",
+        "facets": [
+          "73z/bpe",
+          "73z/bpe/9da/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/9da/"
+      },
+      {
+        "name": "Masala and Spices",
+        "group": "Staples",
+        "parent_code": "73z/bpe",
+        "category_code": "73z/bpe/a6m/",
+        "facets": [
+          "73z/bpe",
+          "73z/bpe/a6m/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/a6m/"
+      },
+      {
+        "name": "Rice and Rice Products",
+        "group": "Staples",
+        "parent_code": "73z/bpe",
+        "category_code": "73z/bpe/zwp/",
+        "facets": [
+          "73z/bpe",
+          "73z/bpe/zwp/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/zwp/"
+      },
+      {
+        "name": "Dry Fruits, Nuts & Seeds",
+        "group": "Staples",
+        "parent_code": "73z/bpe",
+        "category_code": "73z/bpe/dtp/",
+        "facets": [
+          "73z/bpe",
+          "73z/bpe/dtp/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/dtp/"
+      },
+      {
+        "name": "Sugar, Jaggery & Salt",
+        "group": "Staples",
+        "parent_code": "73z/bpe",
+        "category_code": "73z/bpe/fdl/",
+        "facets": [
+          "73z/bpe",
+          "73z/bpe/fdl/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/fdl/"
+      }
+    ],
+    "Snacks & Beverages": [
+      {
+        "name": "Biscuits",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/eb9/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/eb9/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/"
+      },
+      {
+        "name": "Chips, Namkeen and Snacks",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/dd9/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/dd9/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/"
+      },
+      {
+        "name": "Tea",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/amr/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/amr/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/"
+      },
+      {
+        "name": "Coffee",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/t7k/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/t7k/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/t7k/"
+      },
+      {
+        "name": "Juices",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/afd/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/afd/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/afd/"
+      },
+      {
+        "name": "Nutritional Drink Mix",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/vnq/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/vnq/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/vnq/"
+      },
+      {
+        "name": "Soft Drinks",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/dfw/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/dfw/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/"
+      },
+      {
+        "name": "Instant Drink Mixes, Squash and Syrups",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/iau/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/iau/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/iau/"
+      },
+      {
+        "name": "Water",
+        "group": "Snacks & Beverages",
+        "parent_code": "73z/ujs",
+        "category_code": "73z/ujs/wsx/",
+        "facets": [
+          "73z/ujs",
+          "73z/ujs/wsx/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/wsx/"
+      }
+    ],
+    "Dairy, Bakery and Eggs": [
+      {
+        "name": "Dairy",
+        "group": "Dairy, Bakery and Eggs",
+        "parent_code": "73z/esa",
+        "category_code": "73z/esa/dt6/",
+        "facets": [
+          "73z/esa",
+          "73z/esa/dt6/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa&p[]=facets.category[]=73z/esa/dt6/"
+      },
+      {
+        "name": "Eggs",
+        "group": "Dairy, Bakery and Eggs",
+        "parent_code": "73z/esa",
+        "category_code": "73z/esa/hh7/",
+        "facets": [
+          "73z/esa",
+          "73z/esa/hh7/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa&p[]=facets.category[]=73z/esa/hh7/"
+      },
+      {
+        "name": "Bakery Sweets and Namkeen",
+        "group": "Dairy, Bakery and Eggs",
+        "parent_code": "73z/esa",
+        "category_code": "73z/esa/93l/",
+        "facets": [
+          "73z/esa",
+          "73z/esa/93l/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa&p[]=facets.category[]=73z/esa/93l/"
+      }
+    ],
+    "Packaged Goods": [
+      {
+        "name": "All Packaged Goods",
+        "group": "Packaged Goods",
+        "parent_code": "73z",
+        "category_code": "73z/u0u/",
+        "facets": [
+          "73z",
+          "73z/u0u/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/u0u/"
+      },
+      {
+        "name": "Noodles and Pasta",
+        "group": "Packaged Goods",
+        "parent_code": "73z/u0u",
+        "category_code": "73z/u0u/ltz/",
+        "facets": [
+          "73z/u0u",
+          "73z/u0u/ltz/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/ltz/"
+      },
+      {
+        "name": "Chocolates and Sweets",
+        "group": "Packaged Goods",
+        "parent_code": "73z/u0u",
+        "category_code": "73z/u0u/7o6/",
+        "facets": [
+          "73z/u0u",
+          "73z/u0u/7o6/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/7o6/"
+      },
+      {
+        "name": "Ketchups and Spreads",
+        "group": "Packaged Goods",
+        "parent_code": "73z/u0u",
+        "category_code": "73z/u0u/0tl/",
+        "facets": [
+          "73z/u0u",
+          "73z/u0u/0tl/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/0tl/"
+      },
+      {
+        "name": "Breakfast Cereals",
+        "group": "Packaged Goods",
+        "parent_code": "73z/u0u",
+        "category_code": "73z/u0u/bx9/",
+        "facets": [
+          "73z/u0u",
+          "73z/u0u/bx9/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/bx9/"
+      },
+      {
+        "name": "Jam and Honey",
+        "group": "Packaged Goods",
+        "parent_code": "73z/u0u",
+        "category_code": "73z/u0u/j4e/",
+        "facets": [
+          "73z/u0u",
+          "73z/u0u/j4e/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/j4e/"
+      },
+      {
+        "name": "Cooking Sauces and Vinegar",
+        "group": "Packaged Goods",
+        "parent_code": "73z/u0u",
+        "category_code": "73z/u0u/wd7/",
+        "facets": [
+          "73z/u0u",
+          "73z/u0u/wd7/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/wd7/"
+      },
+      {
+        "name": "Baking",
+        "group": "Packaged Goods",
+        "parent_code": "73z/u0u",
+        "category_code": "73z/u0u/td1/",
+        "facets": [
+          "73z/u0u",
+          "73z/u0u/td1/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/td1/"
+      }
+    ],
+    "Personal and Baby Care": [
+      {
+        "name": "All Personal & Baby Care",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z",
+        "category_code": "73z/njl/",
+        "facets": [
+          "73z",
+          "73z/njl/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/njl/"
+      },
+      {
+        "name": "Soaps and Body Wash",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/sn6/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/sn6/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/sn6/"
+      },
+      {
+        "name": "Hair Care",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/vpw/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/vpw/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/vpw/"
+      },
+      {
+        "name": "Oral Care",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/2s3/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/2s3/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/2s3/"
+      },
+      {
+        "name": "Deos, Perfumes and Talcs",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/np3/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/np3/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/np3/"
+      },
+      {
+        "name": "Creams, Lotions Skin Care",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/n3m/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/n3m/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/n3m/"
+      },
+      {
+        "name": "Kajal and Makeup",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/lzq/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/lzq/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/lzq/"
+      },
+      {
+        "name": "Sanitary Needs",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/tlj/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/tlj/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/tlj/"
+      },
+      {
+        "name": "Wellness and Common Pharma",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/07d/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/07d/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/07d/"
+      },
+      {
+        "name": "Shaving Needs",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/nw3/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/nw3/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/nw3/"
+      },
+      {
+        "name": "Diapers and Wipes",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/smb/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/smb/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/smb/"
+      },
+      {
+        "name": "Baby Food",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/2jj/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/2jj/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/2jj/"
+      },
+      {
+        "name": "Baby Bath and Skin Care",
+        "group": "Personal and Baby Care",
+        "parent_code": "73z/njl",
+        "category_code": "73z/njl/m1f/",
+        "facets": [
+          "73z/njl",
+          "73z/njl/m1f/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/m1f/"
+      }
+    ],
+    "Fruits and Vegetables": [
+      {
+        "name": "All Fruits & Vegetables",
+        "group": "Fruits and Vegetables",
+        "parent_code": "73z",
+        "category_code": "73z/mk9/",
+        "facets": [
+          "73z",
+          "73z/mk9/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/mk9/"
+      },
+      {
+        "name": "Fruits",
+        "group": "Fruits and Vegetables",
+        "parent_code": "73z/mk9",
+        "category_code": "73z/mk9/w9z/",
+        "facets": [
+          "73z/mk9",
+          "73z/mk9/w9z/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9&p[]=facets.category[]=73z/mk9/w9z/"
+      },
+      {
+        "name": "Vegetables",
+        "group": "Fruits and Vegetables",
+        "parent_code": "73z/mk9",
+        "category_code": "73z/mk9/aiw/",
+        "facets": [
+          "73z/mk9",
+          "73z/mk9/aiw/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9&p[]=facets.category[]=73z/mk9/aiw/"
+      }
+    ],
+    "Household Care": [
+      {
+        "name": "Household Care (Excl. Pooja & Pet)",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/clean_household",
+        "default_selected": true,
+        "facets": [
+          "73z/cwl/2z2/",
+          "73z/cwl/bdc/",
+          "73z/cwl/u3c/",
+          "73z/cwl/qz9/",
+          "73z/cwl/2wc/",
+          "73z/cwl/0s4/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl/2z2/&p[]=facets.category[]=73z/cwl/bdc/&p[]=facets.category[]=73z/cwl/u3c/&p[]=facets.category[]=73z/cwl/qz9/&p[]=facets.category[]=73z/cwl/2wc/&p[]=facets.category[]=73z/cwl/0s4/"
+      },
+      {
+        "name": "Detergents and Laundry",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/2z2/",
+        "default_selected": true,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/2z2/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/2z2/"
+      },
+      {
+        "name": "Utensil Cleaners",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/bdc/",
+        "default_selected": true,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/bdc/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/bdc/"
+      },
+      {
+        "name": "Floor and Other Cleaners",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/u3c/",
+        "default_selected": true,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/u3c/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/u3c/"
+      },
+      {
+        "name": "Repellents and Fresheners",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/qz9/",
+        "default_selected": true,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/qz9/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/qz9/"
+      },
+      {
+        "name": "Paper and Disposables",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/2wc/",
+        "default_selected": true,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/2wc/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/2wc/"
+      },
+      {
+        "name": "Basic Electricals",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/0s4/",
+        "default_selected": true,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/0s4/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/0s4/"
+      },
+      {
+        "name": "Pet Supplies",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/m92/",
+        "default_selected": false,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/m92/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/m92/"
+      },
+      {
+        "name": "Pooja Needs",
+        "group": "Household Care",
+        "parent_code": "73z/cwl",
+        "category_code": "73z/cwl/u64/",
+        "default_selected": false,
+        "facets": [
+          "73z/cwl",
+          "73z/cwl/u64/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/u64/"
+      }
+    ],
+    "Home & Kitchen": [
+      {
+        "name": "Home & Kitchen (Excl. Festive & Cases)",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk",
+        "category_code": "73z/uyk/clean_home",
+        "default_selected": true,
+        "facets": [
+          "73z/uyk/sgh/lbh/",
+          "73z/uyk/sgh/ib1/",
+          "73z/uyk/sgh/nlf/",
+          "73z/uyk/hho/",
+          "73z/uyk/vdx/",
+          "73z/uyk/6f4/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh/lbh/&p[]=facets.category[]=73z/uyk/sgh/ib1/&p[]=facets.category[]=73z/uyk/sgh/nlf/&p[]=facets.category[]=73z/uyk/hho/&p[]=facets.category[]=73z/uyk/vdx/&p[]=facets.category[]=73z/uyk/6f4/"
+      },
+      {
+        "name": "Home Utilities",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk/sgh",
+        "category_code": "73z/uyk/sgh/lbh/",
+        "default_selected": true,
+        "facets": [
+          "73z/uyk/sgh",
+          "73z/uyk/sgh/lbh/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/lbh/"
+      },
+      {
+        "name": "Home Organisers",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk/sgh",
+        "category_code": "73z/uyk/sgh/ib1/",
+        "default_selected": true,
+        "facets": [
+          "73z/uyk/sgh",
+          "73z/uyk/sgh/ib1/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/ib1/"
+      },
+      {
+        "name": "Hand Tools",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk/sgh",
+        "category_code": "73z/uyk/sgh/nlf/",
+        "default_selected": true,
+        "facets": [
+          "73z/uyk/sgh",
+          "73z/uyk/sgh/nlf/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/nlf/"
+      },
+      {
+        "name": "Kitchen Tools and Appliances",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk",
+        "category_code": "73z/uyk/hho/",
+        "default_selected": true,
+        "facets": [
+          "73z/uyk",
+          "73z/uyk/hho/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/hho/"
+      },
+      {
+        "name": "Cookware and Serveware",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk",
+        "category_code": "73z/uyk/vdx/",
+        "default_selected": true,
+        "facets": [
+          "73z/uyk",
+          "73z/uyk/vdx/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/vdx/"
+      },
+      {
+        "name": "Bath and Bed Essentials",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk",
+        "category_code": "73z/uyk/6f4/",
+        "default_selected": true,
+        "facets": [
+          "73z/uyk",
+          "73z/uyk/6f4/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/6f4/"
+      },
+      {
+        "name": "Home Utilities Tools & Organizers (All Parent)",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk",
+        "category_code": "73z/uyk/sgh/",
+        "default_selected": false,
+        "facets": [
+          "73z/uyk",
+          "73z/uyk/sgh/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/sgh/"
+      },
+      {
+        "name": "Decor & Festive Needs",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk",
+        "category_code": "73z/uyk/hnw/",
+        "default_selected": false,
+        "facets": [
+          "73z",
+          "73z/uyk/",
+          "73z/uyk/hnw/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/uyk/&p[]=facets.category[]=73z/uyk/hnw/"
+      },
+      {
+        "name": "Mobile Pouches",
+        "group": "Home & Kitchen",
+        "parent_code": "73z/uyk/sgh",
+        "category_code": "73z/uyk/sgh/jaa/",
+        "default_selected": false,
+        "facets": [
+          "73z/uyk",
+          "73z/uyk/sgh/",
+          "73z/uyk/sgh/jaa/"
+        ],
+        "url_path": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/sgh/&p[]=facets.category[]=73z/uyk/sgh/jaa/"
+      }
+    ],
+    "Office and School Supplies": [
+      {
+        "name": "All Office and School Supplies",
+        "group": "Office and School Supplies",
+        "parent_code": "73z",
+        "category_code": "73z/pyy/",
+        "default_selected": true,
+        "facets": [
+          "73z",
+          "73z/pyy/"
+        ],
+        "url_path": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"
+      }
+    ]
+  }
+}

@@ -1,6 +1,10 @@
 name: Flipkart Minutes Deals Alert
 
 on:
+  schedule:
+    # Runs hourly at :05 between 6:05 AM and 1:05 AM IST (00:35 to 19:35 UTC, 20 runs/day)
+    # Skips the dead night hours (1:05 AM to 6:05 AM IST)
+    - cron: '35 0-19 * * *'
   repository_dispatch:
     types: [hourly_deals_scan, flipkart_scan]
   workflow_dispatch:
@@ -8,7 +12,7 @@ on:
       min_discount:
         description: 'Minimum Discount % threshold'
         required: false
-        default: '70'
+        default: '65'
       pincode:
         description: 'Delivery Pincode'
         required: false
@@ -53,7 +57,7 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           PINCODE: ${{ github.event.client_payload.pincode || inputs.pincode || secrets.PINCODE || '560045' }}
-          MIN_DISCOUNT: ${{ github.event.client_payload.min_discount || inputs.min_discount || secrets.MIN_DISCOUNT || '70' }}
+          MIN_DISCOUNT: ${{ github.event.client_payload.min_discount || inputs.min_discount || secrets.MIN_DISCOUNT || '65' }}
           FLIPKART_COOKIE: ${{ secrets.FLIPKART_COOKIE }}
           DRY_RUN: ${{ inputs.dry_run || 'false' }}
           MAX_WORKERS: '5'

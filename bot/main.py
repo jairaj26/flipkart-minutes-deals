@@ -20,8 +20,8 @@ from .telegram import TelegramNotifier
 # Indian Standard Time (UTC+5:30)
 IST = timezone(timedelta(hours=5, minutes=30))
 
-# 7-day cooldown for unchanging prices (items with same price alert at most once a week)
-SEVEN_DAYS_SECONDS = 7 * 24 * 3600
+# 30-day cooldown for unchanging prices (items with unchanging price alert at most once a month, never twice in same day)
+COOLDOWN_SECONDS = 30 * 24 * 3600
 
 def get_deal_key(deal):
     """
@@ -47,10 +47,10 @@ def load_cache(cache_path):
     return {}
 
 def save_cache(cache, cache_path):
-    """Saves posted deals to cache, pruning records older than 30 days."""
+    """Saves posted deals to cache, pruning records older than 60 days."""
     os.makedirs(os.path.dirname(cache_path), exist_ok=True)
     now = time.time()
-    retention_period = 30 * 24 * 3600  # 30 days retention
+    retention_period = 60 * 24 * 3600  # 60 days retention to preserve 30-day cooldown history
 
     pruned = {}
     for key, record in cache.items():
@@ -63,14 +63,14 @@ def save_cache(cache, cache_path):
 
 def should_post_deal(deal, cache):
     """
-    Weekly Deduplication Rules:
+    30-Day Deduplication & Alert Frequency Rules:
     1. If never posted before -> Post it.
     2. If posted before:
-       - If selling price dropped further (fsp < cached_fsp) -> Post immediately (price drop).
+       - If selling price dropped further (fsp < cached_fsp) -> Post immediately (price drop alert).
        - If price is the same or higher:
-         * Check if 7 days (1 week) have passed since last post.
-         * If >= 7 days -> Post once for the new week.
-         * Otherwise -> Suppress (shows only once a week for items with unchanging prices).
+         * Check if 30 days have passed since last post.
+         * If >= 30 days -> Post once for the new month.
+         * Otherwise -> Suppress (prevents repeat alerts on the same day and for the next 30 days).
     """
     key = get_deal_key(deal)
     # Check by stable key or legacy deal id
@@ -84,19 +84,84 @@ def should_post_deal(deal, cache):
     if deal["fsp"] < cached_fsp:
         return True
 
-    # 2. Same or higher price -> check if 7 days (1 week) have passed
+    # 2. Same or higher price -> check if 30 days have passed
     now = time.time()
     last_posted = cached.get("timestamp", 0)
-    if (now - last_posted) >= SEVEN_DAYS_SECONDS:
+    if (now - last_posted) >= COOLDOWN_SECONDS:
         return True
 
-    # Suppress repeat alert within the 7-day window
+    # Suppress repeat alert within the 30-day window (and same day)
     return False
+
+def is_deal_blacklisted(deal):
+    """
+    Checks if a deal should be filtered out based on:
+    - Excluded negative keywords (mobile covers, rakhi, pooja items, pet food)
+    - Excluded brands (rakhi, puja, phone case, and pet food brands)
+    - Religious brand pattern ('reli...' brands, e.g. 'Religious Ganesha Rakhi', except genuine words like 'relish')
+    """
+    title = deal.get("title", "").strip().lower()
+
+    # 1. Excluded negative keywords
+    for kw in config.EXCLUDED_KEYWORDS:
+        if kw in title:
+            return True
+
+    # 2. Religious brand / keyword pattern (starts with reli... except relish)
+    for word in re.findall(r"\b[a-z]+", title):
+        if word.startswith("reli") and not word.startswith("relish"):
+            return True
+
+    # 3. Excluded brands
+    for eb in config.EXCLUDED_BRANDS:
+        eb_lower = eb.lower()
+        if title.startswith(eb_lower + " ") or f" by {eb_lower}" in title or title == eb_lower or f" {eb_lower} " in title:
+            return True
+
+    return False
+
+def get_effective_min_discount(deal, category_name=None, default_min=None):
+    """
+    Computes the minimum discount percentage required for a deal to qualify.
+    Evaluates rules in hierarchical priority:
+    1. Title keyword override (config.KEYWORD_THRESHOLDS)
+    2. Brand override (config.BRAND_THRESHOLDS)
+    3. Category override (config.CATEGORY_THRESHOLDS)
+    4. Global default (config.DEFAULT_MIN_DISCOUNT, default: 65%)
+    """
+    title = deal.get("title", "").strip().lower()
+    cat = (category_name or deal.get("category", "")).strip()
+
+    # Priority 1: Keyword thresholds in title
+    for kw, thresh in config.KEYWORD_THRESHOLDS:
+        if kw.lower() in title:
+            return thresh
+
+    # Priority 2: Brand thresholds
+    for b_name, thresh in config.BRAND_THRESHOLDS.items():
+        b_lower = b_name.lower()
+        if title.startswith(b_lower + " ") or f" by {b_lower}" in title or title == b_lower or f" {b_lower} " in title:
+            return thresh
+
+    # Priority 3: Category thresholds
+    if cat:
+        if cat in config.CATEGORY_THRESHOLDS:
+            return config.CATEGORY_THRESHOLDS[cat]
+        cat_lower = cat.lower()
+        for c_key, thresh in config.CATEGORY_THRESHOLDS.items():
+            if c_key.lower() == cat_lower or c_key.lower() in cat_lower:
+                return thresh
+
+    # Priority 4: Fallback to CLI argument or config default
+    return default_min if default_min is not None else config.DEFAULT_MIN_DISCOUNT
 
 def scan_worker(category_info, pincode, min_discount=None):
     """Worker function to scrape deals for a single category with smart multi-page pagination."""
     scraper = FlipkartScraper(pincode=pincode)
-    return scraper.fetch_category_deals(category_info, min_discount=min_discount, max_pages=3)
+    cat_name = category_info.get("name", "")
+    cat_thresh = config.CATEGORY_THRESHOLDS.get(cat_name)
+    scan_min = cat_thresh if cat_thresh is not None else (min_discount if min_discount is not None else config.DEFAULT_MIN_DISCOUNT)
+    return scraper.fetch_category_deals(category_info, min_discount=scan_min, max_pages=3)
 
 def main():
     parser = argparse.ArgumentParser(description="Flipkart Minutes Deals Scraper & Telegram Bot")
@@ -182,15 +247,30 @@ def main():
     elapsed_scan = time.time() - start_time
     print(f"[*] Scan complete in {elapsed_scan:.1f}s. Total unique items scraped: {len(all_products)}")
 
-    # Filter deals
-    qualifying_deals = [
-        p for p in all_products
-        if p["discount"] >= args.min_discount and not p["oos"]
-    ]
+    # Filter deals with negative filters and hierarchical threshold engine
+    qualifying_deals = []
+    dropped_blacklisted = 0
+    dropped_threshold = 0
+    dropped_oos = 0
+
+    for p in all_products:
+        if is_deal_blacklisted(p):
+            dropped_blacklisted += 1
+            continue
+        if p.get("oos"):
+            dropped_oos += 1
+            continue
+        effective_threshold = get_effective_min_discount(p, p.get("category"), default_min=args.min_discount)
+        if p.get("discount", 0) >= effective_threshold:
+            p["effective_threshold"] = effective_threshold
+            qualifying_deals.append(p)
+        else:
+            dropped_threshold += 1
+
     # Sort highest discount first
     qualifying_deals.sort(key=lambda x: x["discount"], reverse=True)
 
-    print(f"[*] Found {len(qualifying_deals)} deals matching criteria (>= {args.min_discount}% OFF & In Stock)")
+    print(f"[*] Filtering summary: {len(qualifying_deals)} qualified deals (Excluded: {dropped_blacklisted} blacklisted/junk, {dropped_oos} OOS, {dropped_threshold} below threshold)")
 
     # Load cache for deduplication
     cache = load_cache(args.cache)
@@ -200,31 +280,41 @@ def main():
     suppressed_count = 0
     now = time.time()
 
+    deals_to_post = []
     for deal in qualifying_deals:
         key = get_deal_key(deal)
+        thresh = deal.get("effective_threshold", args.min_discount)
         if should_post_deal(deal, cache):
-            print(f"  🔥 NEW DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']}) [Key: {key}]")
-            if not args.dry_run:
-                success = notifier.send_deal(deal)
-                if success:
-                    cache[key] = {
-                        "key": key,
-                        "title": deal["title"],
-                        "fsp": deal["fsp"],
-                        "mrp": deal["mrp"],
-                        "discount": deal["discount"],
-                        "link": deal["link"],
-                        "timestamp": now,
-                        "date": datetime.now(timezone.utc).isoformat()
-                    }
-                    new_alerts_sent += 1
-            else:
-                new_alerts_sent += 1
+            print(f"  🔥 QUALIFIED DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']}) [Req: >={thresh}%] [Key: {key}]")
+            deals_to_post.append(deal)
         else:
             suppressed_count += 1
 
+    if deals_to_post:
+        if not args.dry_run:
+            posted_deals = notifier.send_combined_deals(deals_to_post)
+            for deal in posted_deals:
+                key = get_deal_key(deal)
+                cache[key] = {
+                    "key": key,
+                    "title": deal["title"],
+                    "fsp": deal["fsp"],
+                    "mrp": deal["mrp"],
+                    "discount": deal["discount"],
+                    "link": deal["link"],
+                    "timestamp": now,
+                    "date": datetime.now(timezone.utc).isoformat()
+                }
+                new_alerts_sent += 1
+            print(f"[*] Posted {len(posted_deals)} deals in combined message(s) to Telegram.")
+        else:
+            new_alerts_sent = len(deals_to_post)
+            print(f"[*] Dry run: {len(deals_to_post)} deals ready to post in combined message.")
+    else:
+        print("[*] No new qualifying deals to post this run.")
+
     if suppressed_count > 0:
-        print(f"[*] Suppressed {suppressed_count} deals already alerted within the past 7 days at same price.")
+        print(f"[*] Suppressed {suppressed_count} deals already alerted within the past 30 days (or earlier today) with unchanging price.")
 
     if not args.dry_run:
         save_cache(cache, args.cache)

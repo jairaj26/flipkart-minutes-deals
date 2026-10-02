@@ -190,17 +190,32 @@ class FlipkartScraper:
             return None
 
     def parse_products_from_json(self, json_data):
-        """Extracts products from Rome API JSON payload."""
+        """Extracts products from Rome API JSON payload or HTML state."""
         products = []
         seen_uids = set()
 
-        if not json_data:
+        if isinstance(json_data, str):
+            idx = json_data.find("window.__INITIAL_STATE__")
+            if idx != -1:
+                j_start = json_data.find("{", idx)
+                s_end = json_data.find("</script>", j_start)
+                j_end = json_data.rfind("}", j_start, s_end)
+                try:
+                    json_data = json.loads(json_data[j_start:j_end+1])
+                except Exception:
+                    pass
+
+        if not json_data or not isinstance(json_data, dict):
             return products
 
         resp = json_data.get("RESPONSE", {})
-        slots = resp.get("slots", []) or json_data.get("slots", [])
+        slots = (resp.get("slots", []) or
+                 json_data.get("slots", []) or
+                 json_data.get("multiWidgetState", {}).get("widgetsData", {}).get("slots", []) or
+                 json_data.get("multiWidgetState", {}).get("pageDataResponse", {}).get("slots", []))
 
-        for s in slots:
+        for raw_s in slots:
+            s = raw_s.get("slotData", raw_s) if isinstance(raw_s, dict) else {}
             wdata = s.get("widget", {}).get("data", {})
             comps = wdata.get("products", []) or wdata.get("renderableComponents", [])
 
@@ -272,18 +287,18 @@ class FlipkartScraper:
                                          cval.get("trackerData_0", {}).get("tracking", {}).get("contentTitle") or
                                          extract_title_from_url(lnk) or "Product")
 
-                                # Prices
+                                # Prices with comma stripping
                                 fsp = 0
                                 l4 = snb_text.get("label_4", {}).get("value", "")
                                 l4_str = str(l4.get("UNLOCKED", {}).get("value", {}).get("params", {}).get("defaultValue") or l4.get("text", "") if isinstance(l4, dict) else l4)
-                                m_fsp = re.search(r"\d+", l4_str)
+                                m_fsp = re.search(r"\d+", l4_str.replace(",", ""))
                                 if m_fsp:
                                     fsp = int(m_fsp.group(0))
 
                                 mrp = fsp
                                 l3 = snb_text.get("label_3", {}).get("value", "")
                                 l3_str = str(l3.get("params", {}).get("defaultValue") or l3.get("text", "") if isinstance(l3, dict) else l3)
-                                m_mrp = re.search(r"\d+", l3_str)
+                                m_mrp = re.search(r"\d+", l3_str.replace(",", ""))
                                 if m_mrp:
                                     mrp = int(m_mrp.group(0))
 
@@ -295,11 +310,11 @@ class FlipkartScraper:
                                     disc = int(m_disc.group(1))
 
                                 if not fsp and stepper.get("params", {}).get("price"):
-                                    fsp = int(stepper["params"]["price"])
+                                    fsp = int(re.sub(r"[^\d]", "", str(stepper["params"]["price"])))
                                 if not fsp and stepper.get("tracking", {}).get("fsp"):
-                                    fsp = int(stepper["tracking"]["fsp"])
+                                    fsp = int(re.sub(r"[^\d]", "", str(stepper["tracking"]["fsp"])))
                                 if stepper.get("tracking", {}).get("mrp"):
-                                    mrp = int(stepper["tracking"]["mrp"])
+                                    mrp = int(re.sub(r"[^\d]", "", str(stepper["tracking"]["mrp"])))
 
                                 is_oos = (stepper.get("tracking", {}).get("isAvailable") == "false" or
                                           stepper.get("enabled") is False or
@@ -330,23 +345,23 @@ class FlipkartScraper:
                                 stepper_tracking = stepper_action.get("tracking", {})
                                 fsp = 0
                                 if stepper_action.get("params", {}).get("price"):
-                                    fsp = int(stepper_action["params"]["price"])
+                                    fsp = int(re.sub(r"[^\d]", "", str(stepper_action["params"]["price"])))
                                 elif stepper_tracking.get("fsp"):
-                                    fsp = int(stepper_tracking["fsp"])
+                                    fsp = int(re.sub(r"[^\d]", "", str(stepper_tracking["fsp"])))
 
-                                mrp = int(stepper_tracking["mrp"]) if stepper_tracking.get("mrp") else fsp
+                                mrp = int(re.sub(r"[^\d]", "", str(stepper_tracking["mrp"]))) if stepper_tracking.get("mrp") else fsp
 
                                 if not fsp and pcard.get("label_5", {}).get("value"):
                                     l5 = pcard["label_5"]["value"]
                                     l5_str = str(l5.get("UNLOCKED", {}).get("value", {}).get("text") or l5.get("LOCKED", {}).get("value", {}).get("text") or l5.get("text", "") if isinstance(l5, dict) else l5)
-                                    m_fsp = re.search(r"\d+", l5_str)
+                                    m_fsp = re.search(r"\d+", l5_str.replace(",", ""))
                                     if m_fsp:
                                         fsp = int(m_fsp.group(0))
 
                                 if mrp == fsp and pcard.get("label_4", {}).get("value"):
                                     l4 = pcard["label_4"]["value"]
                                     l4_str = str(l4.get("text", "") if isinstance(l4, dict) else l4)
-                                    m_mrp = re.search(r"\d+", l4_str)
+                                    m_mrp = re.search(r"\d+", l4_str.replace(",", ""))
                                     if m_mrp:
                                         mrp = int(m_mrp.group(0))
 

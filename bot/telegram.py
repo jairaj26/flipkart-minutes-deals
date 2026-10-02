@@ -18,35 +18,72 @@ class TelegramNotifier:
     def is_configured(self):
         return bool(self.bot_token and self.chat_id)
 
-    def format_deal_message(self, deal):
-        """Formats a deal into a clean text-only message without category tags or images."""
-        title = html.escape(deal.get("title", "Product"))
+    def format_deal_entry(self, deal):
+        """
+        Formats an individual deal entry according to:
+        Title
+        🔥 {disc}% OFF | 💰 ₹{fsp} (MRP: ₹{mrp})
+        Click here
+        """
+        title = html.escape(deal.get("title", "Product").strip())
         fsp = deal.get("fsp", 0)
         mrp = deal.get("mrp", fsp)
         disc = deal.get("discount", 0)
         link = deal.get("link", "https://www.flipkart.com")
+        mrp_str = f" (MRP: ₹{mrp})" if mrp > fsp else ""
 
-        lines = [
-            f"<b>{title}</b>",
-            f"🔥 <b>{disc}% OFF</b>",
-            f"💰 <b>₹{fsp}</b> (MRP: <strike>₹{mrp}</strike>)",
-            "",
-            f"👉 <a href=\"{link}\">Buy on Flipkart Minutes</a>"
-        ]
-        return "\n".join(lines)
+        return f"<b>{title}</b>\n🔥 <b>{disc}% OFF</b> | 💰 <b>₹{fsp}</b>{mrp_str}\n<a href=\"{link}\">Click here</a>"
 
-    def send_deal(self, deal):
-        """Sends a text-only deal alert to Telegram (no images, no link preview)."""
+    def format_deal_message(self, deal):
+        """Single deal format for backward compatibility."""
+        return self.format_deal_entry(deal)
+
+    def send_combined_deals(self, deals, max_chars_per_message=3800):
+        """
+        Combines multiple deals into a single message (or chunked messages if > 3800 chars).
+        Returns the list of successfully sent deals.
+        """
         if not self.is_configured:
             print("[Telegram] Not configured (missing bot token or chat ID). Skipping alert.")
-            return False
+            return []
 
-        message = self.format_deal_message(deal)
-        success = self._send_text(message)
+        if not deals:
+            return []
 
-        # Respect Telegram rate limit (~30 msgs/min per chat)
-        time.sleep(1.0)
-        return success
+        successfully_sent = []
+        chunks = []
+        current_chunk_deals = []
+        current_chunk_text = ""
+
+        for deal in deals:
+            entry_text = self.format_deal_entry(deal)
+            tentative_len = len(current_chunk_text) + (2 if current_chunk_text else 0) + len(entry_text)
+            if tentative_len > max_chars_per_message and current_chunk_deals:
+                chunks.append((current_chunk_text, current_chunk_deals))
+                current_chunk_text = entry_text
+                current_chunk_deals = [deal]
+            else:
+                if current_chunk_text:
+                    current_chunk_text += "\n\n" + entry_text
+                else:
+                    current_chunk_text = entry_text
+                current_chunk_deals.append(deal)
+
+        if current_chunk_deals:
+            chunks.append((current_chunk_text, current_chunk_deals))
+
+        for text, chunk_deals in chunks:
+            success = self._send_text(text)
+            if success:
+                successfully_sent.extend(chunk_deals)
+            time.sleep(1.0)
+
+        return successfully_sent
+
+    def send_deal(self, deal):
+        """Sends a single deal alert (backward compatibility)."""
+        res = self.send_combined_deals([deal])
+        return len(res) > 0
 
     def _send_text(self, text):
         url = f"{self.base_url}/sendMessage"
