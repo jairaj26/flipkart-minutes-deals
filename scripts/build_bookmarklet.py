@@ -164,12 +164,7 @@ def build_bookmarklet():
   var EXCLUDED_BRANDS = {js_excluded_brands};
 
   /* Dynamic Threshold Rules */
-  var CATEGORY_THRESHOLDS = {{
-    "fruits and vegetables": 90,
-    "fresh vegetables": 90,
-    "fresh fruits": 90,
-    "decor & festive needs": 90
-  }};
+  var DEFAULT_MIN_DISCOUNT = 45;
   var BRAND_THRESHOLDS = {{
     "clothology": 90,
     "decent home": 90,
@@ -965,15 +960,8 @@ def build_bookmarklet():
       }}
     }}
 
-    /* Hierarchical threshold verification */
-    var effectiveMin = 65;
-    var currentGroup = (st.selectedItem?.group || "").toLowerCase();
-    var currentCat = (st.selectedItem?.name || "").toLowerCase();
-    for (var ck in CATEGORY_THRESHOLDS) {{
-      if (currentGroup.includes(ck) || currentCat.includes(ck)) {{
-        effectiveMin = Math.max(effectiveMin, CATEGORY_THRESHOLDS[ck]);
-      }}
-    }}
+    /* Threshold verification (default 45% across all categories) */
+    var effectiveMin = DEFAULT_MIN_DISCOUNT;
     for (var bt in BRAND_THRESHOLDS) {{
       if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {{
         effectiveMin = Math.max(effectiveMin, BRAND_THRESHOLDS[bt]);
@@ -1540,8 +1528,8 @@ def build_bookmarklet():
       var res = await fetchAndParsePage(pUri);
       renderGrid();
 
-      /* If Page 1 has top deals (>=65%), fetch Page 2 as well */
-      if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 8 && st.items.some(function(x){{ return x.d >= 65; }})) {{
+      /* If Page 1 has top deals (>=45%), fetch Page 2 as well */
+      if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 8 && st.items.some(function(x){{ return x.d >= 45; }})) {{
         var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
         await fetchAndParsePage(p2Uri);
         renderGrid();
