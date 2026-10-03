@@ -1,3 +1,4 @@
+import html
 import json
 import os
 import re
@@ -2222,15 +2223,31 @@ def build_bookmarklet():
             with open(html_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
+            # 1. Update the primary PC/Desktop button in .btn-box
             content = re.sub(
-                r'(<summary>🛡️ Looking for the 100% Offline Standalone Version\?</summary>[\s\S]*?<a class="bookmarklet-btn" href=")(?:javascript:|javascript%3A)[^"]+(")',
-                r'\g<1>' + encoded_js + r'\2',
+                r'(<div class="btn-box">\s*<a class="bookmarklet-btn" href=")[^"]+(")',
+                lambda m: m.group(1) + encoded_js + m.group(2),
+                content
+            )
+
+            # 2. Update the mobile textarea
+            escaped_mobile_code = html.escape(minified_js)
+            content = re.sub(
+                r'(<textarea id="mobile-code"[^>]*>)[^<]*(</textarea>)',
+                lambda m: m.group(1) + escaped_mobile_code + m.group(2),
+                content
+            )
+
+            # 3. Update the offline fallback button inside details if present
+            content = re.sub(
+                r'(<summary>🛡️ Looking for the 100% Offline Standalone Version\?</summary>[\s\S]*?<a class="bookmarklet-btn" href=")[^"]+(")',
+                lambda m: m.group(1) + encoded_js + m.group(2),
                 content
             )
 
             with open(html_path, "w", encoding="utf-8") as f:
                 f.write(content)
-            print(f"Updated bookmarklet link in {html_path} successfully!")
+            print(f"Updated all bookmarklet links in {html_path} successfully!")
 
 if __name__ == "__main__":
     build_bookmarklet()
