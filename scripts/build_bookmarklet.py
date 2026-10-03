@@ -22,7 +22,6 @@ def build_bookmarklet():
     ]
     excluded_brands = sorted(list({b.strip().lower() for b in raw_excluded if b.strip()}))
 
-    # Structure category entries
     # Group icons
     icons = {
         "Staples": "🌾",
@@ -36,13 +35,8 @@ def build_bookmarklet():
         "Office and School Supplies": "📚"
     }
 
-    # We will build an array of items for the drawer:
-    # 1. Master: { id: "all", name: "🔥 Scan All Categories (Top Deals)", isMaster: true, uri: "" }
-    # 2. For each group:
-    #    - Group Main: { id: "grp_...", name: "... (All)", isGroup: true, uri: "..." }
-    #    - Subcategories: { id: "sub_...", name: "↳ ...", isSub: true, uri: "...", defaultSelected: bool }
-    
-    drawer_items = [
+    # Build hierarchical category tree for the Figma-style dropdown
+    category_tree = [
         {
             "id": "master_all",
             "name": "🔥 Scan All Categories (Top Deals)",
@@ -55,25 +49,14 @@ def build_bookmarklet():
 
     for group_name, subcats in cat_catalog["groups"].items():
         icon = icons.get(group_name, "📦")
-        
-        # Find group main or clean composite
-        # For Household Care: 'Household Care (Excl. Pooja Needs)'
-        # For Home & Kitchen: 'Home & Kitchen (Excl. Festive & Cases)'
-        # For Packaged Goods: 'All Packaged Goods'
-        # For Personal & Baby: 'All Personal & Baby Care'
-        # For Fruits & Veg: 'All Fruits & Vegetables'
-        # For Office Supplies: 'All Office and School Supplies'
-        # For Staples / Snacks / Dairy: first or composite or general group code
-        
+
         main_item = None
-        # Check if there is an explicit clean composite or 'All ...' item
         for item in subcats:
             if "Excl." in item["name"] or item["name"].startswith("All "):
                 main_item = item
                 break
-        
+
         if not main_item:
-            # For Staples (73z/bpe), Snacks (73z/ujs), Dairy (73z/esa)
             first_p = subcats[0].get("parent_code", "")
             if first_p:
                 main_uri = f"/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]={first_p}"
@@ -85,52 +68,57 @@ def build_bookmarklet():
                 "category_code": first_p
             }
 
-        group_disp_name = f"{icon} {group_name} (All)"
+        group_disp_name = f"{icon} {group_name}"
+        group_all_label = f"{group_name} (All)"
         if "Excl. Pooja" in main_item["name"]:
-            group_disp_name = f"{icon} Household Care (Excl. Pooja & Pet)"
+            group_disp_name = f"{icon} Household Care"
+            group_all_label = "Household Care (Excl. Pooja & Pet)"
         elif "Excl. Festive" in main_item["name"]:
-            group_disp_name = f"{icon} Home & Kitchen (Clean - Excl. Cases)"
-        
-        group_entry = {
-            "id": f"grp_{group_name.replace(' ', '_')}",
-            "group": group_name,
-            "name": group_disp_name,
-            "isGroup": True,
-            "uri": main_item["url_path"]
-        }
-        drawer_items.append(group_entry)
-        main_groups.append(group_entry)
+            group_disp_name = f"{icon} Home & Kitchen"
+            group_all_label = "Home & Kitchen (Clean - Excl. Cases)"
 
-        # Now add individual subcategories
+        # Process subcategories: Clean names, NO enter symbols ↳, collapsed by default
+        children = []
         for sub in subcats:
-            # Skip if it is the composite item itself
             if sub == main_item:
                 continue
             if "Excl." in sub["name"] or sub["name"].startswith("All "):
                 continue
             if "(All Parent)" in sub["name"]:
                 continue
-            
+
             is_optin = not sub.get("default_selected", True)
             optin_suffix = " (Opt-in)" if is_optin else ""
-            sub_disp_name = f"  ↳ {sub['name']}{optin_suffix}"
+            clean_sub_name = f"{sub['name']}{optin_suffix}".strip()
 
-            drawer_items.append({
+            children.append({
                 "id": f"sub_{sub['category_code'].replace('/', '_')}",
-                "group": group_name,
-                "name": sub_disp_name,
-                "isSub": True,
-                "isOptin": is_optin,
-                "uri": sub["url_path"]
+                "name": clean_sub_name,
+                "uri": sub["url_path"],
+                "isOptin": is_optin
             })
 
-    print(f"Total drawer items generated: {len(drawer_items)}")
+        group_entry = {
+            "id": f"grp_{group_name.replace(' ', '_')}",
+            "group": group_name,
+            "name": group_disp_name,
+            "allLabel": group_all_label,
+            "isGroup": True,
+            "uri": main_item["url_path"],
+            "subs": children
+        }
+        category_tree.append(group_entry)
+        main_groups.append({
+            "id": group_entry["id"],
+            "group": group_name,
+            "name": group_disp_name,
+            "uri": group_entry["uri"]
+        })
+
+    print(f"Total category tree nodes generated: {len(category_tree)}")
     print(f"Total main scan groups: {len(main_groups)}")
 
-    # Read base template or write updated FKMinutes_Readable.js
-    # Let's inspect how cleanly we can construct the JS code.
-    
-    js_drawer_items = json.dumps(drawer_items, indent=2, ensure_ascii=False)
+    js_category_tree = json.dumps(category_tree, indent=2, ensure_ascii=False)
     js_main_groups = json.dumps(main_groups, indent=2, ensure_ascii=False)
     js_excluded_brands = json.dumps(excluded_brands, indent=2, ensure_ascii=False)
 
@@ -141,57 +129,10 @@ def build_bookmarklet():
     if (el) el.remove();
   }});
 
-  /* Available UI Theme Styles (User Requested: Slate, Warm Earth, Nordic Frost, Charcoal Mono, Botanical Green) */
-  var THEMES = [
-    {{
-      id: "slate",
-      name: "Slate Minimal",
-      icon: "🔲",
-      desc: "Monochrome zinc/slate, sharp corners, dev-tools aesthetic",
-      swatches: ["#0f172a", "#38bdf8", "#f8fafc"]
-    }},
-    {{
-      id: "warm",
-      name: "Warm Earth",
-      icon: "🍂",
-      desc: "Amber/stone tones, rounded shapes, cozy grocery feel",
-      swatches: ["#78350f", "#f59e0b", "#fbfaf8"]
-    }},
-    {{
-      id: "nordic",
-      name: "Nordic Frost",
-      icon: "❄️",
-      desc: "Cool sky-blue, frosted glass cards, airy & spacious",
-      swatches: ["#0284c7", "#38bdf8", "#e0f2fe"]
-    }},
-    {{
-      id: "charcoal",
-      name: "Charcoal Mono",
-      icon: "📰",
-      desc: "Dark charcoal background, newspaper-style typography",
-      swatches: ["#121214", "#ffffff", "#27272a"]
-    }},
-    {{
-      id: "botanical",
-      name: "Botanical Green",
-      icon: "🌿",
-      desc: "Fresh emerald palette, nature-inspired, trustworthy",
-      swatches: ["#064e3b", "#34d399", "#f0fdf4"]
-    }}
-  ];
-
-  var currentTheme = "slate";
-  try {{
-    var savedTh = localStorage.getItem("fk_deals_theme");
-    if (savedTh && THEMES.some(function(t){{ return t.id === savedTh; }})) {{
-      currentTheme = savedTh;
-    }}
-  }} catch(e) {{}}
-
   var d = document;
 
-  /* Verified Category Catalog (Direct Solr Facets) */
-  var DRAWER_ITEMS = {js_drawer_items};
+  /* Verified Category Catalog (Direct Solr Facets Collapsible Tree) */
+  var CATEGORY_TREE = {js_category_tree};
 
   /* Clean Main Groups for Full Store Scanning */
   var MAIN_GROUPS = {js_main_groups};
@@ -226,15 +167,15 @@ def build_bookmarklet():
     "deodap": 90
   }};
 
-  var initialIdx = 0;
+  var initialCategory = CATEGORY_TREE[0];
   var st = {{
     mode: "IDLE",
     sort: "discount",
     searchQuery: "",
     items: [],
     seen: new Set(),
-    selectedIdx: initialIdx,
-    selectedItem: DRAWER_ITEMS[initialIdx],
+    selectedItem: initialCategory,
+    selectedLabel: initialCategory.name,
     hideOos: true,
     isCollapsed: false
   }};
@@ -267,332 +208,39 @@ def build_bookmarklet():
       .replace(/'/g, "&#39;");
   }}
 
-  /* Inject Sidebar Styles */
+  /* Inject Figma-inspired Clean Styles */
   var style = d.createElement("style");
   style.id = "fk-deals-styles";
   style.textContent = `
-    /* Theme Base Variables: Slate Minimal (Default) */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
     #fk-deals-sidebar, #fk-deals-pill {{
-      --fkd-sidebar-bg: #f8fafc;
-      --fkd-header-bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-      --fkd-header-text: #ffffff;
-      --fkd-text-main: #0f172a;
-      --fkd-text-muted: #64748b;
-      --fkd-card-bg: #ffffff;
-      --fkd-card-border: 1px solid #cbd5e1;
-      --fkd-card-radius: 0px;
-      --fkd-card-shadow: 0 1px 3px rgba(15,23,42,0.08);
-      --fkd-card-hover-shadow: 0 6px 18px rgba(15,23,42,0.16);
-      --fkd-card-backdrop: none;
-      --fkd-img-bg: #f1f5f9;
-      --fkd-img-radius: 0px;
-      --fkd-disc-bg: #0f172a;
-      --fkd-disc-color: #ffffff;
-      --fkd-disc-radius: 0px;
-      --fkd-disc-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      --fkd-price-color: #0f172a;
-      --fkd-price-font: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      --fkd-mrp-color: #94a3b8;
-      --fkd-badge-bg: #38bdf8;
-      --fkd-badge-color: #0f172a;
-      --fkd-pill-radius: 0px;
-      --fkd-pill-bg: rgba(255,255,255,0.18);
-      --fkd-pill-border: 1px solid rgba(255,255,255,0.28);
-      --fkd-pill-color: #ffffff;
-      --fkd-pill-active-bg: #ffffff;
-      --fkd-pill-active-color: #0f172a;
-      --fkd-action-bg: #38bdf8;
-      --fkd-action-color: #0f172a;
-      --fkd-action-hover: #0ea5e9;
-      --fkd-status-dot: #38bdf8;
-      --fkd-status-color: #e2e8f0;
-      --fkd-input-bg: #ffffff;
-      --fkd-input-color: #0f172a;
-      --fkd-input-border: 1px solid #cbd5e1;
-      --fkd-input-radius: 0px;
-      --fkd-drawer-bg: #ffffff;
-      --fkd-drawer-border: 1px solid #cbd5e1;
-      --fkd-drawer-radius: 0px;
-      --fkd-drawer-item-hover: #f1f5f9;
-      --fkd-drawer-item-active-bg: #e2e8f0;
-      --fkd-drawer-item-active-color: #0f172a;
-      --fkd-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      --fkd-title-font: inherit;
-      --fkd-float-bg: #0f172a;
-      --fkd-float-color: #ffffff;
-      --fkd-float-radius: 0px;
-      --fkd-float-shadow: 0 4px 16px rgba(15,23,42,0.4);
+      --fkd-bg: #F7F7F8;
+      --fkd-header-bg: #FFFFFF;
+      --fkd-border: #E6E6E6;
+      --fkd-border-light: #EBEBEB;
+      --fkd-text-main: #1E1E1E;
+      --fkd-text-sub: #6E6E6E;
+      --fkd-text-muted: #8C8C8C;
+      --fkd-accent: #0D99FF;
+      --fkd-accent-hover: #0B85DE;
+      --fkd-danger: #F24822;
+      --fkd-card-bg: #FFFFFF;
+      --fkd-card-border: #E8E8E8;
+      --fkd-card-hover: #D1D5DB;
+      --fkd-dark: #1E1E1E;
+      --fkd-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+      font-family: var(--fkd-font);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      box-sizing: border-box;
     }}
 
-    /* Theme: Warm Earth */
-    #fk-deals-sidebar[data-theme="warm"], #fk-deals-pill[data-theme="warm"] {{
-      --fkd-sidebar-bg: #faf8f5;
-      --fkd-header-bg: linear-gradient(135deg, #78350f 0%, #92400e 45%, #b45309 100%);
-      --fkd-header-text: #fef3c7;
-      --fkd-text-main: #451a03;
-      --fkd-text-muted: #78716c;
-      --fkd-card-bg: #ffffff;
-      --fkd-card-border: 1px solid #fed7aa;
-      --fkd-card-radius: 16px;
-      --fkd-card-shadow: 0 3px 12px rgba(180, 83, 9, 0.08);
-      --fkd-card-hover-shadow: 0 8px 24px rgba(180, 83, 9, 0.16);
-      --fkd-card-backdrop: none;
-      --fkd-img-bg: #fffbeb;
-      --fkd-img-radius: 12px;
-      --fkd-disc-bg: linear-gradient(135deg, #ea580c 0%, #c2410c 100%);
-      --fkd-disc-color: #ffffff;
-      --fkd-disc-radius: 9999px;
-      --fkd-disc-font: inherit;
-      --fkd-price-color: #7c2d12;
-      --fkd-price-font: inherit;
-      --fkd-mrp-color: #a8a29e;
-      --fkd-badge-bg: #f59e0b;
-      --fkd-badge-color: #ffffff;
-      --fkd-pill-radius: 9999px;
-      --fkd-pill-bg: rgba(255,255,255,0.22);
-      --fkd-pill-border: 1px solid rgba(255,255,255,0.35);
-      --fkd-pill-color: #ffffff;
-      --fkd-pill-active-bg: #ffffff;
-      --fkd-pill-active-color: #78350f;
-      --fkd-action-bg: #f59e0b;
-      --fkd-action-color: #ffffff;
-      --fkd-action-hover: #d97706;
-      --fkd-status-dot: #f59e0b;
-      --fkd-status-color: #fef3c7;
-      --fkd-input-bg: #ffffff;
-      --fkd-input-color: #451a03;
-      --fkd-input-border: 1px solid #fed7aa;
-      --fkd-input-radius: 9999px;
-      --fkd-drawer-bg: #ffffff;
-      --fkd-drawer-border: 1px solid #fed7aa;
-      --fkd-drawer-radius: 14px;
-      --fkd-drawer-item-hover: #fffbeb;
-      --fkd-drawer-item-active-bg: #fef3c7;
-      --fkd-drawer-item-active-color: #78350f;
-      --fkd-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      --fkd-title-font: inherit;
-      --fkd-float-bg: linear-gradient(135deg, #78350f 0%, #d97706 100%);
-      --fkd-float-color: #ffffff;
-      --fkd-float-radius: 9999px;
-      --fkd-float-shadow: 0 4px 18px rgba(180,83,9,0.4);
+    #fk-deals-sidebar *, #fk-deals-pill * {{
+      box-sizing: border-box;
     }}
 
-    /* Theme: Nordic Frost */
-    #fk-deals-sidebar[data-theme="nordic"], #fk-deals-pill[data-theme="nordic"] {{
-      --fkd-sidebar-bg: linear-gradient(180deg, #f0f9ff 0%, #e0f2fe 100%);
-      --fkd-header-bg: linear-gradient(135deg, #0369a1 0%, #0284c7 50%, #38bdf8 100%);
-      --fkd-header-text: #ffffff;
-      --fkd-text-main: #0c4a6e;
-      --fkd-text-muted: #64748b;
-      --fkd-card-bg: rgba(255, 255, 255, 0.78);
-      --fkd-card-border: 1px solid rgba(186, 230, 253, 0.75);
-      --fkd-card-radius: 14px;
-      --fkd-card-shadow: 0 4px 18px rgba(2, 132, 199, 0.08);
-      --fkd-card-hover-shadow: 0 10px 25px rgba(2, 132, 199, 0.16);
-      --fkd-card-backdrop: blur(12px) saturate(160%);
-      --fkd-img-bg: rgba(240, 249, 255, 0.7);
-      --fkd-img-radius: 10px;
-      --fkd-disc-bg: linear-gradient(135deg, #0284c7 0%, #0ea5e9 100%);
-      --fkd-disc-color: #ffffff;
-      --fkd-disc-radius: 8px;
-      --fkd-disc-font: inherit;
-      --fkd-price-color: #0369a1;
-      --fkd-price-font: inherit;
-      --fkd-mrp-color: #64748b;
-      --fkd-badge-bg: #38bdf8;
-      --fkd-badge-color: #0369a1;
-      --fkd-pill-radius: 10px;
-      --fkd-pill-bg: rgba(255,255,255,0.22);
-      --fkd-pill-border: 1px solid rgba(255,255,255,0.35);
-      --fkd-pill-color: #ffffff;
-      --fkd-pill-active-bg: #ffffff;
-      --fkd-pill-active-color: #0284c7;
-      --fkd-action-bg: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
-      --fkd-action-color: #ffffff;
-      --fkd-action-hover: #0369a1;
-      --fkd-status-dot: #38bdf8;
-      --fkd-status-color: #e0f2fe;
-      --fkd-input-bg: rgba(255, 255, 255, 0.9);
-      --fkd-input-color: #0c4a6e;
-      --fkd-input-border: 1px solid #bae6fd;
-      --fkd-input-radius: 10px;
-      --fkd-drawer-bg: rgba(255, 255, 255, 0.95);
-      --fkd-drawer-border: 1px solid #bae6fd;
-      --fkd-drawer-radius: 12px;
-      --fkd-drawer-item-hover: #e0f2fe;
-      --fkd-drawer-item-active-bg: #bae6fd;
-      --fkd-drawer-item-active-color: #0369a1;
-      --fkd-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      --fkd-title-font: inherit;
-      --fkd-float-bg: linear-gradient(135deg, #0369a1 0%, #38bdf8 100%);
-      --fkd-float-color: #ffffff;
-      --fkd-float-radius: 9999px;
-      --fkd-float-shadow: 0 6px 20px rgba(2,132,199,0.35);
-    }}
-
-    /* Theme: Charcoal Mono */
-    #fk-deals-sidebar[data-theme="charcoal"], #fk-deals-pill[data-theme="charcoal"] {{
-      --fkd-sidebar-bg: #18181b;
-      --fkd-header-bg: linear-gradient(180deg, #121214 0%, #1e1e24 100%);
-      --fkd-header-text: #fafafa;
-      --fkd-text-main: #fafafa;
-      --fkd-text-muted: #a1a1aa;
-      --fkd-card-bg: #27272a;
-      --fkd-card-border: 1px solid #3f3f46;
-      --fkd-card-radius: 4px;
-      --fkd-card-shadow: 0 4px 14px rgba(0,0,0,0.4);
-      --fkd-card-hover-shadow: 0 8px 24px rgba(0,0,0,0.6);
-      --fkd-card-backdrop: none;
-      --fkd-img-bg: #202023;
-      --fkd-img-radius: 3px;
-      --fkd-disc-bg: #ffffff;
-      --fkd-disc-color: #09090b;
-      --fkd-disc-radius: 2px;
-      --fkd-disc-font: "Georgia", "Merriweather", "Times New Roman", serif;
-      --fkd-price-color: #fafafa;
-      --fkd-price-font: "Georgia", "Merriweather", "Times New Roman", serif;
-      --fkd-mrp-color: #71717a;
-      --fkd-badge-bg: #ffffff;
-      --fkd-badge-color: #09090b;
-      --fkd-pill-radius: 4px;
-      --fkd-pill-bg: rgba(255,255,255,0.1);
-      --fkd-pill-border: 1px solid #3f3f46;
-      --fkd-pill-color: #e4e4e7;
-      --fkd-pill-active-bg: #ffffff;
-      --fkd-pill-active-color: #09090b;
-      --fkd-action-bg: #ffffff;
-      --fkd-action-color: #09090b;
-      --fkd-action-hover: #e4e4e7;
-      --fkd-status-dot: #a1a1aa;
-      --fkd-status-color: #a1a1aa;
-      --fkd-input-bg: #27272a;
-      --fkd-input-color: #fafafa;
-      --fkd-input-border: 1px solid #52525b;
-      --fkd-input-radius: 4px;
-      --fkd-drawer-bg: #27272a;
-      --fkd-drawer-border: 1px solid #3f3f46;
-      --fkd-drawer-radius: 4px;
-      --fkd-drawer-item-hover: #3f3f46;
-      --fkd-drawer-item-active-bg: #52525b;
-      --fkd-drawer-item-active-color: #ffffff;
-      --fkd-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      --fkd-title-font: "Georgia", "Merriweather", "Times New Roman", serif;
-      --fkd-float-bg: #121214;
-      --fkd-float-color: #ffffff;
-      --fkd-float-radius: 4px;
-      --fkd-float-shadow: 0 4px 16px rgba(0,0,0,0.6);
-    }}
-
-    /* Theme: Botanical Green */
-    #fk-deals-sidebar[data-theme="botanical"], #fk-deals-pill[data-theme="botanical"] {{
-      --fkd-sidebar-bg: #f0fdf4;
-      --fkd-header-bg: linear-gradient(135deg, #064e3b 0%, #047857 50%, #059669 100%);
-      --fkd-header-text: #ecfdf5;
-      --fkd-text-main: #064e3b;
-      --fkd-text-muted: #065f46;
-      --fkd-card-bg: #ffffff;
-      --fkd-card-border: 1px solid #bbf7d0;
-      --fkd-card-radius: 14px;
-      --fkd-card-shadow: 0 3px 12px rgba(5, 150, 105, 0.08);
-      --fkd-card-hover-shadow: 0 8px 24px rgba(5, 150, 105, 0.16);
-      --fkd-card-backdrop: none;
-      --fkd-img-bg: #ecfdf5;
-      --fkd-img-radius: 10px;
-      --fkd-disc-bg: linear-gradient(135deg, #047857 0%, #059669 100%);
-      --fkd-disc-color: #ffffff;
-      --fkd-disc-radius: 8px;
-      --fkd-disc-font: inherit;
-      --fkd-price-color: #064e3b;
-      --fkd-price-font: inherit;
-      --fkd-mrp-color: #6b7280;
-      --fkd-badge-bg: #34d399;
-      --fkd-badge-color: #064e3b;
-      --fkd-pill-radius: 12px;
-      --fkd-pill-bg: rgba(255,255,255,0.2);
-      --fkd-pill-border: 1px solid rgba(255,255,255,0.3);
-      --fkd-pill-color: #ffffff;
-      --fkd-pill-active-bg: #ffffff;
-      --fkd-pill-active-color: #064e3b;
-      --fkd-action-bg: #34d399;
-      --fkd-action-color: #064e3b;
-      --fkd-action-hover: #10b981;
-      --fkd-status-dot: #34d399;
-      --fkd-status-color: #d1fae5;
-      --fkd-input-bg: #ffffff;
-      --fkd-input-color: #064e3b;
-      --fkd-input-border: 1px solid #a7f3d0;
-      --fkd-input-radius: 10px;
-      --fkd-drawer-bg: #ffffff;
-      --fkd-drawer-border: 1px solid #bbf7d0;
-      --fkd-drawer-radius: 12px;
-      --fkd-drawer-item-hover: #ecfdf5;
-      --fkd-drawer-item-active-bg: #d1fae5;
-      --fkd-drawer-item-active-color: #064e3b;
-      --fkd-font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, Helvetica, Arial, sans-serif;
-      --fkd-title-font: inherit;
-      --fkd-float-bg: linear-gradient(135deg, #064e3b 0%, #059669 100%);
-      --fkd-float-color: #ffffff;
-      --fkd-float-radius: 9999px;
-      --fkd-float-shadow: 0 4px 18px rgba(6,78,59,0.35);
-    }}
-
-    /* Charcoal Mono Category Item Overrides */
-    #fk-deals-sidebar[data-theme="charcoal"] .fkd-cat-item.fkd-group-head {{
-      background: #3f3f46;
-      color: #fafafa;
-    }}
-    #fk-deals-sidebar[data-theme="charcoal"] .fkd-cat-item.fkd-sub {{
-      color: #a1a1aa;
-    }}
-    #fk-deals-sidebar[data-theme="charcoal"] .fkd-cat-item.fkd-master {{
-      background: #3f3f46;
-      color: #fde047;
-      border-color: #52525b;
-    }}
-
-    /* Warm Earth Category Item Overrides */
-    #fk-deals-sidebar[data-theme="warm"] .fkd-cat-item.fkd-group-head {{
-      background: #fef3c7;
-      color: #78350f;
-    }}
-    #fk-deals-sidebar[data-theme="warm"] .fkd-cat-item.fkd-sub {{
-      color: #92400e;
-    }}
-    #fk-deals-sidebar[data-theme="warm"] .fkd-cat-item.fkd-master {{
-      background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-      color: #78350f;
-      border-color: #f59e0b;
-    }}
-
-    /* Botanical Green Category Item Overrides */
-    #fk-deals-sidebar[data-theme="botanical"] .fkd-cat-item.fkd-group-head {{
-      background: #dcfce7;
-      color: #064e3b;
-    }}
-    #fk-deals-sidebar[data-theme="botanical"] .fkd-cat-item.fkd-sub {{
-      color: #047857;
-    }}
-    #fk-deals-sidebar[data-theme="botanical"] .fkd-cat-item.fkd-master {{
-      background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-      color: #064e3b;
-      border-color: #34d399;
-    }}
-
-    /* Nordic Frost Category Item Overrides */
-    #fk-deals-sidebar[data-theme="nordic"] .fkd-cat-item.fkd-group-head {{
-      background: #e0f2fe;
-      color: #0369a1;
-    }}
-    #fk-deals-sidebar[data-theme="nordic"] .fkd-cat-item.fkd-sub {{
-      color: #0284c7;
-    }}
-    #fk-deals-sidebar[data-theme="nordic"] .fkd-cat-item.fkd-master {{
-      background: linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%);
-      color: #0369a1;
-      border-color: #38bdf8;
-    }}
-
-    /* Core Layout & Elements */
     #fk-deals-sidebar {{
       position: fixed;
       top: 0;
@@ -600,203 +248,107 @@ def build_bookmarklet():
       width: 400px;
       max-width: 100vw;
       height: 100vh;
-      background: var(--fkd-sidebar-bg);
+      background: var(--fkd-bg);
       z-index: 2147483647;
-      font-family: var(--fkd-font-family);
       display: flex;
       flex-direction: column;
-      border: none;
-      box-shadow: -10px 0 35px rgba(0,0,0,0.18);
+      border-left: 1px solid var(--fkd-border);
+      box-shadow: -6px 0 24px rgba(0, 0, 0, 0.08);
       color: var(--fkd-text-main);
-      transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }}
     #fk-deals-sidebar.collapsed {{
       transform: translateX(105%);
       pointer-events: none;
     }}
+
     #fk-deals-pill {{
       position: fixed;
       bottom: 24px;
-      right: 18px;
+      right: 20px;
       z-index: 2147483647;
-      background: var(--fkd-float-bg);
-      color: var(--fkd-float-color);
-      padding: 10px 18px;
-      border-radius: var(--fkd-float-radius);
-      font-family: var(--fkd-font-family);
-      font-size: 13px;
-      font-weight: 700;
+      background: var(--fkd-dark);
+      color: #FFFFFF;
+      padding: 9px 15px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
       cursor: pointer;
-      box-shadow: var(--fkd-float-shadow);
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
       display: flex;
       align-items: center;
       gap: 8px;
-      border: none;
-      transition: transform 0.2s ease, background 0.15s ease;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      transition: transform 0.18s ease, background 0.15s ease;
     }}
     #fk-deals-pill:hover {{
-      transform: scale(1.05);
+      transform: translateY(-2px);
+      background: #000000;
     }}
     #fk-deals-pill.hidden {{
       display: none;
     }}
+
     .fkd-badge {{
-      background: var(--fkd-badge-bg);
-      color: var(--fkd-badge-color);
+      background: #F0F0F0;
+      color: var(--fkd-text-sub);
       font-size: 11px;
-      font-weight: 800;
-      padding: 2px 8px;
-      border-radius: var(--fkd-pill-radius);
-      font-family: var(--fkd-disc-font);
+      font-weight: 500;
+      padding: 2px 7px;
+      border-radius: 9999px;
+      letter-spacing: -0.01em;
     }}
+    #fk-deals-pill .fkd-badge {{
+      background: var(--fkd-accent);
+      color: #FFFFFF;
+    }}
+
     .fkd-header {{
       background: var(--fkd-header-bg);
-      color: var(--fkd-header-text);
-      padding: 14px 14px 12px 14px;
+      border-bottom: 1px solid var(--fkd-border);
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 9px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
-      position: relative;
+      gap: 10px;
     }}
+
     .fkd-top-row {{
       display: flex;
       justify-content: space-between;
       align-items: center;
     }}
     .fkd-title {{
-      font-size: 15px;
-      font-weight: 800;
+      font-size: 13px;
+      font-weight: 600;
       display: flex;
       align-items: center;
-      gap: 6px;
-      letter-spacing: -0.2px;
-      font-family: var(--fkd-title-font);
+      gap: 8px;
+      color: var(--fkd-text-main);
+      letter-spacing: -0.01em;
     }}
     .fkd-controls {{
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 4px;
     }}
     .fkd-icon-btn {{
-      background: rgba(255,255,255,0.2);
+      background: transparent;
       border: none;
-      color: #ffffff;
-      width: 28px;
-      height: 28px;
-      border-radius: var(--fkd-pill-radius);
+      color: var(--fkd-text-sub);
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
-      font-weight: bold;
-      transition: background 0.15s ease, transform 0.1s ease;
+      font-size: 13px;
+      font-weight: 600;
+      transition: background 0.12s ease, color 0.12s ease;
     }}
     .fkd-icon-btn:hover {{
-      background: rgba(255,255,255,0.35);
-      transform: scale(1.05);
-    }}
-
-    /* Theme Picker Drawer */
-    .fkd-theme-drawer {{
-      position: absolute;
-      top: 48px;
-      right: 14px;
-      width: 280px;
-      background: var(--fkd-drawer-bg);
-      border: var(--fkd-drawer-border);
-      border-radius: var(--fkd-drawer-radius);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.12);
-      z-index: 60;
-      padding: 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+      background: #F0F0F0;
       color: var(--fkd-text-main);
-    }}
-    .fkd-theme-drawer.hidden {{
-      display: none;
-    }}
-    .fkd-theme-header-label {{
-      font-size: 10px;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.6px;
-      color: var(--fkd-text-muted);
-      padding: 3px 6px;
-      border-bottom: 1px solid rgba(125,125,125,0.2);
-      margin-bottom: 2px;
-    }}
-    .fkd-theme-list {{
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }}
-    .fkd-theme-item {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 8px;
-      border-radius: calc(var(--fkd-drawer-radius) * 0.7);
-      cursor: pointer;
-      transition: background 0.15s ease;
-      user-select: none;
-      border: 1px solid transparent;
-    }}
-    .fkd-theme-item:hover {{
-      background: var(--fkd-drawer-item-hover);
-    }}
-    .fkd-theme-item.active {{
-      background: var(--fkd-drawer-item-active-bg);
-      color: var(--fkd-drawer-item-active-color);
-      border-color: rgba(125,125,125,0.25);
-      font-weight: 700;
-    }}
-    .fkd-theme-swatches {{
-      display: flex;
-      gap: 3px;
-      align-items: center;
-      flex-shrink: 0;
-    }}
-    .fkd-theme-swatch {{
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      border: 1px solid rgba(0,0,0,0.15);
-      display: inline-block;
-    }}
-    .fkd-theme-meta {{
-      flex: 1;
-      min-width: 0;
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-    }}
-    .fkd-theme-name {{
-      font-size: 11.5px;
-      font-weight: 700;
-      color: var(--fkd-text-main);
-      display: flex;
-      align-items: center;
-      gap: 4px;
-    }}
-    .fkd-theme-desc {{
-      font-size: 9.5px;
-      color: var(--fkd-text-muted);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      line-height: 1.2;
-    }}
-    .fkd-theme-check {{
-      font-size: 12px;
-      font-weight: 900;
-      color: #10b981;
-      opacity: 0;
-    }}
-    .fkd-theme-item.active .fkd-theme-check {{
-      opacity: 1;
     }}
 
     .fkd-search-row {{
@@ -805,46 +357,69 @@ def build_bookmarklet():
       align-items: center;
     }}
     .fkd-input {{
-      background: var(--fkd-input-bg);
-      color: var(--fkd-input-color);
-      border: var(--fkd-input-border);
-      border-radius: var(--fkd-input-radius);
+      background: #FFFFFF;
+      color: var(--fkd-text-main);
+      border: 1px solid #D9D9D9;
+      border-radius: 6px;
       padding: 7px 10px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 400;
+      font-family: inherit;
       outline: none;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: box-shadow 0.15s ease;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    }}
+    .fkd-input::placeholder {{
+      color: var(--fkd-text-muted);
     }}
     .fkd-input:focus {{
-      box-shadow: 0 0 0 2px rgba(255,255,255,0.8), 0 1px 4px rgba(0,0,0,0.2);
+      border-color: var(--fkd-accent);
+      box-shadow: 0 0 0 2px rgba(13, 153, 255, 0.16);
     }}
+
+    .fkd-btn-search {{
+      background: var(--fkd-accent);
+      color: #FFFFFF;
+      border: 1px solid var(--fkd-accent);
+      border-radius: 6px;
+      padding: 0 12px;
+      height: 31px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.12s ease;
+      flex: none;
+    }}
+    .fkd-btn-search:hover {{
+      background: var(--fkd-accent-hover);
+    }}
+
     .fkd-row-2 {{
       position: relative;
       width: 100%;
     }}
     .fkd-cat-toggle {{
       width: 100%;
-      background: var(--fkd-input-bg);
-      color: var(--fkd-input-color);
-      border: var(--fkd-input-border);
-      border-radius: var(--fkd-input-radius);
-      padding: 7px 12px;
+      background: #FFFFFF;
+      color: var(--fkd-text-main);
+      border: 1px solid #D9D9D9;
+      border-radius: 6px;
+      padding: 7px 10px;
       font-size: 12px;
-      font-weight: 700;
+      font-weight: 500;
+      font-family: inherit;
       text-align: left;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 6px;
-      overflow: hidden;
+      gap: 8px;
       outline: none;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: background 0.15s ease, box-shadow 0.15s ease;
+      transition: border-color 0.15s ease, background 0.15s ease;
     }}
     .fkd-cat-toggle:hover {{
-      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+      border-color: #BDBDBD;
+      background: #FAFAFA;
     }}
     .fkd-cat-toggle-text {{
       white-space: nowrap;
@@ -853,78 +428,166 @@ def build_bookmarklet():
       flex: 1;
     }}
     .fkd-caret {{
-      font-size: 10px;
-      color: var(--fkd-text-muted);
-      transition: transform 0.2s ease;
+      font-size: 11px;
+      color: var(--fkd-text-sub);
+      transition: transform 0.15s ease;
     }}
+
     .fkd-cat-drawer {{
       position: absolute;
       top: calc(100% + 4px);
       left: 0;
       right: 0;
-      background: var(--fkd-drawer-bg);
-      border-radius: var(--fkd-drawer-radius);
-      border: var(--fkd-drawer-border);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25), 0 2px 8px rgba(0,0,0,0.08);
-      max-height: 360px;
+      background: #FFFFFF;
+      border-radius: 8px;
+      border: 1px solid #D9D9D9;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+      max-height: 380px;
       overflow-y: auto;
       z-index: 50;
       padding: 6px;
       display: flex;
       flex-direction: column;
       gap: 2px;
-      color: var(--fkd-text-main);
     }}
     .fkd-cat-drawer.hidden {{
       display: none;
     }}
-    .fkd-cat-item {{
-      padding: 7px 10px;
-      border-radius: calc(var(--fkd-drawer-radius) * 0.6);
-      font-size: 11.5px;
+
+    /* Figma Tree View Elements */
+    .fkd-tree-master {{
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
       color: var(--fkd-text-main);
+      background: #F5F5F5;
       cursor: pointer;
+      margin-bottom: 4px;
+      border: 1px solid var(--fkd-border-light);
+      transition: background 0.12s ease;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      transition: background 0.15s ease, color 0.15s ease;
+      gap: 6px;
     }}
-    .fkd-cat-item:hover {{
-      background: var(--fkd-drawer-item-hover);
+    .fkd-tree-master:hover {{
+      background: #EBEBEB;
     }}
-    .fkd-cat-item.active {{
-      background: var(--fkd-drawer-item-active-bg);
-      color: var(--fkd-drawer-item-active-color);
-      font-weight: 800;
+    .fkd-tree-master.active {{
+      background: #E8F4FD;
+      color: var(--fkd-accent);
+      border-color: #BAE6FD;
     }}
-    .fkd-cat-item.fkd-master {{
-      background: linear-gradient(135deg, #fef08a 0%, #fde047 100%);
-      color: #0f172a;
-      font-weight: 800;
+
+    .fkd-tree-group {{
+      display: flex;
+      flex-direction: column;
+    }}
+    .fkd-group-row {{
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      padding: 5px 6px;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s ease;
+    }}
+    .fkd-group-row:hover {{
+      background: #F5F5F5;
+    }}
+    .fkd-group-row.active {{
+      background: #E8F4FD;
+    }}
+
+    .fkd-tree-chevron {{
+      width: 20px;
+      height: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: none;
+      background: transparent;
+      color: var(--fkd-text-sub);
+      font-size: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background 0.12s ease, transform 0.15s ease;
+      flex: none;
+      padding: 0;
+    }}
+    .fkd-tree-chevron:hover {{
+      background: #EBEBEB;
+      color: var(--fkd-text-main);
+    }}
+    .fkd-tree-chevron.hidden {{
+      visibility: hidden;
+    }}
+
+    .fkd-group-title {{
+      flex: 1;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--fkd-text-main);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }}
+
+    .fkd-group-all-btn {{
+      background: #F0F0F0;
+      border: none;
+      border-radius: 4px;
+      padding: 2px 7px;
+      font-size: 10.5px;
+      font-weight: 500;
+      color: var(--fkd-text-sub);
+      cursor: pointer;
+      flex: none;
+      transition: background 0.12s ease, color 0.12s ease;
+    }}
+    .fkd-group-all-btn:hover {{
+      background: var(--fkd-accent);
+      color: #FFFFFF;
+    }}
+
+    .fkd-sub-container {{
+      margin-left: 14px;
+      padding-left: 8px;
+      border-left: 1.5px solid var(--fkd-border-light);
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      margin-top: 2px;
       margin-bottom: 4px;
-      border: 1px solid #facc15;
     }}
-    .fkd-cat-item.fkd-master:hover {{
-      background: #facc15;
-      color: #000000;
+    .fkd-sub-container.collapsed {{
+      display: none;
     }}
-    .fkd-cat-item.fkd-group-head {{
-      font-weight: 700;
-      background: #f1f5f9;
-      color: #0f172a;
-      margin-top: 3px;
+
+    .fkd-sub-item {{
+      padding: 5px 8px;
+      font-size: 11.5px;
+      font-weight: 400;
+      color: #374151;
+      border-radius: 4px;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: background 0.12s ease, color 0.12s ease;
     }}
-    .fkd-cat-item.fkd-sub {{
-      padding-left: 20px;
-      font-size: 11px;
-      color: var(--fkd-text-muted);
+    .fkd-sub-item:hover {{
+      background: #F0F0F0;
+      color: var(--fkd-text-main);
     }}
-    .fkd-cat-item.fkd-optin {{
-      color: var(--fkd-text-muted);
-      font-style: italic;
+    .fkd-sub-item.active {{
+      background: #E8F4FD;
+      color: var(--fkd-accent);
+      font-weight: 600;
     }}
-    /* Toolbar: Equal-Sized Pills */
+
+    /* Toolbar Segmented Controls */
     .fkd-toolbar {{
       display: flex;
       gap: 6px;
@@ -934,72 +597,76 @@ def build_bookmarklet():
     .fkd-pill {{
       flex: 1 1 0;
       min-width: 0;
-      height: 30px;
+      height: 29px;
       padding: 0 4px;
-      border-radius: var(--fkd-pill-radius);
-      background: var(--fkd-pill-bg);
-      color: var(--fkd-pill-color);
-      border: var(--fkd-pill-border);
+      border-radius: 6px;
+      background: #FFFFFF;
+      color: var(--fkd-text-main);
+      border: 1px solid #D9D9D9;
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 500;
+      font-family: inherit;
       cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
       white-space: nowrap;
-      transition: all 0.15s ease;
+      transition: all 0.12s ease;
       user-select: none;
-      box-sizing: border-box;
       outline: none;
     }}
     .fkd-pill:hover {{
-      background: rgba(255, 255, 255, 0.28);
+      background: #F5F5F5;
+      border-color: #BDBDBD;
     }}
     .fkd-pill.active {{
-      background: var(--fkd-pill-active-bg);
-      color: var(--fkd-pill-active-color);
-      border-color: var(--fkd-pill-active-bg);
-      box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+      background: var(--fkd-dark);
+      color: #FFFFFF;
+      border-color: var(--fkd-dark);
+      font-weight: 600;
     }}
+
     .fkd-pill-action {{
-      background: var(--fkd-action-bg) !important;
-      color: var(--fkd-action-color) !important;
-      border-color: var(--fkd-action-bg) !important;
-      font-weight: 800;
+      background: var(--fkd-accent) !important;
+      color: #FFFFFF !important;
+      border-color: var(--fkd-accent) !important;
+      font-weight: 600;
     }}
     .fkd-pill-action:hover {{
-      background: var(--fkd-action-hover) !important;
+      background: var(--fkd-accent-hover) !important;
     }}
+
     .fkd-pill-danger {{
-      background: #ef4444 !important;
-      color: #ffffff !important;
-      border-color: #ef4444 !important;
-      font-weight: 800;
+      background: var(--fkd-danger) !important;
+      color: #FFFFFF !important;
+      border-color: var(--fkd-danger) !important;
+      font-weight: 600;
     }}
+
     .fkd-status-bar {{
       display: flex;
       align-items: center;
       gap: 6px;
-      padding-top: 2px;
-      min-height: 16px;
+      min-height: 15px;
     }}
     .fkd-status-dot {{
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--fkd-status-dot);
+      background: var(--fkd-accent);
       flex-shrink: 0;
     }}
     .fkd-status-text {{
       font-size: 11px;
-      color: var(--fkd-status-color);
+      color: var(--fkd-text-sub);
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
       flex: 1;
-      font-weight: 500;
-      font-family: var(--fkd-disc-font);
+      font-weight: 400;
     }}
+
+    /* Product Grid & Cards */
     .fkd-grid {{
       flex: 1;
       overflow-y: auto;
@@ -1008,39 +675,41 @@ def build_bookmarklet():
       grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       align-content: start;
+      background: var(--fkd-bg);
     }}
+
     .fkd-card {{
       background: var(--fkd-card-bg);
-      border: var(--fkd-card-border);
-      border-radius: var(--fkd-card-radius);
-      box-shadow: var(--fkd-card-shadow);
-      backdrop-filter: var(--fkd-card-backdrop);
-      -webkit-backdrop-filter: var(--fkd-card-backdrop);
+      border: 1px solid var(--fkd-card-border);
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
       padding: 8px;
       display: flex;
       flex-direction: column;
       cursor: pointer;
       position: relative;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     }}
     .fkd-card:hover {{
       transform: translateY(-2px);
-      box-shadow: var(--fkd-card-hover-shadow);
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+      border-color: var(--fkd-card-hover);
     }}
     .fkd-card.oos {{
-      opacity: 0.62;
+      opacity: 0.6;
       filter: grayscale(0.2);
     }}
+
     .fkd-img-box {{
       position: relative;
       width: 100%;
-      height: 110px;
+      height: 112px;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-bottom: 6px;
-      background: var(--fkd-img-bg);
-      border-radius: var(--fkd-img-radius);
+      margin-bottom: 7px;
+      background: #FFFFFF;
+      border-radius: 6px;
       overflow: hidden;
     }}
     .fkd-img {{
@@ -1048,46 +717,66 @@ def build_bookmarklet():
       max-height: 100%;
       object-fit: contain;
     }}
+
+    /* Stacked Larger Discount Tag (User Requested: 70% above OFF) */
     .fkd-disc-tag {{
       position: absolute;
-      top: 4px;
-      left: 4px;
-      background: var(--fkd-disc-bg);
-      color: var(--fkd-disc-color);
-      font-size: 10px;
-      font-weight: 800;
-      padding: 2px 6px;
-      border-radius: var(--fkd-disc-radius);
-      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
-      font-family: var(--fkd-disc-font);
+      top: 5px;
+      left: 5px;
+      background: var(--fkd-dark);
+      color: #FFFFFF;
+      padding: 3px 6px;
+      border-radius: 5px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      line-height: 1.05;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+      pointer-events: none;
+      z-index: 2;
     }}
+    .fkd-disc-pct {{
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+    }}
+    .fkd-disc-off {{
+      font-size: 8px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      opacity: 0.9;
+    }}
+
     .fkd-oos-tag {{
       position: absolute;
       bottom: 4px;
       left: 4px;
       right: 4px;
-      background: rgba(220, 38, 38, 0.92);
-      color: #ffffff;
+      background: rgba(242, 72, 34, 0.92);
+      color: #FFFFFF;
       font-size: 9px;
-      font-weight: 800;
+      font-weight: 700;
       text-align: center;
       padding: 2px 0;
-      border-radius: var(--fkd-disc-radius);
+      border-radius: 4px;
       letter-spacing: 0.3px;
     }}
+
     .fkd-card-title {{
-      font-size: 11px;
-      font-weight: 600;
+      font-size: 11.5px;
+      font-weight: 500;
       color: var(--fkd-text-main);
       line-height: 1.35;
       margin-bottom: 6px;
-      height: 29px;
+      height: 31px;
       overflow: hidden;
       display: -webkit-box;
       -webkit-line-clamp: 2;
       -webkit-box-orient: vertical;
-      font-family: var(--fkd-title-font);
     }}
+
     .fkd-price-row {{
       margin-top: auto;
       display: flex;
@@ -1096,22 +785,23 @@ def build_bookmarklet():
     }}
     .fkd-price {{
       font-size: 14px;
-      font-weight: 800;
-      color: var(--fkd-price-color);
-      font-family: var(--fkd-price-font);
+      font-weight: 700;
+      color: var(--fkd-text-main);
+      letter-spacing: -0.01em;
     }}
     .fkd-mrp {{
       font-size: 11px;
-      color: var(--fkd-mrp-color);
+      color: var(--fkd-text-muted);
       text-decoration: line-through;
-      font-weight: 500;
+      font-weight: 400;
     }}
+
     .fkd-empty {{
       grid-column: 1 / -1;
       text-align: center;
       padding: 40px 15px;
-      color: var(--fkd-text-muted);
-      font-size: 13px;
+      color: var(--fkd-text-sub);
+      font-size: 12.5px;
       line-height: 1.6;
     }}
   `;
@@ -1120,7 +810,6 @@ def build_bookmarklet():
   /* Minimized Floating Pill */
   var pill = d.createElement("div");
   pill.id = "fk-deals-pill";
-  pill.setAttribute("data-theme", currentTheme);
   pill.className = "hidden";
   pill.innerHTML = `<span>⚡ Minutes Deals</span><span class="fkd-badge" id="fkd-pill-count">0</span>`;
   d.body.appendChild(pill);
@@ -1128,7 +817,6 @@ def build_bookmarklet():
   /* Sidebar UI */
   var sb = d.createElement("div");
   sb.id = "fk-deals-sidebar";
-  sb.setAttribute("data-theme", currentTheme);
   sb.innerHTML = `
     <div class="fkd-header">
       <div class="fkd-top-row">
@@ -1137,22 +825,17 @@ def build_bookmarklet():
           <span class="fkd-badge" id="fkd-head-count">0 Items</span>
         </div>
         <div class="fkd-controls">
-          <button class="fkd-icon-btn" id="fkd-btn-theme" type="button" title="Switch Theme (Slate, Warm Earth, Nordic, Charcoal, Botanical)">🎨</button>
-          <button class="fkd-icon-btn" id="fkd-btn-min" type="button" title="Minimize / Collapse">_</button>
+          <button class="fkd-icon-btn" id="fkd-btn-min" type="button" title="Minimize / Collapse">—</button>
           <button class="fkd-icon-btn" id="fkd-btn-close" type="button" title="Close">✕</button>
         </div>
       </div>
-      <div id="fkd-theme-drawer" class="fkd-theme-drawer hidden">
-        <div class="fkd-theme-header-label">Switch Theme</div>
-        <div id="fkd-theme-list" class="fkd-theme-list"></div>
-      </div>
       <div class="fkd-search-row">
         <input type="text" class="fkd-input" id="fkd-input-search" placeholder="🔍 Search e.g. cake, ghee, surf..." style="flex:1" title="Type keyword and press Enter or click Search">
-        <button class="fkd-pill fkd-pill-action" id="fkd-btn-search" style="flex:none;width:68px">Search</button>
+        <button class="fkd-btn-search" id="fkd-btn-search">Search</button>
       </div>
       <div class="fkd-row-2">
         <button class="fkd-cat-toggle" id="fkd-cat-toggle" type="button" title="Browse & select Flipkart Minutes categories">
-          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">${{DRAWER_ITEMS[initialIdx].name}}</span>
+          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">${{initialCategory.name}}</span>
           <span class="fkd-caret" id="fkd-cat-caret">▾</span>
         </button>
         <div id="fkd-cat-drawer" class="fkd-cat-drawer hidden"></div>
@@ -1190,7 +873,6 @@ def build_bookmarklet():
   function toggleCatDrawer() {{
     if (!catDrawer) return;
     if (catDrawer.classList.contains("hidden")) {{
-      closeThemeDrawer();
       catDrawer.classList.remove("hidden");
       if (catCaret) catCaret.textContent = "▴";
     }} else {{
@@ -1203,124 +885,124 @@ def build_bookmarklet():
     toggleCatDrawer();
   }};
 
-  /* Render Drawer Items */
-  DRAWER_ITEMS.forEach(function(item, idx){{
-    var itemEl = d.createElement("div");
-    var cls = "fkd-cat-item";
-    if (idx === initialIdx) cls += " active";
-    if (item.isMaster) cls += " fkd-master";
-    else if (item.isGroup) cls += " fkd-group-head";
-    else if (item.isSub) cls += " fkd-sub";
-    if (item.isOptin) cls += " fkd-optin";
-    itemEl.className = cls;
-    itemEl.textContent = item.name;
+  function selectCategory(item, label) {{
+    st.selectedItem = item;
+    st.selectedLabel = label;
+    catNameDisplay.textContent = label;
+    if (inputSearch) inputSearch.value = "";
+    st.searchQuery = "";
 
-    itemEl.onclick = function(e) {{
-      e.stopPropagation();
-      d.querySelectorAll(".fkd-cat-item").forEach(function(el){{ el.classList.remove("active"); }});
-      itemEl.classList.add("active");
-      st.selectedIdx = idx;
-      st.selectedItem = item;
-      catNameDisplay.textContent = item.name.trim();
-      if (inputSearch) inputSearch.value = "";
-      st.searchQuery = "";
+    /* Default to sort by discount */
+    st.sort = "discount";
+    btnSortDisc.classList.add("active");
+    btnSortPrice.classList.remove("active");
 
-      /* User Requirement: Default option should be sort by discount */
-      st.sort = "discount";
-      btnSortDisc.classList.add("active");
-      btnSortPrice.classList.remove("active");
-
-      closeCatDrawer();
-      setStatus("Selected: " + item.name.trim());
-    }};
-    catDrawer.appendChild(itemEl);
-  }});
-
-  /* Theme Switcher Logic */
-  var btnTheme = d.getElementById("fkd-btn-theme");
-  var themeDrawer = d.getElementById("fkd-theme-drawer");
-  var themeList = d.getElementById("fkd-theme-list");
-
-  function closeThemeDrawer() {{
-    if (themeDrawer && !themeDrawer.classList.contains("hidden")) {{
-      themeDrawer.classList.add("hidden");
-    }}
+    closeCatDrawer();
+    setStatus("Selected: " + label);
   }}
 
-  function toggleThemeDrawer() {{
-    if (!themeDrawer) return;
-    if (themeDrawer.classList.contains("hidden")) {{
-      closeCatDrawer();
-      themeDrawer.classList.remove("hidden");
-    }} else {{
-      closeThemeDrawer();
-    }}
-  }}
-
-  if (btnTheme) {{
-    btnTheme.onclick = function(e) {{
-      e.stopPropagation();
-      toggleThemeDrawer();
-    }};
-  }}
-
-  function applyTheme(themeId) {{
-    currentTheme = themeId;
-    try {{
-      localStorage.setItem("fk_deals_theme", themeId);
-    }} catch(e) {{}}
-
-    if (sb) sb.setAttribute("data-theme", themeId);
-    if (pill) pill.setAttribute("data-theme", themeId);
-
-    if (themeList) {{
-      var items = themeList.querySelectorAll(".fkd-theme-item");
-      items.forEach(function(el) {{
-        if (el.getAttribute("data-theme-id") === themeId) {{
-          el.classList.add("active");
-        }} else {{
-          el.classList.remove("active");
-        }}
-      }});
-    }}
-  }}
-
-  if (themeList) {{
-    THEMES.forEach(function(thm) {{
-      var itemEl = d.createElement("div");
-      itemEl.className = "fkd-theme-item" + (thm.id === currentTheme ? " active" : "");
-      itemEl.setAttribute("data-theme-id", thm.id);
-
-      var swatchesHtml = thm.swatches.map(function(c) {{
-        return '<span class="fkd-theme-swatch" style="background:' + c + '"></span>';
-      }}).join("");
-
-      itemEl.innerHTML = 
-        '<div class="fkd-theme-swatches">' + swatchesHtml + '</div>' +
-        '<div class="fkd-theme-meta">' +
-          '<div class="fkd-theme-name"><span>' + thm.icon + '</span><span>' + thm.name + '</span></div>' +
-          '<div class="fkd-theme-desc">' + thm.desc + '</div>' +
-        '</div>' +
-        '<span class="fkd-theme-check">✓</span>';
-
-      itemEl.onclick = function(e) {{
+  /* Render Figma Collapsible Category Tree */
+  CATEGORY_TREE.forEach(function(item) {{
+    if (item.isMaster) {{
+      var masterEl = d.createElement("div");
+      masterEl.className = "fkd-tree-master active";
+      masterEl.innerHTML = `<span>🔥</span><span>Scan All Categories (Top Deals)</span>`;
+      masterEl.onclick = function(e) {{
         e.stopPropagation();
-        applyTheme(thm.id);
-        closeThemeDrawer();
-        setStatus("Theme applied: " + thm.name);
+        d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){{ el.classList.remove("active"); }});
+        masterEl.classList.add("active");
+        selectCategory(item, item.name);
       }};
+      catDrawer.appendChild(masterEl);
+      return;
+    }}
 
-      themeList.appendChild(itemEl);
-    }});
-  }}
+    var groupWrapper = d.createElement("div");
+    groupWrapper.className = "fkd-tree-group";
+
+    var headerRow = d.createElement("div");
+    headerRow.className = "fkd-group-row";
+
+    var hasSubs = item.subs && item.subs.length > 0;
+
+    var chevron = d.createElement("button");
+    chevron.type = "button";
+    chevron.className = "fkd-tree-chevron" + (hasSubs ? "" : " hidden");
+    chevron.innerHTML = "▸";
+    chevron.title = "Expand subcategories";
+
+    var titleSpan = d.createElement("div");
+    titleSpan.className = "fkd-group-title";
+    titleSpan.textContent = item.name;
+
+    var allBtn = d.createElement("button");
+    allBtn.type = "button";
+    allBtn.className = "fkd-group-all-btn";
+    allBtn.textContent = "All";
+    allBtn.title = "Select " + (item.allLabel || item.name);
+
+    headerRow.appendChild(chevron);
+    headerRow.appendChild(titleSpan);
+    headerRow.appendChild(allBtn);
+    groupWrapper.appendChild(headerRow);
+
+    var subContainer = d.createElement("div");
+    subContainer.className = "fkd-sub-container collapsed";
+
+    if (hasSubs) {{
+      item.subs.forEach(function(sub) {{
+        var subEl = d.createElement("div");
+        subEl.className = "fkd-sub-item";
+        subEl.textContent = sub.name;
+        subEl.title = sub.name;
+        subEl.onclick = function(e) {{
+          e.stopPropagation();
+          d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){{ el.classList.remove("active"); }});
+          subEl.classList.add("active");
+          headerRow.classList.add("active");
+          selectCategory(sub, item.name + " › " + sub.name);
+        }};
+        subContainer.appendChild(subEl);
+      }});
+
+      function toggleGroup(e) {{
+        e.stopPropagation();
+        var isCol = subContainer.classList.contains("collapsed");
+        if (isCol) {{
+          subContainer.classList.remove("collapsed");
+          chevron.innerHTML = "▾";
+        }} else {{
+          subContainer.classList.add("collapsed");
+          chevron.innerHTML = "▸";
+        }}
+      }}
+
+      chevron.onclick = toggleGroup;
+      titleSpan.onclick = toggleGroup;
+    }} else {{
+      titleSpan.onclick = function(e) {{
+        e.stopPropagation();
+        d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){{ el.classList.remove("active"); }});
+        headerRow.classList.add("active");
+        selectCategory(item, item.name);
+      }};
+    }}
+
+    allBtn.onclick = function(e) {{
+      e.stopPropagation();
+      d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){{ el.classList.remove("active"); }});
+      headerRow.classList.add("active");
+      selectCategory(item, item.name + " (All)");
+    }};
+
+    groupWrapper.appendChild(subContainer);
+    catDrawer.appendChild(groupWrapper);
+  }});
 
   /* Close drawer when clicking outside inside sidebar */
   sb.addEventListener("click", function(e){{
     if (catDrawer && !catDrawer.contains(e.target) && !catToggle.contains(e.target)) {{
       closeCatDrawer();
-    }}
-    if (themeDrawer && !themeDrawer.contains(e.target) && (!btnTheme || !btnTheme.contains(e.target))) {{
-      closeThemeDrawer();
     }}
   }});
 
@@ -1359,7 +1041,7 @@ def build_bookmarklet():
     btnFetch.className = "fkd-pill fkd-pill-action";
     if (btnSearch) {{
       btnSearch.textContent = "Search";
-      btnSearch.className = "fkd-pill fkd-pill-action";
+      btnSearch.className = "fkd-btn-search";
     }}
   }}
 
@@ -1466,7 +1148,12 @@ def build_bookmarklet():
       card.innerHTML = `
         <div class="fkd-img-box">
           <img src="${{safeImg}}" class="fkd-img" loading="lazy" onerror="this.src='https://rukminim1.flixcart.com/flap/200/200/image/placeholder.png'">
-          ${{it.d > 0 ? `<div class="fkd-disc-tag">${{it.d}}% OFF</div>` : ''}}
+          ${{it.d > 0 ? `
+            <div class="fkd-disc-tag">
+              <span class="fkd-disc-pct">${{it.d}}%</span>
+              <span class="fkd-disc-off">OFF</span>
+            </div>
+          ` : ''}}
           ${{it.oos ? `<div class="fkd-oos-tag">OUT OF STOCK</div>` : ''}}
         </div>
         <div class="fkd-card-title" title="${{safeTitle}}">${{safeTitle}}</div>
@@ -2058,7 +1745,7 @@ def build_bookmarklet():
     return {{ count: 0 }};
   }}
 
-  /* Search Flipkart Minutes via Rome API */
+  /* Search Flipkart Minutes via unified fetcher */
   async function startSearch(query) {{
     if (!query || !query.trim()) {{
       setStatus("Enter search keyword");
@@ -2070,7 +1757,9 @@ def build_bookmarklet():
     st.mode = "RUN";
     if (btnSearch) {{
       btnSearch.textContent = "Stop ⏹";
-      btnSearch.className = "fkd-pill fkd-pill-danger";
+      btnSearch.className = "fkd-btn-search";
+      btnSearch.style.background = "#F24822";
+      btnSearch.style.borderColor = "#F24822";
     }}
 
     st.items = [];
@@ -2158,7 +1847,8 @@ def build_bookmarklet():
       return;
     }}
 
-    setStatus(`Fetching ${{item.name.trim()}}...`);
+    var label = st.selectedLabel || item.name || "Category";
+    setStatus(`Fetching ${{label.trim()}}...`);
     var p1Uri = targetUri;
     if (!p1Uri.includes("sort=discount")) {{
       p1Uri += (p1Uri.includes("?") ? "&" : "?") + "sort=discount";
@@ -2170,7 +1860,7 @@ def build_bookmarklet():
     var pageNum = 2;
     while (st.mode === "RUN" && !window.fkDealsStop && pageNum <= 3) {{
       if (res1 && res1.count < 6) break;
-      setStatus(`Fetching ${{item.name.trim()}} Page ${{pageNum}}...`);
+      setStatus(`Fetching ${{label.trim()}} Page ${{pageNum}}...`);
       var pUri = targetUri + (targetUri.includes("?") ? "&" : "?") + "page=" + pageNum + "&sort=discount";
       var pRes = await fetchAndParsePage(pUri);
       renderGrid();
@@ -2185,7 +1875,6 @@ def build_bookmarklet():
   }}
 
   /* Initialize */
-  applyTheme(currentTheme);
   setStatus("Ready - Click Fetch ⚡ or select category");
 }})();
 """
@@ -2197,13 +1886,9 @@ def build_bookmarklet():
     print(f"Size of FKMinutes_Readable.js: {len(template)} characters")
 
     # Minify for compact bookmarklet
-    # Clean whitespace and comments
-    compact_code = template
-    # encode for bookmarklet URL
-    # Replace newlines
     compact_lines = [line.strip() for line in template.split("\n") if line.strip() and not line.strip().startswith("//")]
     minified_js = " ".join(compact_lines)
-    
+
     with open("FKMinutes_Compact.txt", "w", encoding="utf-8") as f:
         f.write(minified_js)
     print(f"Size of FKMinutes_Compact.txt: {len(minified_js)} characters")
