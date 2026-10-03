@@ -609,64 +609,59 @@ javascript:(function(){
   ];
   var EXCLUDED_BRANDS = [
   "100percent",
-  "Artistique",
-  "CEDO XPRO",
-  "CraftVatika",
-  "D1769",
-  "Designer Rakhi",
-  "Flipkart Supemart",
-  "Flipkart Supermart Home Essentials",
-  "Flipkart Supermart Kitchen Essentials",
-  "House of Festivals",
-  "KWINE CASE",
-  "KYASO",
-  "Mad Over Print",
-  "Oye Happy",
-  "Parv Craft",
-  "Picfest",
-  "QUACE",
-  "Quickoo",
-  "Religious Ganesha Rakhi",
-  "Rudraksh",
-  "Spigen",
-  "TIED RIBBONS",
-  "TOMUNCLE",
-  "Unbranded",
   "abt",
   "adofys",
   "aircase",
   "amazer",
   "amzer",
   "annprash",
+  "artistique",
   "casotec",
   "cease",
+  "cedo xpro",
   "cover alive",
+  "craftvatika",
   "d1769",
   "designer rakhi",
   "doubleshot",
   "drools",
-  "eCraftIndia",
+  "ecraftindia",
+  "flipkart supemart",
+  "flipkart supermart home essentials",
+  "flipkart supermart kitchen essentials",
   "golden tree collection",
+  "house of festivals",
   "hritika",
   "hyper mob",
   "kartik crafts",
   "kavish",
+  "kwine case",
+  "kyaso",
+  "mad over print",
   "maru",
   "me-o",
   "mixtron",
   "mudrika",
   "mumbai creations",
+  "oye happy",
   "paper plane design",
   "parasnath",
   "parth",
+  "parv craft",
   "pedigree",
+  "picfest",
   "purepet",
+  "quace",
+  "quickoo",
   "religious ganesha rakhi",
   "royal canin",
   "rudraksh",
   "shine craft",
+  "spigen",
   "sunshine sale",
   "tied ribbons",
+  "tomuncle",
+  "unbranded",
   "vanya",
   "whiskas"
 ];
@@ -717,6 +712,17 @@ javascript:(function(){
       }
     } catch(e) {}
     return "";
+  }
+
+  /* Safe HTML escaping helper to prevent XSS injection from product titles & images */
+  function escapeHtml(s) {
+    if (s == null) return "";
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }
 
   /* Inject Sidebar Styles */
@@ -1394,13 +1400,15 @@ javascript:(function(){
     filtered.forEach(function(it){
       var card = d.createElement("div");
       card.className = "fkd-card" + (it.oos ? " oos" : "");
+      var safeTitle = escapeHtml(it.t);
+      var safeImg = escapeHtml(it.i);
       card.innerHTML = `
         <div class="fkd-img-box">
-          <img src="${it.i}" class="fkd-img" loading="lazy" onerror="this.src='https://rukminim1.flixcart.com/flap/200/200/image/placeholder.png'">
+          <img src="${safeImg}" class="fkd-img" loading="lazy" onerror="this.src='https://rukminim1.flixcart.com/flap/200/200/image/placeholder.png'">
           ${it.d > 0 ? `<div class="fkd-disc-tag">${it.d}% OFF</div>` : ''}
           ${it.oos ? `<div class="fkd-oos-tag">OUT OF STOCK</div>` : ''}
         </div>
-        <div class="fkd-card-title" title="${it.t.replace(/"/g, '&quot;')}">${it.t}</div>
+        <div class="fkd-card-title" title="${safeTitle}">${safeTitle}</div>
         <div class="fkd-price-row">
           <span class="fkd-price">₹${it.f}</span>
           ${it.m > it.f ? `<span class="fkd-mrp">₹${it.m}</span>` : ''}
@@ -1468,22 +1476,38 @@ javascript:(function(){
       }
     }
 
-    /* Threshold verification (default 45% across all categories) */
-    var effectiveMin = DEFAULT_MIN_DISCOUNT;
-    for (var bt in BRAND_THRESHOLDS) {
-      if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {
-        effectiveMin = Math.max(effectiveMin, BRAND_THRESHOLDS[bt]);
-        break;
+    /* Threshold verification (default 45% across all categories, bypassed during search) */
+    var isSearchMode = !!(st.searchQuery && st.searchQuery.trim().length > 0);
+    if (!isSearchMode) {
+      var effectiveMin = DEFAULT_MIN_DISCOUNT;
+      for (var bt in BRAND_THRESHOLDS) {
+        if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {
+          effectiveMin = Math.max(effectiveMin, BRAND_THRESHOLDS[bt]);
+          break;
+        }
       }
+      if (disc < effectiveMin) return false;
     }
-    if (disc < effectiveMin) return false;
 
     /* Ensure deal links open directly in Flipkart Minutes */
     if (lnk && !lnk.includes("marketplace=HYPERLOCAL")) {
       lnk += (lnk.includes("?") ? "&" : "?") + "marketplace=HYPERLOCAL";
     }
 
-    var uid = title + "_" + fsp;
+    /* Robust UID: extract Flipkart PID from product URL, fallback to normalized title + price */
+    var pid = "";
+    if (lnk) {
+      var mPid = lnk.match(/[?&]pid=([a-zA-Z0-9_-]+)/i);
+      if (mPid && mPid[1]) {
+        pid = mPid[1];
+      } else {
+        var mItm = lnk.match(/\/p\/(itm[a-zA-Z0-9_-]+)/i);
+        if (mItm && mItm[1]) pid = mItm[1];
+      }
+    }
+    var normTitle = (title || "").toLowerCase().replace(/\s+/g, " ").trim();
+    var uid = pid ? ("pid_" + pid) : (normTitle + "_" + fsp);
+
     if (!st.seen.has(uid)) {
       st.seen.add(uid);
       st.items.push({ t: title, f: fsp, m: mrp, d: disc, i: img, l: lnk, oos: !!isOos });
@@ -2014,6 +2038,8 @@ javascript:(function(){
   /* Master Scan: Sequentially fetch Page 1 across all clean main category groups */
   async function startAllCategoriesFetch() {
     closeCatDrawer();
+    st.searchQuery = "";
+    if (inputSearch) inputSearch.value = "";
     window.fkDealsStop = false;
     st.mode = "RUN";
     btnFetch.textContent = "Stop ⏹";
@@ -2053,6 +2079,8 @@ javascript:(function(){
   /* Fetch specific Category or Subcategory */
   async function startCategoryFetch() {
     closeCatDrawer();
+    st.searchQuery = "";
+    if (inputSearch) inputSearch.value = "";
     window.fkDealsStop = false;
     st.mode = "RUN";
     btnFetch.textContent = "Stop ⏹";

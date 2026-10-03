@@ -10,17 +10,16 @@ def build_bookmarklet():
     with open("data/brands_catalog.json", "r", encoding="utf-8") as f:
         brand_catalog = json.load(f)
 
-    excluded_brands = sorted(list(set(
-        brand_catalog.get("excluded_brands", []) + [
-            "100percent", "abt", "adofys", "aircase", "amazer", "amzer", "annprash",
-            "casotec", "cease", "cover alive", "doubleshot",
-            "golden tree collection", "hritika", "hyper mob", "kartik crafts",
-            "kavish", "maru", "mixtron", "mudrika", "mumbai creations",
-            "paper plane design", "parasnath", "shine craft", "sunshine sale",
-            "tied ribbons", "vanya", "pedigree", "whiskas", "drools", "purepet",
-            "royal canin", "me-o", "designer rakhi", "rudraksh", "religious ganesha rakhi", "d1769"
-        ]
-    )))
+    raw_excluded = brand_catalog.get("excluded_brands", []) + [
+        "100percent", "abt", "adofys", "aircase", "amazer", "amzer", "annprash",
+        "casotec", "cease", "cover alive", "doubleshot",
+        "golden tree collection", "hritika", "hyper mob", "kartik crafts",
+        "kavish", "maru", "mixtron", "mudrika", "mumbai creations",
+        "paper plane design", "parasnath", "shine craft", "sunshine sale",
+        "tied ribbons", "vanya", "pedigree", "whiskas", "drools", "purepet",
+        "royal canin", "me-o", "designer rakhi", "rudraksh", "religious ganesha rakhi", "d1769"
+    ]
+    excluded_brands = sorted(list({b.strip().lower() for b in raw_excluded if b.strip()}))
 
     # Structure category entries
     # Group icons
@@ -209,6 +208,17 @@ def build_bookmarklet():
       }}
     }} catch(e) {{}}
     return "";
+  }}
+
+  /* Safe HTML escaping helper to prevent XSS injection from product titles & images */
+  function escapeHtml(s) {{
+    if (s == null) return "";
+    return String(s)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#39;");
   }}
 
   /* Inject Sidebar Styles */
@@ -886,13 +896,15 @@ def build_bookmarklet():
     filtered.forEach(function(it){{
       var card = d.createElement("div");
       card.className = "fkd-card" + (it.oos ? " oos" : "");
+      var safeTitle = escapeHtml(it.t);
+      var safeImg = escapeHtml(it.i);
       card.innerHTML = `
         <div class="fkd-img-box">
-          <img src="${{it.i}}" class="fkd-img" loading="lazy" onerror="this.src='https://rukminim1.flixcart.com/flap/200/200/image/placeholder.png'">
+          <img src="${{safeImg}}" class="fkd-img" loading="lazy" onerror="this.src='https://rukminim1.flixcart.com/flap/200/200/image/placeholder.png'">
           ${{it.d > 0 ? `<div class="fkd-disc-tag">${{it.d}}% OFF</div>` : ''}}
           ${{it.oos ? `<div class="fkd-oos-tag">OUT OF STOCK</div>` : ''}}
         </div>
-        <div class="fkd-card-title" title="${{it.t.replace(/"/g, '&quot;')}}">${{it.t}}</div>
+        <div class="fkd-card-title" title="${{safeTitle}}">${{safeTitle}}</div>
         <div class="fkd-price-row">
           <span class="fkd-price">₹${{it.f}}</span>
           ${{it.m > it.f ? `<span class="fkd-mrp">₹${{it.m}}</span>` : ''}}
@@ -960,22 +972,38 @@ def build_bookmarklet():
       }}
     }}
 
-    /* Threshold verification (default 45% across all categories) */
-    var effectiveMin = DEFAULT_MIN_DISCOUNT;
-    for (var bt in BRAND_THRESHOLDS) {{
-      if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {{
-        effectiveMin = Math.max(effectiveMin, BRAND_THRESHOLDS[bt]);
-        break;
+    /* Threshold verification (default 45% across all categories, bypassed during search) */
+    var isSearchMode = !!(st.searchQuery && st.searchQuery.trim().length > 0);
+    if (!isSearchMode) {{
+      var effectiveMin = DEFAULT_MIN_DISCOUNT;
+      for (var bt in BRAND_THRESHOLDS) {{
+        if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {{
+          effectiveMin = Math.max(effectiveMin, BRAND_THRESHOLDS[bt]);
+          break;
+        }}
       }}
+      if (disc < effectiveMin) return false;
     }}
-    if (disc < effectiveMin) return false;
 
     /* Ensure deal links open directly in Flipkart Minutes */
     if (lnk && !lnk.includes("marketplace=HYPERLOCAL")) {{
       lnk += (lnk.includes("?") ? "&" : "?") + "marketplace=HYPERLOCAL";
     }}
 
-    var uid = title + "_" + fsp;
+    /* Robust UID: extract Flipkart PID from product URL, fallback to normalized title + price */
+    var pid = "";
+    if (lnk) {{
+      var mPid = lnk.match(/[?&]pid=([a-zA-Z0-9_-]+)/i);
+      if (mPid && mPid[1]) {{
+        pid = mPid[1];
+      }} else {{
+        var mItm = lnk.match(/\\/p\\/(itm[a-zA-Z0-9_-]+)/i);
+        if (mItm && mItm[1]) pid = mItm[1];
+      }}
+    }}
+    var normTitle = (title || "").toLowerCase().replace(/\\s+/g, " ").trim();
+    var uid = pid ? ("pid_" + pid) : (normTitle + "_" + fsp);
+
     if (!st.seen.has(uid)) {{
       st.seen.add(uid);
       st.items.push({{ t: title, f: fsp, m: mrp, d: disc, i: img, l: lnk, oos: !!isOos }});
@@ -1506,6 +1534,8 @@ def build_bookmarklet():
   /* Master Scan: Sequentially fetch Page 1 across all clean main category groups */
   async function startAllCategoriesFetch() {{
     closeCatDrawer();
+    st.searchQuery = "";
+    if (inputSearch) inputSearch.value = "";
     window.fkDealsStop = false;
     st.mode = "RUN";
     btnFetch.textContent = "Stop ⏹";
@@ -1545,6 +1575,8 @@ def build_bookmarklet():
   /* Fetch specific Category or Subcategory */
   async function startCategoryFetch() {{
     closeCatDrawer();
+    st.searchQuery = "";
+    if (inputSearch) inputSearch.value = "";
     window.fkDealsStop = false;
     st.mode = "RUN";
     btnFetch.textContent = "Stop ⏹";
@@ -1614,7 +1646,10 @@ def build_bookmarklet():
         f.write(template)
     print("FKMinutes.txt synced successfully!")
 
-    encoded_js = "javascript%3A" + urllib.parse.quote(template)
+    clean_js = template
+    if clean_js.startswith("javascript:"):
+        clean_js = clean_js[len("javascript:"):]
+    encoded_js = "javascript:" + urllib.parse.quote(clean_js)
 
     # Update Install_Bookmarklet.html and index.html
     for html_path in ["Install_Bookmarklet.html", "index.html"]:
