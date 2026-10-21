@@ -148,5 +148,29 @@ CATEGORIES = [
     {
         "name": "Office and School Supplies",
         "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"
+    },
+    {
+        "name": "Fashion & Accessories",
+        "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount"
+    },
+    {
+        "name": "Electronics & Gadgets",
+        "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount"
+    },
+    {
+        "name": "Ice Cream & Desserts",
+        "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount"
+    },
+    {
+        "name": "Toys, Games & Sports",
+        "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount"
+    },
+    {
+        "name": "Chicken, Meat & Fish",
+        "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount"
+    },
+    {
+        "name": "Paan Corner & Refreshers",
+        "uri": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"
     }
 ]

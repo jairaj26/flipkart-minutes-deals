@@ -1,5 +1,5 @@
 {
-  "last_updated": "2026-10-02T09:45:59.026976",
+  "last_updated": "2026-10-21T20:15:59.423315",
   "groups": {
     "Staples": [
       {
@@ -740,6 +740,139 @@
           "73z/pyy/"
         ],
         "url_path": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"
+      }
+    ],
+    "Fashion & Accessories": [
+      {
+        "name": "All Fashion & Accessories",
+        "group": "Fashion & Accessories",
+        "parent_code": "hloc/0026",
+        "category_code": "hloc/0026",
+        "default_selected": true,
+        "facets": [
+          "hloc/0026"
+        ],
+        "url_path": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount"
+      }
+    ],
+    "Electronics & Gadgets": [
+      {
+        "name": "All Electronics & Gadgets",
+        "group": "Electronics & Gadgets",
+        "parent_code": "hloc/0038",
+        "category_code": "hloc/0038",
+        "default_selected": true,
+        "facets": [
+          "hloc/0038"
+        ],
+        "url_path": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount"
+      },
+      {
+        "name": "Speakers & Earphones",
+        "group": "Electronics & Gadgets",
+        "parent_code": "hloc/0039",
+        "category_code": "hloc/0039",
+        "default_selected": true,
+        "facets": [
+          "hloc/0039"
+        ],
+        "url_path": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount"
+      },
+      {
+        "name": "Smartwatches & Wearables",
+        "group": "Electronics & Gadgets",
+        "parent_code": "ajy",
+        "category_code": "ajy",
+        "default_selected": true,
+        "facets": [
+          "ajy"
+        ],
+        "url_path": "/ajy/~cs-n07lff2ctz/pr?sid=ajy&marketplace=HYPERLOCAL&collection-tab-name=Smartwatches&sort=discount"
+      },
+      {
+        "name": "Kitchen & Home Appliances",
+        "group": "Electronics & Gadgets",
+        "parent_code": "j9e,abm",
+        "category_code": "j9e,abm",
+        "default_selected": true,
+        "facets": [
+          "j9e,abm"
+        ],
+        "url_path": "/j9e/abm/~cs-sg12jxivk6/pr?sid=j9e%2Cabm&marketplace=HYPERLOCAL&collection-tab-name=Appliances&sort=discount"
+      }
+    ],
+    "Ice Cream & Desserts": [
+      {
+        "name": "All Ice Cream & Desserts",
+        "group": "Ice Cream & Desserts",
+        "parent_code": "hloc/0034",
+        "category_code": "hloc/0034",
+        "default_selected": true,
+        "facets": [
+          "hloc/0034"
+        ],
+        "url_path": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount"
+      },
+      {
+        "name": "Sweets & Mithai",
+        "group": "Ice Cream & Desserts",
+        "parent_code": "hloc/0081/0806",
+        "category_code": "hloc/0081/0806",
+        "default_selected": true,
+        "facets": [
+          "hloc/0081/0806"
+        ],
+        "url_path": "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL&sort=discount"
+      }
+    ],
+    "Toys, Games & Sports": [
+      {
+        "name": "All Toys & Games",
+        "group": "Toys, Games & Sports",
+        "parent_code": "hloc/0028",
+        "category_code": "hloc/0028",
+        "default_selected": true,
+        "facets": [
+          "hloc/0028"
+        ],
+        "url_path": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount"
+      },
+      {
+        "name": "Sports & Fitness",
+        "group": "Toys, Games & Sports",
+        "parent_code": "hloc/0036",
+        "category_code": "hloc/0036",
+        "default_selected": true,
+        "facets": [
+          "hloc/0036"
+        ],
+        "url_path": "/hyperlocal/Sports-Fitness/pr?sid=hloc%2F0036&marketplace=HYPERLOCAL&sort=discount"
+      }
+    ],
+    "Chicken, Meat & Fish": [
+      {
+        "name": "All Chicken, Meat & Fish",
+        "group": "Chicken, Meat & Fish",
+        "parent_code": "hloc/7n35",
+        "category_code": "hloc/7n35",
+        "default_selected": true,
+        "facets": [
+          "hloc/7n35"
+        ],
+        "url_path": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount"
+      }
+    ],
+    "Paan Corner & Refreshers": [
+      {
+        "name": "All Paan Corner & Refreshers",
+        "group": "Paan Corner & Refreshers",
+        "parent_code": "hloc/0049/4901",
+        "category_code": "hloc/0049/4901",
+        "default_selected": true,
+        "facets": [
+          "hloc/0049/4901"
+        ],
+        "url_path": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"
       }
     ]
   }

@@ -11,7 +11,7 @@ javascript:(function(){
   var CATEGORY_TREE = [
   {
     "id": "master_all",
-    "name": "🔥 Scan All Categories (Top Deals)",
+    "name": "⚡ Scan All Categories (Top Deals)",
     "isMaster": true,
     "uri": ""
   },
@@ -68,7 +68,7 @@ javascript:(function(){
     ]
   },
   {
-    "id": "grp_Snacks_&_Beverages",
+    "id": "grp_Snacks_and_Beverages",
     "group": "Snacks & Beverages",
     "name": "🍟 Snacks & Beverages",
     "allLabel": "Snacks & Beverages (All)",
@@ -374,7 +374,7 @@ javascript:(function(){
     ]
   },
   {
-    "id": "grp_Home_&_Kitchen",
+    "id": "grp_Home_and_Kitchen",
     "group": "Home & Kitchen",
     "name": "🍳 Home & Kitchen",
     "allLabel": "Home & Kitchen (Clean - Excl. Cases)",
@@ -439,6 +439,93 @@ javascript:(function(){
     "isGroup": true,
     "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/",
     "subs": []
+  },
+  {
+    "id": "grp_Fashion_and_Accessories",
+    "group": "Fashion & Accessories",
+    "name": "👕 Fashion & Accessories",
+    "allLabel": "Fashion & Accessories (All)",
+    "isGroup": true,
+    "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount",
+    "subs": []
+  },
+  {
+    "id": "grp_Electronics_and_Gadgets",
+    "group": "Electronics & Gadgets",
+    "name": "🔌 Electronics & Gadgets",
+    "allLabel": "Electronics & Gadgets (All)",
+    "isGroup": true,
+    "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount",
+    "subs": [
+      {
+        "id": "sub_hloc_0039",
+        "name": "Speakers & Earphones",
+        "uri": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      },
+      {
+        "id": "sub_ajy",
+        "name": "Smartwatches & Wearables",
+        "uri": "/ajy/~cs-n07lff2ctz/pr?sid=ajy&marketplace=HYPERLOCAL&collection-tab-name=Smartwatches&sort=discount",
+        "isOptin": false
+      },
+      {
+        "id": "sub_j9e,abm",
+        "name": "Kitchen & Home Appliances",
+        "uri": "/j9e/abm/~cs-sg12jxivk6/pr?sid=j9e%2Cabm&marketplace=HYPERLOCAL&collection-tab-name=Appliances&sort=discount",
+        "isOptin": false
+      }
+    ]
+  },
+  {
+    "id": "grp_Ice_Cream_and_Desserts",
+    "group": "Ice Cream & Desserts",
+    "name": "🍦 Ice Cream & Desserts",
+    "allLabel": "Ice Cream & Desserts (All)",
+    "isGroup": true,
+    "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount",
+    "subs": [
+      {
+        "id": "sub_hloc_0081_0806",
+        "name": "Sweets & Mithai",
+        "uri": "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      }
+    ]
+  },
+  {
+    "id": "grp_Toys,_Games_and_Sports",
+    "group": "Toys, Games & Sports",
+    "name": "🧸 Toys, Games & Sports",
+    "allLabel": "Toys, Games & Sports (All)",
+    "isGroup": true,
+    "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount",
+    "subs": [
+      {
+        "id": "sub_hloc_0036",
+        "name": "Sports & Fitness",
+        "uri": "/hyperlocal/Sports-Fitness/pr?sid=hloc%2F0036&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      }
+    ]
+  },
+  {
+    "id": "grp_Chicken,_Meat_and_Fish",
+    "group": "Chicken, Meat & Fish",
+    "name": "🍗 Chicken, Meat & Fish",
+    "allLabel": "Chicken, Meat & Fish (All)",
+    "isGroup": true,
+    "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount",
+    "subs": []
+  },
+  {
+    "id": "grp_Paan_Corner_and_Refreshers",
+    "group": "Paan Corner & Refreshers",
+    "name": "🌿 Paan Corner & Refreshers",
+    "allLabel": "Paan Corner & Refreshers (All)",
+    "isGroup": true,
+    "uri": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount",
+    "subs": []
   }
 ];
 
@@ -451,7 +538,7 @@ javascript:(function(){
     "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe"
   },
   {
-    "id": "grp_Snacks_&_Beverages",
+    "id": "grp_Snacks_and_Beverages",
     "group": "Snacks & Beverages",
     "name": "🍟 Snacks & Beverages",
     "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs"
@@ -487,7 +574,7 @@ javascript:(function(){
     "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl/2z2/&p[]=facets.category[]=73z/cwl/bdc/&p[]=facets.category[]=73z/cwl/u3c/&p[]=facets.category[]=73z/cwl/qz9/&p[]=facets.category[]=73z/cwl/2wc/&p[]=facets.category[]=73z/cwl/0s4/"
   },
   {
-    "id": "grp_Home_&_Kitchen",
+    "id": "grp_Home_and_Kitchen",
     "group": "Home & Kitchen",
     "name": "🍳 Home & Kitchen",
     "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh/lbh/&p[]=facets.category[]=73z/uyk/sgh/ib1/&p[]=facets.category[]=73z/uyk/sgh/nlf/&p[]=facets.category[]=73z/uyk/hho/&p[]=facets.category[]=73z/uyk/vdx/&p[]=facets.category[]=73z/uyk/6f4/"
@@ -497,6 +584,42 @@ javascript:(function(){
     "group": "Office and School Supplies",
     "name": "📚 Office and School Supplies",
     "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"
+  },
+  {
+    "id": "grp_Fashion_and_Accessories",
+    "group": "Fashion & Accessories",
+    "name": "👕 Fashion & Accessories",
+    "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount"
+  },
+  {
+    "id": "grp_Electronics_and_Gadgets",
+    "group": "Electronics & Gadgets",
+    "name": "🔌 Electronics & Gadgets",
+    "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount"
+  },
+  {
+    "id": "grp_Ice_Cream_and_Desserts",
+    "group": "Ice Cream & Desserts",
+    "name": "🍦 Ice Cream & Desserts",
+    "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount"
+  },
+  {
+    "id": "grp_Toys,_Games_and_Sports",
+    "group": "Toys, Games & Sports",
+    "name": "🧸 Toys, Games & Sports",
+    "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount"
+  },
+  {
+    "id": "grp_Chicken,_Meat_and_Fish",
+    "group": "Chicken, Meat & Fish",
+    "name": "🍗 Chicken, Meat & Fish",
+    "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount"
+  },
+  {
+    "id": "grp_Paan_Corner_and_Refreshers",
+    "group": "Paan Corner & Refreshers",
+    "name": "🌿 Paan Corner & Refreshers",
+    "uri": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"
   }
 ];
 
@@ -587,18 +710,30 @@ javascript:(function(){
     "deodap": 90
   };
 
-  var initialCategory = CATEGORY_TREE[0];
+  /* State Management */
   var st = {
     mode: "IDLE",
     sort: "discount",
     searchQuery: "",
+    minDiscount: DEFAULT_MIN_DISCOUNT,
     items: [],
     seen: new Set(),
-    selectedItem: initialCategory,
-    selectedLabel: initialCategory.name,
     hideOos: true,
     isCollapsed: false
   };
+
+  /* Checked Categories Set */
+  var selectedNodes = new Set();
+  selectedNodes.add("master_all");
+  CATEGORY_TREE.forEach(function(grp) {
+    if (grp.isMaster) return;
+    selectedNodes.add(grp.id);
+    if (grp.subs) {
+      grp.subs.forEach(function(sub) {
+        if (!sub.isOptin) selectedNodes.add(sub.id);
+      });
+    }
+  });
 
   window.fkDealsStop = false;
 
@@ -628,27 +763,28 @@ javascript:(function(){
       .replace(/'/g, "&#39;");
   }
 
-  /* Inject Figma-inspired Clean Styles */
+  /* Inject Canva-inspired Clean Styles with Flipkart Minutes Colors */
   var style = d.createElement("style");
   style.id = "fk-deals-styles";
   style.textContent = `
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
     #fk-deals-sidebar, #fk-deals-pill {
-      --fkd-bg: #F7F7F8;
+      --fkd-bg: #F8F9FA;
       --fkd-header-bg: #FFFFFF;
-      --fkd-border: #E6E6E6;
-      --fkd-border-light: #EBEBEB;
-      --fkd-text-main: #1E1E1E;
-      --fkd-text-sub: #6E6E6E;
-      --fkd-text-muted: #8C8C8C;
-      --fkd-accent: #0D99FF;
-      --fkd-accent-hover: #0B85DE;
-      --fkd-danger: #F24822;
+      --fkd-border: #E5E7EB;
+      --fkd-border-light: #F3F4F6;
+      --fkd-text-main: #1F2937;
+      --fkd-text-sub: #4B5563;
+      --fkd-text-muted: #9CA3AF;
+      --fkd-green: #0F8458;
+      --fkd-green-hover: #0D724C;
+      --fkd-green-tint: #E8F5E9;
+      --fkd-danger: #DC2626;
+      --fkd-danger-hover: #B91C1C;
       --fkd-card-bg: #FFFFFF;
-      --fkd-card-border: #E8E8E8;
+      --fkd-card-border: #E5E7EB;
       --fkd-card-hover: #D1D5DB;
-      --fkd-dark: #1E1E1E;
       --fkd-font: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
       font-family: var(--fkd-font);
       -webkit-font-smoothing: antialiased;
@@ -665,7 +801,7 @@ javascript:(function(){
       position: fixed;
       top: 0;
       right: 0;
-      width: 400px;
+      width: 410px;
       max-width: 100vw;
       height: 100vh;
       background: var(--fkd-bg);
@@ -673,7 +809,7 @@ javascript:(function(){
       display: flex;
       flex-direction: column;
       border-left: 1px solid var(--fkd-border);
-      box-shadow: -6px 0 24px rgba(0, 0, 0, 0.08);
+      box-shadow: -4px 0 24px rgba(0, 0, 0, 0.08);
       color: var(--fkd-text-main);
       transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
     }
@@ -687,40 +823,40 @@ javascript:(function(){
       bottom: 24px;
       right: 20px;
       z-index: 2147483647;
-      background: var(--fkd-dark);
+      background: var(--fkd-green);
       color: #FFFFFF;
-      padding: 9px 15px;
-      border-radius: 8px;
-      font-size: 12px;
+      padding: 10px 16px;
+      border-radius: 30px;
+      font-size: 13px;
       font-weight: 600;
       cursor: pointer;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 4px 18px rgba(15, 132, 88, 0.35);
       display: flex;
       align-items: center;
       gap: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       transition: transform 0.18s ease, background 0.15s ease;
     }
     #fk-deals-pill:hover {
       transform: translateY(-2px);
-      background: #000000;
+      background: var(--fkd-green-hover);
     }
     #fk-deals-pill.hidden {
       display: none;
     }
 
     .fkd-badge {
-      background: #F0F0F0;
+      background: #F3F4F6;
       color: var(--fkd-text-sub);
       font-size: 11px;
-      font-weight: 500;
-      padding: 2px 7px;
+      font-weight: 600;
+      padding: 2px 8px;
       border-radius: 9999px;
       letter-spacing: -0.01em;
     }
     #fk-deals-pill .fkd-badge {
-      background: var(--fkd-accent);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      color: var(--fkd-green);
     }
 
     .fkd-header {
@@ -729,7 +865,7 @@ javascript:(function(){
       padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 9px;
     }
 
     .fkd-top-row {
@@ -738,13 +874,13 @@ javascript:(function(){
       align-items: center;
     }
     .fkd-title {
-      font-size: 13px;
-      font-weight: 600;
+      font-size: 14px;
+      font-weight: 700;
       display: flex;
       align-items: center;
       gap: 8px;
       color: var(--fkd-text-main);
-      letter-spacing: -0.01em;
+      letter-spacing: -0.02em;
     }
     .fkd-controls {
       display: flex;
@@ -757,7 +893,7 @@ javascript:(function(){
       color: var(--fkd-text-sub);
       width: 26px;
       height: 26px;
-      border-radius: 5px;
+      border-radius: 6px;
       cursor: pointer;
       display: flex;
       align-items: center;
@@ -767,7 +903,7 @@ javascript:(function(){
       transition: background 0.12s ease, color 0.12s ease;
     }
     .fkd-icon-btn:hover {
-      background: #F0F0F0;
+      background: #F3F4F6;
       color: var(--fkd-text-main);
     }
 
@@ -779,9 +915,9 @@ javascript:(function(){
     .fkd-input {
       background: #FFFFFF;
       color: var(--fkd-text-main);
-      border: 1px solid #D9D9D9;
-      border-radius: 6px;
-      padding: 7px 10px;
+      border: 1px solid #D1D5DB;
+      border-radius: 7px;
+      padding: 7px 11px;
       font-size: 12px;
       font-weight: 400;
       font-family: inherit;
@@ -792,28 +928,29 @@ javascript:(function(){
       color: var(--fkd-text-muted);
     }
     .fkd-input:focus {
-      border-color: var(--fkd-accent);
-      box-shadow: 0 0 0 2px rgba(13, 153, 255, 0.16);
+      border-color: var(--fkd-green);
+      box-shadow: 0 0 0 2px rgba(15, 132, 88, 0.15);
     }
 
     .fkd-btn-search {
-      background: var(--fkd-accent);
+      background: var(--fkd-green);
       color: #FFFFFF;
-      border: 1px solid var(--fkd-accent);
-      border-radius: 6px;
-      padding: 0 12px;
-      height: 31px;
+      border: 1px solid var(--fkd-green);
+      border-radius: 7px;
+      padding: 0 13px;
+      height: 32px;
       font-size: 12px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       font-family: inherit;
       transition: background 0.12s ease;
       flex: none;
     }
     .fkd-btn-search:hover {
-      background: var(--fkd-accent-hover);
+      background: var(--fkd-green-hover);
     }
 
+    /* Canva-Style Category Dropdown */
     .fkd-row-2 {
       position: relative;
       width: 100%;
@@ -822,9 +959,9 @@ javascript:(function(){
       width: 100%;
       background: #FFFFFF;
       color: var(--fkd-text-main);
-      border: 1px solid #D9D9D9;
-      border-radius: 6px;
-      padding: 7px 10px;
+      border: 1px solid #D1D5DB;
+      border-radius: 7px;
+      padding: 7px 11px;
       font-size: 12px;
       font-weight: 500;
       font-family: inherit;
@@ -838,7 +975,7 @@ javascript:(function(){
       transition: border-color 0.15s ease, background 0.15s ease;
     }
     .fkd-cat-toggle:hover {
-      border-color: #BDBDBD;
+      border-color: #9CA3AF;
       background: #FAFAFA;
     }
     .fkd-cat-toggle-text {
@@ -855,17 +992,17 @@ javascript:(function(){
 
     .fkd-cat-drawer {
       position: absolute;
-      top: calc(100% + 4px);
+      top: calc(100% + 5px);
       left: 0;
       right: 0;
       background: #FFFFFF;
-      border-radius: 8px;
-      border: 1px solid #D9D9D9;
-      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
+      border-radius: 10px;
+      border: 1px solid #E5E7EB;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
       max-height: 380px;
       overflow-y: auto;
       z-index: 50;
-      padding: 6px;
+      padding: 7px;
       display: flex;
       flex-direction: column;
       gap: 2px;
@@ -874,29 +1011,39 @@ javascript:(function(){
       display: none;
     }
 
-    /* Figma Tree View Elements */
+    /* Canva Checkbox Tree View */
+    .fkd-checkbox {
+      accent-color: var(--fkd-green);
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      margin: 0;
+      flex: none;
+      border-radius: 4px;
+    }
+
     .fkd-tree-master {
       padding: 8px 10px;
-      border-radius: 6px;
+      border-radius: 7px;
       font-size: 12px;
       font-weight: 600;
       color: var(--fkd-text-main);
-      background: #F5F5F5;
-      cursor: pointer;
-      margin-bottom: 4px;
-      border: 1px solid var(--fkd-border-light);
-      transition: background 0.12s ease;
+      background: #F8F9FA;
+      border: 1px solid #E5E7EB;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 9px;
+      margin-bottom: 4px;
+      cursor: pointer;
+      transition: background 0.12s ease;
     }
     .fkd-tree-master:hover {
-      background: #EBEBEB;
+      background: #F3F4F6;
     }
-    .fkd-tree-master.active {
-      background: #E8F4FD;
-      color: var(--fkd-accent);
-      border-color: #BAE6FD;
+    .fkd-master-label {
+      cursor: pointer;
+      user-select: none;
+      flex: 1;
     }
 
     .fkd-tree-group {
@@ -906,18 +1053,15 @@ javascript:(function(){
     .fkd-group-row {
       display: flex;
       align-items: center;
-      gap: 4px;
-      padding: 5px 6px;
-      border-radius: 5px;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 6px;
       cursor: pointer;
       user-select: none;
       transition: background 0.12s ease;
     }
     .fkd-group-row:hover {
-      background: #F5F5F5;
-    }
-    .fkd-group-row.active {
-      background: #E8F4FD;
+      background: #F3F4F6;
     }
 
     .fkd-tree-chevron {
@@ -929,7 +1073,7 @@ javascript:(function(){
       border: none;
       background: transparent;
       color: var(--fkd-text-sub);
-      font-size: 10px;
+      font-size: 11px;
       cursor: pointer;
       border-radius: 4px;
       transition: background 0.12s ease, transform 0.15s ease;
@@ -937,7 +1081,7 @@ javascript:(function(){
       padding: 0;
     }
     .fkd-tree-chevron:hover {
-      background: #EBEBEB;
+      background: #E5E7EB;
       color: var(--fkd-text-main);
     }
     .fkd-tree-chevron.hidden {
@@ -954,27 +1098,10 @@ javascript:(function(){
       text-overflow: ellipsis;
     }
 
-    .fkd-group-all-btn {
-      background: #F0F0F0;
-      border: none;
-      border-radius: 4px;
-      padding: 2px 7px;
-      font-size: 10.5px;
-      font-weight: 500;
-      color: var(--fkd-text-sub);
-      cursor: pointer;
-      flex: none;
-      transition: background 0.12s ease, color 0.12s ease;
-    }
-    .fkd-group-all-btn:hover {
-      background: var(--fkd-accent);
-      color: #FFFFFF;
-    }
-
     .fkd-sub-container {
-      margin-left: 14px;
-      padding-left: 8px;
-      border-left: 1.5px solid var(--fkd-border-light);
+      margin-left: 20px;
+      padding-left: 10px;
+      border-left: 1.5px solid var(--fkd-border);
       display: flex;
       flex-direction: column;
       gap: 1px;
@@ -986,28 +1113,78 @@ javascript:(function(){
     }
 
     .fkd-sub-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
       padding: 5px 8px;
+      border-radius: 5px;
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.12s ease;
+    }
+    .fkd-sub-item:hover {
+      background: #F3F4F6;
+    }
+    .fkd-sub-title {
+      flex: 1;
       font-size: 11.5px;
       font-weight: 400;
       color: #374151;
-      border-radius: 4px;
-      cursor: pointer;
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      transition: background 0.12s ease, color 0.12s ease;
     }
-    .fkd-sub-item:hover {
-      background: #F0F0F0;
-      color: var(--fkd-text-main);
+
+    /* Discount Filter Bar */
+    .fkd-disc-bar {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      width: 100%;
     }
-    .fkd-sub-item.active {
-      background: #E8F4FD;
-      color: var(--fkd-accent);
+    .fkd-disc-bar-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fkd-text-sub);
+      flex: none;
+    }
+    .fkd-disc-pills {
+      display: flex;
+      gap: 4px;
+      flex: 1;
+    }
+    .fkd-disc-pill {
+      flex: 1 1 0;
+      min-width: 0;
+      height: 25px;
+      padding: 0 2px;
+      border-radius: 5px;
+      background: #FFFFFF;
+      color: var(--fkd-text-sub);
+      border: 1px solid #D1D5DB;
+      font-size: 11px;
+      font-weight: 500;
+      font-family: inherit;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      transition: all 0.12s ease;
+      outline: none;
+    }
+    .fkd-disc-pill:hover {
+      background: #F3F4F6;
+      border-color: #9CA3AF;
+    }
+    .fkd-disc-pill.active {
+      background: var(--fkd-green);
+      color: #FFFFFF;
+      border-color: var(--fkd-green);
       font-weight: 600;
     }
 
-    /* Toolbar Segmented Controls */
+    /* Toolbar Controls (Off-White & Green Palette) */
     .fkd-toolbar {
       display: flex;
       gap: 6px;
@@ -1017,12 +1194,12 @@ javascript:(function(){
     .fkd-pill {
       flex: 1 1 0;
       min-width: 0;
-      height: 29px;
+      height: 30px;
       padding: 0 4px;
-      border-radius: 6px;
+      border-radius: 7px;
       background: #FFFFFF;
       color: var(--fkd-text-main);
-      border: 1px solid #D9D9D9;
+      border: 1px solid #D1D5DB;
       font-size: 11px;
       font-weight: 500;
       font-family: inherit;
@@ -1036,31 +1213,34 @@ javascript:(function(){
       outline: none;
     }
     .fkd-pill:hover {
-      background: #F5F5F5;
-      border-color: #BDBDBD;
+      background: #F3F4F6;
+      border-color: #9CA3AF;
     }
     .fkd-pill.active {
-      background: var(--fkd-dark);
+      background: var(--fkd-green);
       color: #FFFFFF;
-      border-color: var(--fkd-dark);
+      border-color: var(--fkd-green);
       font-weight: 600;
     }
 
     .fkd-pill-action {
-      background: var(--fkd-accent) !important;
+      background: var(--fkd-green) !important;
       color: #FFFFFF !important;
-      border-color: var(--fkd-accent) !important;
-      font-weight: 600;
+      border-color: var(--fkd-green) !important;
+      font-weight: 700;
     }
     .fkd-pill-action:hover {
-      background: var(--fkd-accent-hover) !important;
+      background: var(--fkd-green-hover) !important;
     }
 
     .fkd-pill-danger {
       background: var(--fkd-danger) !important;
       color: #FFFFFF !important;
       border-color: var(--fkd-danger) !important;
-      font-weight: 600;
+      font-weight: 700;
+    }
+    .fkd-pill-danger:hover {
+      background: var(--fkd-danger-hover) !important;
     }
 
     .fkd-status-bar {
@@ -1073,7 +1253,7 @@ javascript:(function(){
       width: 6px;
       height: 6px;
       border-radius: 50%;
-      background: var(--fkd-accent);
+      background: var(--fkd-green);
       flex-shrink: 0;
     }
     .fkd-status-text {
@@ -1101,7 +1281,7 @@ javascript:(function(){
     .fkd-card {
       background: var(--fkd-card-bg);
       border: 1px solid var(--fkd-card-border);
-      border-radius: 8px;
+      border-radius: 9px;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
       padding: 8px;
       display: flex;
@@ -1138,12 +1318,12 @@ javascript:(function(){
       object-fit: contain;
     }
 
-    /* Stacked Larger Discount Tag (User Requested: 70% above OFF) */
+    /* Stacked Larger Discount Tag (User Requested: 70% above OFF in Green) */
     .fkd-disc-tag {
       position: absolute;
       top: 5px;
       left: 5px;
-      background: var(--fkd-dark);
+      background: var(--fkd-green);
       color: #FFFFFF;
       padding: 3px 6px;
       border-radius: 5px;
@@ -1152,7 +1332,7 @@ javascript:(function(){
       align-items: center;
       justify-content: center;
       line-height: 1.05;
-      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18);
+      box-shadow: 0 2px 6px rgba(15, 132, 88, 0.25);
       pointer-events: none;
       z-index: 2;
     }
@@ -1166,7 +1346,7 @@ javascript:(function(){
       font-weight: 700;
       letter-spacing: 0.04em;
       text-transform: uppercase;
-      opacity: 0.9;
+      opacity: 0.95;
     }
 
     .fkd-oos-tag {
@@ -1174,7 +1354,7 @@ javascript:(function(){
       bottom: 4px;
       left: 4px;
       right: 4px;
-      background: rgba(242, 72, 34, 0.92);
+      background: rgba(220, 38, 38, 0.92);
       color: #FFFFFF;
       font-size: 9px;
       font-weight: 700;
@@ -1206,7 +1386,7 @@ javascript:(function(){
     .fkd-price {
       font-size: 14px;
       font-weight: 700;
-      color: var(--fkd-text-main);
+      color: var(--fkd-green);
       letter-spacing: -0.01em;
     }
     .fkd-mrp {
@@ -1255,10 +1435,21 @@ javascript:(function(){
       </div>
       <div class="fkd-row-2">
         <button class="fkd-cat-toggle" id="fkd-cat-toggle" type="button" title="Browse & select Flipkart Minutes categories">
-          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">${initialCategory.name}</span>
+          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">⚡ All Categories (${MAIN_GROUPS.length})</span>
           <span class="fkd-caret" id="fkd-cat-caret">▾</span>
         </button>
         <div id="fkd-cat-drawer" class="fkd-cat-drawer hidden"></div>
+      </div>
+      <div class="fkd-disc-bar">
+        <span class="fkd-disc-bar-label">Min Discount:</span>
+        <div class="fkd-disc-pills">
+          <button type="button" class="fkd-disc-pill" data-min="0">All</button>
+          <button type="button" class="fkd-disc-pill" data-min="40">40%+</button>
+          <button type="button" class="fkd-disc-pill active" data-min="45">45%+</button>
+          <button type="button" class="fkd-disc-pill" data-min="50">50%+</button>
+          <button type="button" class="fkd-disc-pill" data-min="60">60%+</button>
+          <button type="button" class="fkd-disc-pill" data-min="70">70%+</button>
+        </div>
       </div>
       <div class="fkd-toolbar">
         <button class="fkd-pill" id="fkd-sort-price" title="Sort by lowest price">Sort ₹</button>
@@ -1272,7 +1463,7 @@ javascript:(function(){
       </div>
     </div>
     <div id="fkd-grid" class="fkd-grid">
-      <div class="fkd-empty">Click <b>Fetch ⚡</b> to scan top deals across Flipkart Minutes, or pick a category above.</div>
+      <div class="fkd-empty">Click <b>Fetch ⚡</b> to scan top deals across Flipkart Minutes, or pick categories above.</div>
     </div>
   `;
   d.body.appendChild(sb);
@@ -1305,37 +1496,119 @@ javascript:(function(){
     toggleCatDrawer();
   };
 
-  function selectCategory(item, label) {
-    st.selectedItem = item;
-    st.selectedLabel = label;
-    catNameDisplay.textContent = label;
-    if (inputSearch) inputSearch.value = "";
-    st.searchQuery = "";
+  /* Update Category Selection Summary Label */
+  function updateCategorySummary() {
+    var allGrps = CATEGORY_TREE.filter(function(x){ return !x.isMaster; });
+    var checkedGrps = allGrps.filter(function(x){ return selectedNodes.has(x.id); });
+    var isMasterChecked = selectedNodes.has("master_all") || (checkedGrps.length === allGrps.length);
 
-    /* Default to sort by discount */
-    st.sort = "discount";
-    btnSortDisc.classList.add("active");
-    btnSortPrice.classList.remove("active");
-
-    closeCatDrawer();
-    setStatus("Selected: " + label);
+    if (isMasterChecked || checkedGrps.length === allGrps.length) {
+      catNameDisplay.textContent = "⚡ All Categories (" + allGrps.length + ")";
+    } else if (checkedGrps.length === 1) {
+      var grp = checkedGrps[0];
+      var checkedSubs = grp.subs ? grp.subs.filter(function(s){ return selectedNodes.has(s.id); }) : [];
+      if (checkedSubs.length === 1 && (!grp.subs || checkedSubs.length < grp.subs.length)) {
+        catNameDisplay.textContent = grp.name + " › " + checkedSubs[0].name;
+      } else {
+        catNameDisplay.textContent = grp.name;
+      }
+    } else if (checkedGrps.length > 1) {
+      catNameDisplay.textContent = "⚡ " + checkedGrps.length + " Categories Selected";
+    } else {
+      var totalSubs = 0;
+      var lastSubName = "";
+      allGrps.forEach(function(g) {
+        if (g.subs) {
+          g.subs.forEach(function(s) {
+            if (selectedNodes.has(s.id)) {
+              totalSubs++;
+              lastSubName = g.name + " › " + s.name;
+            }
+          });
+        }
+      });
+      if (totalSubs === 1) {
+        catNameDisplay.textContent = lastSubName;
+      } else if (totalSubs > 1) {
+        catNameDisplay.textContent = "⚡ " + totalSubs + " Subcategories Selected";
+      } else {
+        catNameDisplay.textContent = "Select Categories";
+      }
+    }
   }
 
-  /* Render Figma Collapsible Category Tree */
-  CATEGORY_TREE.forEach(function(item) {
-    if (item.isMaster) {
-      var masterEl = d.createElement("div");
-      masterEl.className = "fkd-tree-master active";
-      masterEl.innerHTML = `<span>🔥</span><span>Scan All Categories (Top Deals)</span>`;
-      masterEl.onclick = function(e) {
-        e.stopPropagation();
-        d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){ el.classList.remove("active"); });
-        masterEl.classList.add("active");
-        selectCategory(item, item.name);
-      };
-      catDrawer.appendChild(masterEl);
-      return;
+  /* Determine which category endpoints to fetch based on checked checkboxes */
+  function getSelectedEndpoints() {
+    var endpoints = [];
+    var allGrps = CATEGORY_TREE.filter(function(x){ return !x.isMaster; });
+
+    var checkedGrps = allGrps.filter(function(x){ return selectedNodes.has(x.id); });
+    if (selectedNodes.has("master_all") || checkedGrps.length === allGrps.length) {
+      return MAIN_GROUPS.map(function(g){ return { name: g.name, uri: g.uri }; });
     }
+
+    allGrps.forEach(function(grp) {
+      if (selectedNodes.has(grp.id)) {
+        endpoints.push({ name: grp.name, uri: grp.uri });
+      } else if (grp.subs) {
+        grp.subs.forEach(function(sub) {
+          if (selectedNodes.has(sub.id)) {
+            endpoints.push({ name: grp.name + " › " + sub.name, uri: sub.uri });
+          }
+        });
+      }
+    });
+
+    return endpoints;
+  }
+
+  /* Render Canva Checkbox Category Tree */
+  var masterRow = d.createElement("div");
+  masterRow.className = "fkd-tree-master";
+  var masterCb = d.createElement("input");
+  masterCb.type = "checkbox";
+  masterCb.className = "fkd-checkbox";
+  masterCb.id = "fkd-master-cb";
+  masterCb.checked = true;
+
+  var masterLabel = d.createElement("label");
+  masterLabel.htmlFor = "fkd-master-cb";
+  masterLabel.className = "fkd-master-label";
+  masterLabel.textContent = "⚡ Scan All Categories (" + MAIN_GROUPS.length + ")";
+
+  masterRow.appendChild(masterCb);
+  masterRow.appendChild(masterLabel);
+  catDrawer.appendChild(masterRow);
+
+  masterCb.onchange = function() {
+    var isChecked = masterCb.checked;
+    if (isChecked) {
+      selectedNodes.add("master_all");
+      CATEGORY_TREE.forEach(function(grp) {
+        if (grp.isMaster) return;
+        selectedNodes.add(grp.id);
+        if (grp.subs) {
+          grp.subs.forEach(function(sub) {
+            if (!sub.isOptin) selectedNodes.add(sub.id);
+          });
+        }
+      });
+    } else {
+      selectedNodes.clear();
+    }
+    syncCheckboxes();
+    updateCategorySummary();
+  };
+
+  masterRow.onclick = function(e) {
+    if (e.target !== masterCb) {
+      masterCb.checked = !masterCb.checked;
+      masterCb.dispatchEvent(new Event("change"));
+    }
+  };
+
+  CATEGORY_TREE.forEach(function(item) {
+    if (item.isMaster) return;
 
     var groupWrapper = d.createElement("div");
     groupWrapper.className = "fkd-tree-group";
@@ -1351,19 +1624,19 @@ javascript:(function(){
     chevron.innerHTML = "▸";
     chevron.title = "Expand subcategories";
 
+    var grpCb = d.createElement("input");
+    grpCb.type = "checkbox";
+    grpCb.className = "fkd-checkbox fkd-grp-check";
+    grpCb.dataset.id = item.id;
+    grpCb.checked = selectedNodes.has(item.id);
+
     var titleSpan = d.createElement("div");
     titleSpan.className = "fkd-group-title";
     titleSpan.textContent = item.name;
 
-    var allBtn = d.createElement("button");
-    allBtn.type = "button";
-    allBtn.className = "fkd-group-all-btn";
-    allBtn.textContent = "All";
-    allBtn.title = "Select " + (item.allLabel || item.name);
-
     headerRow.appendChild(chevron);
+    headerRow.appendChild(grpCb);
     headerRow.appendChild(titleSpan);
-    headerRow.appendChild(allBtn);
     groupWrapper.appendChild(headerRow);
 
     var subContainer = d.createElement("div");
@@ -1373,15 +1646,42 @@ javascript:(function(){
       item.subs.forEach(function(sub) {
         var subEl = d.createElement("div");
         subEl.className = "fkd-sub-item";
-        subEl.textContent = sub.name;
-        subEl.title = sub.name;
-        subEl.onclick = function(e) {
+
+        var subCb = d.createElement("input");
+        subCb.type = "checkbox";
+        subCb.className = "fkd-checkbox fkd-sub-check";
+        subCb.dataset.id = sub.id;
+        subCb.dataset.grpId = item.id;
+        subCb.checked = selectedNodes.has(sub.id);
+
+        var subTitle = d.createElement("span");
+        subTitle.className = "fkd-sub-title";
+        subTitle.textContent = sub.name;
+
+        subEl.appendChild(subCb);
+        subEl.appendChild(subTitle);
+
+        subCb.onchange = function(e) {
           e.stopPropagation();
-          d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){ el.classList.remove("active"); });
-          subEl.classList.add("active");
-          headerRow.classList.add("active");
-          selectCategory(sub, item.name + " › " + sub.name);
+          if (subCb.checked) {
+            selectedNodes.add(sub.id);
+            var allChecked = item.subs.every(function(s){ return selectedNodes.has(s.id); });
+            if (allChecked) selectedNodes.add(item.id);
+          } else {
+            selectedNodes.delete(sub.id);
+            selectedNodes.delete(item.id);
+            selectedNodes.delete("master_all");
+          }
+          syncCheckboxes();
+          updateCategorySummary();
         };
+
+        subTitle.onclick = function(e) {
+          e.stopPropagation();
+          subCb.checked = !subCb.checked;
+          subCb.dispatchEvent(new Event("change"));
+        };
+
         subContainer.appendChild(subEl);
       });
 
@@ -1398,26 +1698,52 @@ javascript:(function(){
       }
 
       chevron.onclick = toggleGroup;
-      titleSpan.onclick = toggleGroup;
-    } else {
-      titleSpan.onclick = function(e) {
-        e.stopPropagation();
-        d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){ el.classList.remove("active"); });
-        headerRow.classList.add("active");
-        selectCategory(item, item.name);
-      };
     }
 
-    allBtn.onclick = function(e) {
+    grpCb.onchange = function(e) {
       e.stopPropagation();
-      d.querySelectorAll(".fkd-tree-master, .fkd-group-row, .fkd-sub-item").forEach(function(el){ el.classList.remove("active"); });
-      headerRow.classList.add("active");
-      selectCategory(item, item.name + " (All)");
+      if (grpCb.checked) {
+        selectedNodes.add(item.id);
+        if (item.subs) {
+          item.subs.forEach(function(s){
+            if (!s.isOptin) selectedNodes.add(s.id);
+          });
+        }
+      } else {
+        selectedNodes.delete(item.id);
+        selectedNodes.delete("master_all");
+        if (item.subs) {
+          item.subs.forEach(function(s){
+            selectedNodes.delete(s.id);
+          });
+        }
+      }
+      syncCheckboxes();
+      updateCategorySummary();
+    };
+
+    titleSpan.onclick = function(e) {
+      e.stopPropagation();
+      grpCb.checked = !grpCb.checked;
+      grpCb.dispatchEvent(new Event("change"));
     };
 
     groupWrapper.appendChild(subContainer);
     catDrawer.appendChild(groupWrapper);
   });
+
+  function syncCheckboxes() {
+    var allGrps = CATEGORY_TREE.filter(function(x){ return !x.isMaster; });
+    var allGrpChecked = allGrps.every(function(g){ return selectedNodes.has(g.id); });
+    masterCb.checked = allGrpChecked;
+
+    catDrawer.querySelectorAll(".fkd-grp-check").forEach(function(cb) {
+      cb.checked = selectedNodes.has(cb.dataset.id);
+    });
+    catDrawer.querySelectorAll(".fkd-sub-check").forEach(function(cb) {
+      cb.checked = selectedNodes.has(cb.dataset.id);
+    });
+  }
 
   /* Close drawer when clicking outside inside sidebar */
   sb.addEventListener("click", function(e){
@@ -1438,6 +1764,17 @@ javascript:(function(){
   var statusMsg = d.getElementById("fkd-status-msg");
   var headCount = d.getElementById("fkd-head-count");
   var pillCount = d.getElementById("fkd-pill-count");
+
+  /* Discount Filter Pills Handling */
+  sb.querySelectorAll(".fkd-disc-pill").forEach(function(pillEl) {
+    pillEl.onclick = function() {
+      var minVal = parseInt(pillEl.dataset.min, 10) || 0;
+      st.minDiscount = minVal;
+      sb.querySelectorAll(".fkd-disc-pill").forEach(function(p){ p.classList.remove("active"); });
+      pillEl.classList.add("active");
+      renderGrid();
+    };
+  });
 
   function setStatus(txt) {
     if (statusMsg) statusMsg.textContent = txt;
@@ -1525,13 +1862,7 @@ javascript:(function(){
       stopAll();
       setStatus("Stopped (" + st.items.length + " items)");
     } else {
-      btnFetch.textContent = "Stop ⏹";
-      btnFetch.className = "fkd-pill fkd-pill-danger";
-      if (st.selectedItem && st.selectedItem.isMaster) {
-        startAllCategoriesFetch();
-      } else {
-        startCategoryFetch();
-      }
+      startFetch();
     }
   };
 
@@ -1539,6 +1870,7 @@ javascript:(function(){
     grid.innerHTML = "";
     var filtered = st.items.filter(function(it){
       if (st.hideOos && it.oos) return false;
+      if (st.minDiscount > 0 && it.d < st.minDiscount) return false;
       return true;
     });
 
@@ -1556,7 +1888,7 @@ javascript:(function(){
     pillCount.textContent = filtered.length;
 
     if (!filtered.length) {
-      grid.innerHTML = `<div class="fkd-empty">${st.items.length ? 'No items match current criteria.<br><br>(Total scanned: ' + st.items.length + (st.hideOos ? ', Out of stock hidden' : '') + ')' : 'No deals loaded yet. Click Fetch ⚡ or search above.'}</div>`;
+      grid.innerHTML = `<div class="fkd-empty">${st.items.length ? 'No items match current criteria.<br><br>(Total scanned: ' + st.items.length + (st.minDiscount > 0 ? ', Discount filter: ' + st.minDiscount + '%+' : '') + (st.hideOos ? ', Out of stock hidden' : '') + ')' : 'No deals loaded yet. Click Fetch ⚡ or search above.'}</div>`;
       return;
     }
 
@@ -1644,10 +1976,11 @@ javascript:(function(){
       }
     }
 
-    /* Threshold verification (default 45% across all categories, bypassed during search) */
+    /* In search mode, include all matching items.
+       In category mode, keep items with at least min(35, st.minDiscount)% so the user can easily switch filter pills in the UI without re-fetching */
     var isSearchMode = !!(st.searchQuery && st.searchQuery.trim().length > 0);
     if (!isSearchMode) {
-      var effectiveMin = DEFAULT_MIN_DISCOUNT;
+      var effectiveMin = Math.min(35, st.minDiscount);
       for (var bt in BRAND_THRESHOLDS) {
         if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {
           effectiveMin = Math.max(effectiveMin, BRAND_THRESHOLDS[bt]);
@@ -1841,7 +2174,7 @@ javascript:(function(){
                     }
                     var img = stepperAction.params?.productImage || "";
                     if (!img) {
-                      var imgObj = pcard.hp_reco_pmu_product-card_image_0?.value || {};
+                      var imgObj = pcard["hp_reco_pmu_product-card_image_0"]?.value || {};
                       img = imgObj.image_0?.value?.dynamicImageUrl || imgObj.video_0?.value?.dynamicImageUrl || "";
                     }
                     img = img.replace("{@width}", "200").replace("{@height}", "200").replace("?q={@quality}", "?q=80");
@@ -2066,7 +2399,7 @@ javascript:(function(){
         body: JSON.stringify(bodyPayload),
         method: "POST",
         mode: "cors",
-        credentials: "omit"
+        credentials: "include"
       });
       if (resp.ok) {
         var json = await resp.json();
@@ -2150,13 +2483,13 @@ javascript:(function(){
   /* Unified page fetcher */
   async function fetchAndParsePage(uri) {
     if (!uri) return { count: 0 };
-    // 1. HTML-first: Same-origin GET with session cookies (100% reliable, zero 403 errors)
+    // 1. Same-origin HTML fetch with session cookies
     var html = await fetchCategoryHtml(uri);
     if (html) {
       var c = parseHtmlString(html);
       if (c > 0) return { count: c, html: html };
     }
-    // 2. Fallback: If HTML fetch returned 0 items, try Rome API
+    // 2. Fallback: Rome API with credentials included
     var json = await fetchRomePage(uri);
     if (json) {
       var c2 = parseProducts(json);
@@ -2178,8 +2511,8 @@ javascript:(function(){
     if (btnSearch) {
       btnSearch.textContent = "Stop ⏹";
       btnSearch.className = "fkd-btn-search";
-      btnSearch.style.background = "#F24822";
-      btnSearch.style.borderColor = "#F24822";
+      btnSearch.style.background = "#DC2626";
+      btnSearch.style.borderColor = "#DC2626";
     }
 
     st.items = [];
@@ -2205,8 +2538,8 @@ javascript:(function(){
     setStatus(`Search done! ${st.items.length} items (${finalIn} in stock)`);
   }
 
-  /* Master Scan: Sequentially fetch Page 1 across all clean main category groups */
-  async function startAllCategoriesFetch() {
+  /* Multi-Category Scanning based on checked categories */
+  async function startFetch() {
     closeCatDrawer();
     st.searchQuery = "";
     if (inputSearch) inputSearch.value = "";
@@ -2219,81 +2552,42 @@ javascript:(function(){
     st.seen.clear();
     renderGrid();
 
-    setStatus(`Scanning ${MAIN_GROUPS.length} verified categories...`);
+    var endpoints = getSelectedEndpoints();
+    if (!endpoints.length) {
+      stopAll();
+      setStatus("Please select at least 1 category above");
+      return;
+    }
 
-    for (var i = 0; i < MAIN_GROUPS.length; i++) {
+    setStatus(`Scanning ${endpoints.length} selected categories...`);
+
+    for (var i = 0; i < endpoints.length; i++) {
       if (st.mode !== "RUN" || window.fkDealsStop) break;
-      var grp = MAIN_GROUPS[i];
-      setStatus(`[${i+1}/${MAIN_GROUPS.length}] ${grp.name.trim()}...`);
-      var pUri = grp.uri;
+      var ep = endpoints[i];
+      setStatus(`[${i+1}/${endpoints.length}] ${ep.name.trim()}...`);
+      var pUri = ep.uri;
       if (!pUri.includes("sort=discount")) {
         pUri += (pUri.includes("?") ? "&" : "?") + "sort=discount";
       }
       var res = await fetchAndParsePage(pUri);
       renderGrid();
 
-      /* If Page 1 has top deals (>=45%), fetch Page 2 as well */
-      if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 8 && st.items.some(function(x){ return x.d >= 45; })) {
+      /* If Page 1 has top deals, fetch Page 2 as well */
+      if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 6) {
         var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
         await fetchAndParsePage(p2Uri);
         renderGrid();
       }
-      await new Promise(function(r){ setTimeout(r, 280); });
+      await new Promise(function(r){ setTimeout(r, 260); });
     }
 
     stopAll();
-    var finalIn = st.items.filter(function(x){ return !x.oos; }).length;
-    setStatus(`Done! Found ${st.items.length} top deals (${finalIn} in stock)`);
-  }
-
-  /* Fetch specific Category or Subcategory */
-  async function startCategoryFetch() {
-    closeCatDrawer();
-    st.searchQuery = "";
-    if (inputSearch) inputSearch.value = "";
-    window.fkDealsStop = false;
-    st.mode = "RUN";
-    btnFetch.textContent = "Stop ⏹";
-    btnFetch.className = "fkd-pill fkd-pill-danger";
-
-    st.items = [];
-    st.seen.clear();
-    renderGrid();
-
-    var item = st.selectedItem;
-    var targetUri = item ? item.uri : "";
-    if (!targetUri) {
-      startAllCategoriesFetch();
-      return;
-    }
-
-    var label = st.selectedLabel || item.name || "Category";
-    setStatus(`Fetching ${label.trim()}...`);
-    var p1Uri = targetUri;
-    if (!p1Uri.includes("sort=discount")) {
-      p1Uri += (p1Uri.includes("?") ? "&" : "?") + "sort=discount";
-    }
-    var res1 = await fetchAndParsePage(p1Uri);
-    renderGrid();
-
-    /* Multi-page fetching: fetch Page 2 and 3 if high deals present */
-    var pageNum = 2;
-    while (st.mode === "RUN" && !window.fkDealsStop && pageNum <= 3) {
-      if (res1 && res1.count < 6) break;
-      setStatus(`Fetching ${label.trim()} Page ${pageNum}...`);
-      var pUri = targetUri + (targetUri.includes("?") ? "&" : "?") + "page=" + pageNum + "&sort=discount";
-      var pRes = await fetchAndParsePage(pUri);
-      renderGrid();
-      if (!pRes.count) break;
-      pageNum++;
-      await new Promise(function(r){ setTimeout(r, 300); });
-    }
-
-    stopAll();
-    var finalIn = st.items.filter(function(x){ return !x.oos; }).length;
-    setStatus(`Done! Found ${st.items.length} items (${finalIn} in stock)`);
+    var finalIn = st.items.filter(function(x){ return !x.oos && (st.minDiscount <= 0 || x.d >= st.minDiscount); }).length;
+    var totalDeals = st.items.filter(function(x){ return st.minDiscount <= 0 || x.d >= st.minDiscount; }).length;
+    setStatus(`Done! Found ${totalDeals} deals (${finalIn} in stock)`);
   }
 
   /* Initialize */
-  setStatus("Ready - Click Fetch ⚡ or select category");
+  updateCategorySummary();
+  setStatus("Ready - Click Fetch ⚡ or pick categories");
 })();
