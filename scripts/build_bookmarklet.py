@@ -1384,6 +1384,47 @@ def build_bookmarklet():
     }});
   }}
 
+  /* Recursively extracts integer price from any Rome label structure, dict, or string */
+  function extractPrice(val) {{
+    if (!val) return 0;
+    if (typeof val === "number") return Math.round(val);
+    if (typeof val === "string") {{
+      var m = val.replace(/,/g, "").match(/\\d+/);
+      return m ? parseInt(m[0], 10) : 0;
+    }}
+    if (typeof val === "object") {{
+      if (val.text !== undefined && val.text !== null) {{
+        var p = extractPrice(val.text);
+        if (p > 0) return p;
+      }}
+      if (val.defaultValue !== undefined && val.defaultValue !== null) {{
+        var p2 = extractPrice(val.defaultValue);
+        if (p2 > 0) return p2;
+      }}
+      if (val.params && typeof val.params === "object") {{
+        var p3 = extractPrice(val.params.defaultValue || val.params.price);
+        if (p3 > 0) return p3;
+      }}
+      if (val.value !== undefined && val.value !== null) {{
+        var p4 = extractPrice(val.value);
+        if (p4 > 0) return p4;
+      }}
+      if (val.UNLOCKED) {{
+        var p5 = extractPrice(val.UNLOCKED);
+        if (p5 > 0) return p5;
+      }}
+      if (val.LOCKED) {{
+        var p6 = extractPrice(val.LOCKED);
+        if (p6 > 0) return p6;
+      }}
+      if (val.tracking && typeof val.tracking === "object") {{
+        var p7 = extractPrice(val.tracking.fsp || val.tracking.mrp);
+        if (p7 > 0) return p7;
+      }}
+    }}
+    return 0;
+  }}
+
   function addProduct(title, fsp, mrp, disc, img, lnk, isOos) {{
     if (!fsp) return false;
     fsp = parseInt(fsp, 10);
@@ -1420,13 +1461,14 @@ def build_bookmarklet():
       mrp = tmp;
     }}
 
-    /* If discount is present but fsp == mrp, compute selling price from discount */
+    /* If discount is present but MRP was not found (or mrp == fsp), derive MRP from selling price! */
+    /* NEVER discount fsp a second time! fsp is what the customer actually pays! */
     if (disc > 0 && disc < 100 && fsp === mrp) {{
-      fsp = Math.round(mrp * (1 - disc / 100));
+      mrp = Math.round(fsp / (1 - disc / 100));
     }}
 
     /* Normalize discount percentage (0 to 99) */
-    if (disc === undefined || isNaN(disc) || disc > 99 || disc < 0) {{
+    if (disc === undefined || isNaN(disc) || disc > 99 || disc <= 0) {{
       disc = (mrp > fsp) ? Math.round(((mrp - fsp) / mrp) * 100) : 0;
     }}
 
@@ -1497,11 +1539,14 @@ def build_bookmarklet():
           var pinfo = item.productInfo || item;
           var v = pinfo.value || pinfo;
           if (v && v.pricing && v.pricing.finalPrice) {{
-            var fsp = v.pricing.finalPrice.value;
+            var fsp = extractPrice(v.pricing.finalPrice.value);
             var mrp = fsp;
             if (v.pricing.prices) {{
               var mrpObj = v.pricing.prices.find(function(x){{ return x.priceType === "MRP"; }});
-              if (mrpObj) mrp = mrpObj.value;
+              if (mrpObj) mrp = extractPrice(mrpObj.value) || mrp;
+            }}
+            if (mrp === fsp && v.pricing.mrp) {{
+              mrp = extractPrice(v.pricing.mrp) || mrp;
             }}
             if (fsp && mrp && fsp > mrp) {{
               var t = fsp; fsp = mrp; mrp = t;
@@ -1542,17 +1587,25 @@ def build_bookmarklet():
 
                   var title = snbText.label_0?.value?.text || snbText.label_1?.value?.text || cval.trackerData_0?.tracking?.contentTitle || extractTitleFromUrl(lnk) || "Product";
 
-                  var fsp = 0;
-                  var l4 = snbText.label_4?.value;
-                  var l4Val = (typeof l4 === "object") ? (l4.UNLOCKED?.value?.params?.defaultValue || l4.LOCKED?.value?.params?.defaultValue || l4.text || "") : String(l4 || "");
-                  var matchFsp = l4Val.replace(/,/g, "").match(/\\d+/);
-                  if (matchFsp) fsp = parseInt(matchFsp[0], 10);
+                  var stepper = cval.stepperData_0?.action || cval.snb_beauty_gmh_image_0?.value?.stepperData_0?.action;
+                  var p1 = extractPrice(snbText.label_4);
+                  var p2 = extractPrice(snbText.label_3);
+                  if (!p1 && stepper) {{
+                    p1 = extractPrice(stepper.params?.price || stepper.tracking?.fsp);
+                  }}
+                  if (!p2 && stepper) {{
+                    p2 = extractPrice(stepper.tracking?.mrp);
+                  }}
 
-                  var mrp = fsp;
-                  var l3 = snbText.label_3?.value;
-                  var l3Val = (typeof l3 === "object") ? (l3.params?.defaultValue || l3.text || "") : String(l3 || "");
-                  var matchMrp = l3Val.replace(/,/g, "").match(/\\d+/);
-                  if (matchMrp) mrp = parseInt(matchMrp[0], 10);
+                  var fsp = 0;
+                  var mrp = 0;
+                  if (p1 && p2) {{
+                    fsp = Math.min(p1, p2);
+                    mrp = Math.max(p1, p2);
+                  }} else {{
+                    fsp = p1 || p2 || 0;
+                    mrp = fsp;
+                  }}
 
                   var disc = 0;
                   var l2 = snbText.label_2?.value;
@@ -1561,18 +1614,6 @@ def build_bookmarklet():
                   if (matchDisc) {{
                     disc = parseInt(matchDisc[1], 10);
                   }} else if (mrp > fsp) {{
-                    disc = Math.round(((mrp - fsp) / mrp) * 100);
-                  }}
-
-                  var stepper = cval.stepperData_0?.action || cval.snb_beauty_gmh_image_0?.value?.stepperData_0?.action;
-                  if (!fsp && stepper?.tracking?.fsp) fsp = parseInt(String(stepper.tracking.fsp).replace(/,/g, ""), 10);
-                  if (!fsp && stepper?.params?.price) fsp = parseInt(String(stepper.params.price).replace(/,/g, ""), 10);
-                  if ((!mrp || mrp === fsp) && stepper?.tracking?.mrp) mrp = parseInt(String(stepper.tracking.mrp).replace(/,/g, ""), 10);
-
-                  if (fsp && mrp && fsp > mrp) {{
-                    var t = fsp; fsp = mrp; mrp = t;
-                  }}
-                  if (disc === 0 && mrp > fsp) {{
                     disc = Math.round(((mrp - fsp) / mrp) * 100);
                   }}
 
@@ -1600,25 +1641,32 @@ def build_bookmarklet():
                 if (pcard) {{
                   var stepperAction = pcard.stepperData_0?.action || {{}};
                   var stepperTracking = stepperAction.tracking || {{}};
-                  var fsp = parseInt(String(stepperTracking.fsp || stepperAction.params?.price || "").replace(/,/g, ""), 10) || 0;
-                  var mrp = parseInt(String(stepperTracking.mrp || "").replace(/,/g, ""), 10) || 0;
+                  var stepperFsp = extractPrice(stepperAction.params?.price || stepperTracking.fsp);
+                  var stepperMrp = extractPrice(stepperTracking.mrp);
+                  var l5Val = extractPrice(pcard.label_5);
+                  var l4Val = extractPrice(pcard.label_4);
 
-                  if (!fsp && pcard.label_5?.value) {{
-                    var l5 = pcard.label_5.value;
-                    var l5Str = (typeof l5 === "object") ? (l5.LOCKED?.value?.text || l5.UNLOCKED?.value?.text || "") : String(l5);
-                    var match5 = l5Str.replace(/,/g, "").match(/\\d+/);
-                    if (match5) fsp = parseInt(match5[0], 10);
+                  var pSell = stepperFsp || l5Val || 0;
+                  var pMrp = stepperMrp || l4Val || 0;
+
+                  var fsp = 0;
+                  var mrp = 0;
+                  if (pSell && pMrp) {{
+                    fsp = Math.min(pSell, pMrp);
+                    mrp = Math.max(pSell, pMrp);
+                  }} else {{
+                    fsp = pSell || pMrp || 0;
+                    mrp = fsp;
                   }}
 
-                  if (!mrp && pcard.label_4?.value) {{
-                    var l4 = pcard.label_4.value;
-                    var l4Str = (typeof l4 === "object") ? (l4.text || "") : String(l4);
-                    var match4 = l4Str.replace(/,/g, "").match(/\\d+/);
-                    if (match4) mrp = parseInt(match4[0], 10);
-                  }}
-
-                  if (fsp && mrp && fsp > mrp) {{
-                    var t = fsp; fsp = mrp; mrp = t;
+                  var disc = 0;
+                  if (pcard.label_15?.value) {{
+                    var l15 = pcard.label_15.value;
+                    var l15Str = (typeof l15 === "object") ? (l15.UNLOCKED?.value?.text || l15.LOCKED?.value?.text || l15.text || "") : String(l15);
+                    var discMatch = l15Str.match(/(\\d+)%/);
+                    if (discMatch) disc = parseInt(discMatch[1], 10);
+                  }} else if (mrp > fsp) {{
+                    disc = Math.round(((mrp - fsp) / mrp) * 100);
                   }}
 
                   var lnk = "";
@@ -1627,24 +1675,15 @@ def build_bookmarklet():
 
                   var title = pcard.label_2?.value?.text || pcard.label_1?.value?.text || pcard.label_0?.value?.text || pcard.trackerData_0?.tracking?.contentTitle || extractTitleFromUrl(lnk) || "Product";
 
-                  if (fsp) {{
-                    var disc = 0;
-                    if (pcard.label_15?.value) {{
-                      var l15 = pcard.label_15.value;
-                      var l15Str = (typeof l15 === "object") ? (l15.UNLOCKED?.value?.text || l15.LOCKED?.value?.text || "") : String(l15);
-                      var discMatch = l15Str.match(/(\\d+)%/);
-                      if (discMatch) disc = parseInt(discMatch[1], 10);
-                    }}
-                    var img = stepperAction.params?.productImage || "";
-                    if (!img) {{
-                      var imgObj = pcard["hp_reco_pmu_product-card_image_0"]?.value || {{}};
-                      img = imgObj.image_0?.value?.dynamicImageUrl || imgObj.video_0?.value?.dynamicImageUrl || "";
-                    }}
-                    img = img.replace("{{@width}}", "200").replace("{{@height}}", "200").replace("?q={{@quality}}", "?q=80");
-
-                    var isOos = (stepperAction.enabled === false) || (pcard.button_0?.value?.actionType === "NOTIFY_ME") || (pcard.button_0?.value?.text && /notify/i.test(pcard.button_0.value.text));
-                    if (addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
+                  var img = stepperAction.params?.productImage || "";
+                  if (!img) {{
+                    var imgObj = pcard["hp_reco_pmu_product-card_image_0"]?.value || {{}};
+                    img = imgObj.image_0?.value?.dynamicImageUrl || imgObj.video_0?.value?.dynamicImageUrl || "";
                   }}
+                  img = img.replace("{{@width}}", "200").replace("{{@height}}", "200").replace("?q={{@quality}}", "?q=80");
+
+                  var isOos = (stepperAction.enabled === false) || (pcard.button_0?.value?.actionType === "NOTIFY_ME") || (pcard.button_0?.value?.text && /notify/i.test(pcard.button_0.value.text));
+                  if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
                 }}
               }} catch (err) {{}}
             }});

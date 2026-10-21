@@ -18,6 +18,40 @@ def extract_title_from_url(url):
             return slug.title()
     return ""
 
+def extract_price(val):
+    """Safely extracts integer price from any Flipkart Rome label structure, dict, or string."""
+    if not val:
+        return 0
+    if isinstance(val, (int, float)):
+        return int(val)
+    if isinstance(val, str):
+        m = re.search(r"\d+", val.replace(",", ""))
+        return int(m.group(0)) if m else 0
+    if isinstance(val, dict):
+        for k in ("text", "defaultValue"):
+            if k in val and val[k] is not None:
+                p = extract_price(val[k])
+                if p > 0:
+                    return p
+        if "params" in val and isinstance(val["params"], dict):
+            p = extract_price(val["params"].get("defaultValue") or val["params"].get("price"))
+            if p > 0:
+                return p
+        if "value" in val:
+            p = extract_price(val["value"])
+            if p > 0:
+                return p
+        for state in ("UNLOCKED", "LOCKED"):
+            if state in val:
+                p = extract_price(val[state])
+                if p > 0:
+                    return p
+        if "tracking" in val and isinstance(val["tracking"], dict):
+            p = extract_price(val["tracking"].get("fsp") or val["tracking"].get("mrp"))
+            if p > 0:
+                return p
+    return 0
+
 def sanitize_page_uri(uri):
     """Encodes slashes inside the sid query parameter as %2F."""
     if not uri:
@@ -231,9 +265,13 @@ class FlipkartScraper:
                         mrp = fsp
                         prices = pricing.get("prices", [])
                         for p in prices:
-                            if p.get("priceType") == "MRP":
-                                mrp = int(p.get("value", fsp))
+                            ptype = str(p.get("priceType", "")).upper()
+                            if ptype in ("MRP", "MAXIMUM_RETAIL_PRICE", "LIST_PRICE", "STRIKE_OFF", "STRIKEOFF") and p.get("value"):
+                                mrp = int(p["value"])
                                 break
+
+                        if mrp == fsp and pricing.get("mrp"):
+                            mrp = extract_price(pricing.get("mrp")) or mrp
 
                         disc = pricing.get("totalDiscount", 0)
                         base_url = v.get("baseUrl") or v.get("smartUrl") or ""
@@ -287,20 +325,20 @@ class FlipkartScraper:
                                          cval.get("trackerData_0", {}).get("tracking", {}).get("contentTitle") or
                                          extract_title_from_url(lnk) or "Product")
 
-                                # Prices with comma stripping
-                                fsp = 0
-                                l4 = snb_text.get("label_4", {}).get("value", "")
-                                l4_str = str(l4.get("UNLOCKED", {}).get("value", {}).get("params", {}).get("defaultValue") or l4.get("text", "") if isinstance(l4, dict) else l4)
-                                m_fsp = re.search(r"\d+", l4_str.replace(",", ""))
-                                if m_fsp:
-                                    fsp = int(m_fsp.group(0))
+                                # Prices with robust recursive extraction
+                                p1 = extract_price(snb_text.get("label_4"))
+                                p2 = extract_price(snb_text.get("label_3"))
+                                if not p1 and stepper:
+                                    p1 = extract_price(stepper.get("params", {}).get("price") or stepper.get("tracking", {}).get("fsp"))
+                                if not p2 and stepper:
+                                    p2 = extract_price(stepper.get("tracking", {}).get("mrp"))
 
-                                mrp = fsp
-                                l3 = snb_text.get("label_3", {}).get("value", "")
-                                l3_str = str(l3.get("params", {}).get("defaultValue") or l3.get("text", "") if isinstance(l3, dict) else l3)
-                                m_mrp = re.search(r"\d+", l3_str.replace(",", ""))
-                                if m_mrp:
-                                    mrp = int(m_mrp.group(0))
+                                if p1 and p2:
+                                    fsp = min(p1, p2)
+                                    mrp = max(p1, p2)
+                                else:
+                                    fsp = p1 or p2 or 0
+                                    mrp = fsp
 
                                 disc = 0
                                 l2 = snb_text.get("label_2", {}).get("value", "")
@@ -308,13 +346,8 @@ class FlipkartScraper:
                                 m_disc = re.search(r"(\d+)%", l2_str)
                                 if m_disc:
                                     disc = int(m_disc.group(1))
-
-                                if not fsp and stepper.get("params", {}).get("price"):
-                                    fsp = int(re.sub(r"[^\d]", "", str(stepper["params"]["price"])))
-                                if not fsp and stepper.get("tracking", {}).get("fsp"):
-                                    fsp = int(re.sub(r"[^\d]", "", str(stepper["tracking"]["fsp"])))
-                                if stepper.get("tracking", {}).get("mrp"):
-                                    mrp = int(re.sub(r"[^\d]", "", str(stepper["tracking"]["mrp"])))
+                                elif mrp > fsp:
+                                    disc = round(((mrp - fsp) / mrp) * 100)
 
                                 is_oos = (stepper.get("tracking", {}).get("isAvailable") == "false" or
                                           stepper.get("enabled") is False or
@@ -343,27 +376,21 @@ class FlipkartScraper:
                             if pcard:
                                 stepper_action = pcard.get("stepperData_0", {}).get("action", {})
                                 stepper_tracking = stepper_action.get("tracking", {})
-                                fsp = 0
-                                if stepper_action.get("params", {}).get("price"):
-                                    fsp = int(re.sub(r"[^\d]", "", str(stepper_action["params"]["price"])))
-                                elif stepper_tracking.get("fsp"):
-                                    fsp = int(re.sub(r"[^\d]", "", str(stepper_tracking["fsp"])))
 
-                                mrp = int(re.sub(r"[^\d]", "", str(stepper_tracking["mrp"]))) if stepper_tracking.get("mrp") else fsp
+                                stepper_fsp = extract_price(stepper_action.get("params", {}).get("price") or stepper_tracking.get("fsp"))
+                                stepper_mrp = extract_price(stepper_tracking.get("mrp"))
+                                l5_val = extract_price(pcard.get("label_5"))
+                                l4_val = extract_price(pcard.get("label_4"))
 
-                                if not fsp and pcard.get("label_5", {}).get("value"):
-                                    l5 = pcard["label_5"]["value"]
-                                    l5_str = str(l5.get("UNLOCKED", {}).get("value", {}).get("text") or l5.get("LOCKED", {}).get("value", {}).get("text") or l5.get("text", "") if isinstance(l5, dict) else l5)
-                                    m_fsp = re.search(r"\d+", l5_str.replace(",", ""))
-                                    if m_fsp:
-                                        fsp = int(m_fsp.group(0))
+                                p_sell = stepper_fsp or l5_val or 0
+                                p_mrp = stepper_mrp or l4_val or 0
 
-                                if mrp == fsp and pcard.get("label_4", {}).get("value"):
-                                    l4 = pcard["label_4"]["value"]
-                                    l4_str = str(l4.get("text", "") if isinstance(l4, dict) else l4)
-                                    m_mrp = re.search(r"\d+", l4_str.replace(",", ""))
-                                    if m_mrp:
-                                        mrp = int(m_mrp.group(0))
+                                if p_sell and p_mrp:
+                                    fsp = min(p_sell, p_mrp)
+                                    mrp = max(p_sell, p_mrp)
+                                else:
+                                    fsp = p_sell or p_mrp or 0
+                                    mrp = fsp
 
                                 disc = 0
                                 if pcard.get("label_15", {}).get("value"):
@@ -372,6 +399,8 @@ class FlipkartScraper:
                                     m_disc = re.search(r"(\d+)%", l15_str)
                                     if m_disc:
                                         disc = int(m_disc.group(1))
+                                elif mrp > fsp:
+                                    disc = round(((mrp - fsp) / mrp) * 100)
 
                                 raw_lnk = (pcard.get("box_5", {}).get("action", {}).get("url") or
                                            pcard.get("col_0", {}).get("action", {}).get("url") or
@@ -420,9 +449,10 @@ class FlipkartScraper:
         if fsp > mrp:
             fsp, mrp = mrp, fsp
 
-        # If disc > 0 and fsp == mrp, derive fsp
-        if 0 < disc < 100 and fsp == mrp:
-            fsp = round(mrp * (1 - disc / 100))
+        # If discount is present but MRP was not found (or mrp == fsp), derive MRP from selling price!
+        # NEVER discount fsp a second time! fsp is what the customer actually pays!
+        if 0 < disc < 100 and mrp == fsp:
+            mrp = round(fsp / (1 - disc / 100))
 
         # Re-verify disc
         if not disc or disc <= 0 or disc >= 100:
