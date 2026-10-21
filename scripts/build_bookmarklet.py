@@ -2113,15 +2113,17 @@ def build_bookmarklet():
         f.write(template)
     print("FKMinutes.txt synced successfully!")
 
-    # Standalone offline JS URL
+    # Standalone offline JS URL (100% self-contained, zero network requests, immune to CSP & ISP blocking)
     clean_js = template
     if clean_js.startswith("javascript:"):
         clean_js = clean_js[len("javascript:"):]
     encoded_standalone_js = "javascript:" + urllib.parse.quote(clean_js)
 
-    # Short bookmarklet loader using jsdelivr with cache buster (~290 characters)
-    # Works seamlessly across PC desktop and mobile browsers
-    short_loader_js = "javascript:(function(){var s=document.createElement('script');s.src='https://cdn.jsdelivr.net/gh/jairaj26/flipkart-minutes-deals@main/FKMinutes_Readable.js?t='+Date.now();s.onerror=function(){alert('Failed to load Flipkart Minutes Deals script. Please check your internet connection or use the offline bookmarklet.');};document.head.appendChild(s);})();"
+    # Multi-CDN, CSP-compliant short loader (~590 characters)
+    # 1. Uses fetch() (allowed by Flipkart CSP connect-src: *) instead of <script src> (blocked by CSP script-src)
+    # 2. Injects script content as inline script (allowed by Flipkart CSP script-src 'unsafe-inline')
+    # 3. Tries Fastly jsdelivr first (bypassing Indian ISP blocks on cdn.jsdelivr.net), then GitHub raw, then jsdelivr
+    short_loader_js = "javascript:(function(){var u=['https://fastly.jsdelivr.net/gh/jairaj26/flipkart-minutes-deals@main/FKMinutes_Readable.js','https://raw.githubusercontent.com/jairaj26/flipkart-minutes-deals/main/FKMinutes_Readable.js','https://cdn.jsdelivr.net/gh/jairaj26/flipkart-minutes-deals@main/FKMinutes_Readable.js'];function l(i){if(i>=u.length){alert('Failed to load Flipkart Minutes Deals script. Please check your internet connection or use the offline bookmarklet.');return;}fetch(u[i]+'?t='+Date.now()).then(function(r){if(!r.ok)throw 1;return r.text();}).then(function(c){var s=document.createElement('script');s.textContent=c.replace(/^javascript:/i,'');document.head.appendChild(s);}).catch(function(){l(i+1);});}l(0);})();"
 
     # Update Install_Bookmarklet.html and index.html
     for html_path in ["Install_Bookmarklet.html", "index.html"]:
@@ -2129,14 +2131,15 @@ def build_bookmarklet():
             with open(html_path, "r", encoding="utf-8") as f:
                 content = f.read()
 
-            # 1. Update the primary PC/Desktop button to use the short loader
+            # 1. Update the primary PC/Desktop button to use the bulletproof standalone offline bookmarklet
+            # Desktop browsers have no bookmark length limits, so standalone is 100% reliable, instant, and CSP-proof
             content = re.sub(
                 r'(<div class="btn-box">\s*<a class="bookmarklet-btn" href=")[^"]+(")',
-                lambda m: m.group(1) + short_loader_js + m.group(2),
+                lambda m: m.group(1) + encoded_standalone_js + m.group(2),
                 content
             )
 
-            # 2. Update the mobile textarea to display the short loader
+            # 2. Update the mobile textarea to display the CSP-compliant multi-CDN short loader
             escaped_short_loader = html.escape(short_loader_js)
             content = re.sub(
                 r'(<textarea id="mobile-code"[^>]*>)[^<]*(</textarea>)',
