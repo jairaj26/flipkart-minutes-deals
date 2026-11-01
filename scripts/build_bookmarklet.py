@@ -22,13 +22,16 @@ def build_bookmarklet():
     ]
     excluded_brands = sorted(list({b.strip().lower() for b in raw_excluded if b.strip()}))
 
-    # Group icons for all 15 quick-commerce categories
+    # Group icons for all quick-commerce categories
     icons = {
         "Staples": "🌾",
-        "Snacks & Beverages": "🍟",
+        "Tea & Coffee": "☕",
+        "Cold Drinks & Juices": "🧃",
+        "Snacks & Munchies": "🍟",
         "Dairy, Bakery and Eggs": "🥛",
         "Packaged Goods": "🥫",
-        "Personal and Baby Care": "🧼",
+        "Personal Care & Wellness": "🧼",
+        "Baby Care": "👶",
         "Fruits and Vegetables": "🍎",
         "Household Care": "🧹",
         "Home & Kitchen": "🍳",
@@ -41,11 +44,18 @@ def build_bookmarklet():
         "Paan Corner & Refreshers": "🌿"
     }
 
+    # Count total active subcategories across all groups
+    clean_sub_count = 0
+    for gname, subcats in cat_catalog["groups"].items():
+        for sub in subcats:
+            if sub.get("default_selected", True):
+                clean_sub_count += 1
+
     # Build hierarchical category tree for Canva-style checkbox dropdown
     category_tree = [
         {
             "id": "master_all",
-            "name": "⚡ Scan All Categories (Top Deals)",
+            "name": f"⚡ Scan All Categories ({clean_sub_count} Subcategories)",
             "isMaster": True,
             "uri": ""
         }
@@ -55,39 +65,12 @@ def build_bookmarklet():
 
     for group_name, subcats in cat_catalog["groups"].items():
         icon = icons.get(group_name, "📦")
-
-        main_item = None
-        for item in subcats:
-            if "Excl." in item["name"] or item["name"].startswith("All "):
-                main_item = item
-                break
-
-        if not main_item:
-            first_p = subcats[0].get("parent_code", "")
-            if first_p:
-                main_uri = f"/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]={first_p}"
-            else:
-                main_uri = subcats[0]["url_path"]
-            main_item = {
-                "name": f"{group_name} (All)",
-                "url_path": main_uri,
-                "category_code": first_p
-            }
-
         group_disp_name = f"{icon} {group_name}"
         group_all_label = f"{group_name} (All)"
-        if "Excl. Pooja" in main_item["name"]:
-            group_disp_name = f"{icon} Household Care"
-            group_all_label = "Household Care (Excl. Pooja & Pet)"
-        elif "Excl. Festive" in main_item["name"]:
-            group_disp_name = f"{icon} Home & Kitchen"
-            group_all_label = "Home & Kitchen (Clean - Excl. Cases)"
 
-        # Process subcategories: Clean names, NO enter symbols, collapsed by default
+        # Process subcategories: Clean names, NO enter symbols, direct leaf Solr facets
         children = []
         for sub in subcats:
-            if sub == main_item:
-                continue
             if "Excl." in sub["name"] or sub["name"].startswith("All "):
                 continue
             if "(All Parent)" in sub["name"]:
@@ -110,7 +93,7 @@ def build_bookmarklet():
             "name": group_disp_name,
             "allLabel": group_all_label,
             "isGroup": True,
-            "uri": main_item["url_path"],
+            "uri": subcats[0]["url_path"],
             "subs": children
         }
         category_tree.append(group_entry)
@@ -513,6 +496,31 @@ def build_bookmarklet():
       cursor: pointer;
       user-select: none;
       flex: 1;
+    }}
+    .fkd-expand-all-btn {{
+      background: none;
+      border: none;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fkd-green);
+      cursor: pointer;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-left: auto;
+      transition: background 0.12s ease;
+      font-family: inherit;
+    }}
+    .fkd-expand-all-btn:hover {{
+      background: rgba(15, 132, 88, 0.08);
+    }}
+    .fkd-sub-count-badge {{
+      font-size: 10px;
+      color: #9CA3AF;
+      background: #F3F4F6;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: auto;
+      font-weight: 600;
     }}
 
     .fkd-tree-group {{
@@ -968,21 +976,24 @@ def build_bookmarklet():
   /* Update Category Selection Summary Label */
   function updateCategorySummary() {{
     var allGrps = CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }});
-    var checkedGrps = allGrps.filter(function(x){{ return selectedNodes.has(x.id); }});
-    var isMasterChecked = selectedNodes.has("master_all") || (checkedGrps.length === allGrps.length);
+    var isMasterChecked = selectedNodes.has("master_all") || allGrps.every(function(g){{ return selectedNodes.has(g.id); }});
 
-    if (isMasterChecked || checkedGrps.length === allGrps.length) {{
-      catNameDisplay.textContent = "⚡ All Categories (" + allGrps.length + ")";
-    }} else if (checkedGrps.length === 1) {{
+    if (isMasterChecked) {{
+      catNameDisplay.textContent = "⚡ All Categories (" + allGrps.length + " departments)";
+      return;
+    }}
+
+    var checkedGrps = allGrps.filter(function(x){{ return selectedNodes.has(x.id); }});
+    if (checkedGrps.length === 1) {{
       var grp = checkedGrps[0];
       var checkedSubs = grp.subs ? grp.subs.filter(function(s){{ return selectedNodes.has(s.id); }}) : [];
-      if (checkedSubs.length === 1 && (!grp.subs || checkedSubs.length < grp.subs.length)) {{
+      if (checkedSubs.length === 1 && grp.subs && grp.subs.length > 1) {{
         catNameDisplay.textContent = grp.name + " › " + checkedSubs[0].name;
       }} else {{
         catNameDisplay.textContent = grp.name;
       }}
     }} else if (checkedGrps.length > 1) {{
-      catNameDisplay.textContent = "⚡ " + checkedGrps.length + " Categories Selected";
+      catNameDisplay.textContent = "⚡ " + checkedGrps.length + " Departments Selected";
     }} else {{
       var totalSubs = 0;
       var lastSubName = "";
@@ -991,7 +1002,7 @@ def build_bookmarklet():
           g.subs.forEach(function(s) {{
             if (selectedNodes.has(s.id)) {{
               totalSubs++;
-              lastSubName = g.name + " › " + s.name;
+              lastSubName = (g.subs.length > 1) ? (g.name + " › " + s.name) : g.name;
             }}
           }});
         }}
@@ -1010,21 +1021,25 @@ def build_bookmarklet():
   function getSelectedEndpoints() {{
     var endpoints = [];
     var allGrps = CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }});
-
-    var checkedGrps = allGrps.filter(function(x){{ return selectedNodes.has(x.id); }});
-    if (selectedNodes.has("master_all") || checkedGrps.length === allGrps.length) {{
-      return MAIN_GROUPS.map(function(g){{ return {{ name: g.name, uri: g.uri }}; }});
-    }}
+    var isMasterAll = selectedNodes.has("master_all");
 
     allGrps.forEach(function(grp) {{
-      if (selectedNodes.has(grp.id)) {{
-        endpoints.push({{ name: grp.name, uri: grp.uri }});
-      }} else if (grp.subs) {{
+      var isGrpChecked = isMasterAll || selectedNodes.has(grp.id);
+      if (grp.subs && grp.subs.length > 0) {{
         grp.subs.forEach(function(sub) {{
-          if (selectedNodes.has(sub.id)) {{
-            endpoints.push({{ name: grp.name + " › " + sub.name, uri: sub.uri }});
+          // If master or group is checked, include all non-optin subs
+          // If sub is specifically checked, include it
+          if (selectedNodes.has(sub.id) || (isGrpChecked && !sub.isOptin)) {{
+            endpoints.push({{
+              name: (grp.subs.length > 1) ? (grp.name + " › " + sub.name) : grp.name,
+              uri: sub.uri
+            }});
           }}
         }});
+      }} else {{
+        if (isGrpChecked || selectedNodes.has(grp.id)) {{
+          endpoints.push({{ name: grp.name, uri: grp.uri }});
+        }}
       }}
     }});
 
@@ -1043,11 +1058,34 @@ def build_bookmarklet():
   var masterLabel = d.createElement("label");
   masterLabel.htmlFor = "fkd-master-cb";
   masterLabel.className = "fkd-master-label";
-  masterLabel.textContent = "⚡ Scan All Categories (" + MAIN_GROUPS.length + ")";
+  masterLabel.textContent = "⚡ Scan All Categories (" + CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }}).length + ")";
+
+  var expandAllBtn = d.createElement("button");
+  expandAllBtn.type = "button";
+  expandAllBtn.className = "fkd-expand-all-btn";
+  expandAllBtn.textContent = "Collapse All";
 
   masterRow.appendChild(masterCb);
   masterRow.appendChild(masterLabel);
+  masterRow.appendChild(expandAllBtn);
   catDrawer.appendChild(masterRow);
+
+  var isAllExpanded = true;
+  expandAllBtn.onclick = function(e) {{
+    e.stopPropagation();
+    isAllExpanded = !isAllExpanded;
+    expandAllBtn.textContent = isAllExpanded ? "Collapse All" : "Expand All";
+    catDrawer.querySelectorAll(".fkd-sub-container").forEach(function(sc) {{
+      if (isAllExpanded) {{
+        sc.classList.remove("collapsed");
+      }} else {{
+        sc.classList.add("collapsed");
+      }}
+    }});
+    catDrawer.querySelectorAll(".fkd-tree-chevron").forEach(function(ch) {{
+      ch.innerHTML = isAllExpanded ? "▾" : "▸";
+    }});
+  }};
 
   masterCb.onchange = function() {{
     var isChecked = masterCb.checked;
@@ -1069,11 +1107,10 @@ def build_bookmarklet():
     updateCategorySummary();
   }};
 
-  masterRow.onclick = function(e) {{
-    if (e.target !== masterCb) {{
-      masterCb.checked = !masterCb.checked;
-      masterCb.dispatchEvent(new Event("change"));
-    }}
+  masterLabel.onclick = function(e) {{
+    e.stopPropagation();
+    masterCb.checked = !masterCb.checked;
+    masterCb.dispatchEvent(new Event("change"));
   }};
 
   CATEGORY_TREE.forEach(function(item) {{
@@ -1090,8 +1127,8 @@ def build_bookmarklet():
     var chevron = d.createElement("button");
     chevron.type = "button";
     chevron.className = "fkd-tree-chevron" + (hasSubs ? "" : " hidden");
-    chevron.innerHTML = "▸";
-    chevron.title = "Expand subcategories";
+    chevron.innerHTML = hasSubs ? "▾" : "";
+    chevron.title = "Toggle subcategories";
 
     var grpCb = d.createElement("input");
     grpCb.type = "checkbox";
@@ -1106,10 +1143,18 @@ def build_bookmarklet():
     headerRow.appendChild(chevron);
     headerRow.appendChild(grpCb);
     headerRow.appendChild(titleSpan);
+
+    if (hasSubs) {{
+      var badge = d.createElement("span");
+      badge.className = "fkd-sub-count-badge";
+      badge.textContent = item.subs.length;
+      headerRow.appendChild(badge);
+    }}
+
     groupWrapper.appendChild(headerRow);
 
     var subContainer = d.createElement("div");
-    subContainer.className = "fkd-sub-container collapsed";
+    subContainer.className = "fkd-sub-container"; // expanded by default
 
     if (hasSubs) {{
       item.subs.forEach(function(sub) {{
@@ -1134,7 +1179,8 @@ def build_bookmarklet():
           e.stopPropagation();
           if (subCb.checked) {{
             selectedNodes.add(sub.id);
-            var allChecked = item.subs.every(function(s){{ return selectedNodes.has(s.id); }});
+            var nonOptin = item.subs.filter(function(s){{ return !s.isOptin; }});
+            var allChecked = nonOptin.every(function(s){{ return selectedNodes.has(s.id); }});
             if (allChecked) selectedNodes.add(item.id);
           }} else {{
             selectedNodes.delete(sub.id);
@@ -1155,7 +1201,7 @@ def build_bookmarklet():
       }});
 
       function toggleGroup(e) {{
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         var isCol = subContainer.classList.contains("collapsed");
         if (isCol) {{
           subContainer.classList.remove("collapsed");
@@ -1167,6 +1213,13 @@ def build_bookmarklet():
       }}
 
       chevron.onclick = toggleGroup;
+      titleSpan.onclick = toggleGroup;
+    }} else {{
+      titleSpan.onclick = function(e) {{
+        e.stopPropagation();
+        grpCb.checked = !grpCb.checked;
+        grpCb.dispatchEvent(new Event("change"));
+      }};
     }}
 
     grpCb.onchange = function(e) {{
@@ -1191,27 +1244,39 @@ def build_bookmarklet():
       updateCategorySummary();
     }};
 
-    titleSpan.onclick = function(e) {{
-      e.stopPropagation();
-      grpCb.checked = !grpCb.checked;
-      grpCb.dispatchEvent(new Event("change"));
-    }};
-
     groupWrapper.appendChild(subContainer);
     catDrawer.appendChild(groupWrapper);
   }});
 
   function syncCheckboxes() {{
     var allGrps = CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }});
-    var allGrpChecked = allGrps.every(function(g){{ return selectedNodes.has(g.id); }});
-    masterCb.checked = allGrpChecked;
 
-    catDrawer.querySelectorAll(".fkd-grp-check").forEach(function(cb) {{
-      cb.checked = selectedNodes.has(cb.dataset.id);
-    }});
     catDrawer.querySelectorAll(".fkd-sub-check").forEach(function(cb) {{
       cb.checked = selectedNodes.has(cb.dataset.id);
     }});
+
+    allGrps.forEach(function(g) {{
+      var gcb = catDrawer.querySelector('.fkd-grp-check[data-id="' + g.id + '"]');
+      if (!gcb) return;
+      if (g.subs && g.subs.length > 0) {{
+        var nonOptin = g.subs.filter(function(s){{ return !s.isOptin; }});
+        var allChecked = nonOptin.length > 0 && nonOptin.every(function(s){{ return selectedNodes.has(s.id); }});
+        var someChecked = g.subs.some(function(s){{ return selectedNodes.has(s.id); }});
+        gcb.checked = allChecked;
+        gcb.indeterminate = !allChecked && someChecked;
+        if (allChecked) {{
+          selectedNodes.add(g.id);
+        }} else {{
+          selectedNodes.delete(g.id);
+        }}
+      }} else {{
+        gcb.checked = selectedNodes.has(g.id);
+      }}
+    }});
+
+    var allGrpChecked = allGrps.every(function(g){{ return selectedNodes.has(g.id); }});
+    masterCb.checked = allGrpChecked;
+    masterCb.indeterminate = !allGrpChecked && selectedNodes.size > 0;
   }}
 
   /* Close drawer when clicking outside inside sidebar */
@@ -2067,27 +2132,42 @@ def build_bookmarklet():
       return;
     }}
 
-    setStatus(`Scanning ${{endpoints.length}} selected categories...`);
+    var totalEps = endpoints.length;
+    var completedCount = 0;
+    var epIndex = 0;
+    var CONCURRENCY = Math.min(3, totalEps);
 
-    for (var i = 0; i < endpoints.length; i++) {{
-      if (st.mode !== "RUN" || window.fkDealsStop) break;
-      var ep = endpoints[i];
-      setStatus(`[${{i+1}}/${{endpoints.length}}] ${{ep.name.trim()}}...`);
-      var pUri = ep.uri;
-      if (!pUri.includes("sort=discount")) {{
-        pUri += (pUri.includes("?") ? "&" : "?") + "sort=discount";
-      }}
-      var res = await fetchAndParsePage(pUri);
-      renderGrid();
+    setStatus(`Scanning ${{totalEps}} categories with ${{CONCURRENCY}} parallel workers...`);
 
-      /* If Page 1 has top deals, fetch Page 2 as well */
-      if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 6) {{
-        var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
-        await fetchAndParsePage(p2Uri);
+    async function scanWorker() {{
+      while (epIndex < totalEps) {{
+        if (st.mode !== "RUN" || window.fkDealsStop) break;
+        var myIdx = epIndex++;
+        var ep = endpoints[myIdx];
+        setStatus(`[${{completedCount + 1}}/${{totalEps}}] ${{ep.name.trim()}}...`);
+        var pUri = ep.uri;
+        if (!pUri.includes("sort=discount")) {{
+          pUri += (pUri.includes("?") ? "&" : "?") + "sort=discount";
+        }}
+        var res = await fetchAndParsePage(pUri);
+        completedCount++;
         renderGrid();
+
+        /* If Page 1 has top deals, fetch Page 2 as well */
+        if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 6) {{
+          var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
+          await fetchAndParsePage(p2Uri);
+          renderGrid();
+        }}
+        await new Promise(function(r){{ setTimeout(r, 100); }});
       }}
-      await new Promise(function(r){{ setTimeout(r, 260); }});
     }}
+
+    var workers = [];
+    for (var w = 0; w < CONCURRENCY; w++) {{
+      workers.push(scanWorker());
+    }}
+    await Promise.all(workers);
 
     stopAll();
     var finalIn = st.items.filter(function(x){{ return !x.oos && (st.minDiscount <= 0 || x.d >= st.minDiscount); }}).length;

@@ -17,7 +17,7 @@ javascript:(function(){
   var CATEGORY_TREE = [
   {
     "id": "master_all",
-    "name": "⚡ Scan All Categories (Top Deals)",
+    "name": "⚡ Scan All Categories (63 Subcategories)",
     "isMaster": true,
     "uri": ""
   },
@@ -27,7 +27,7 @@ javascript:(function(){
     "name": "🌾 Staples",
     "allLabel": "Staples (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/3uv/",
     "subs": [
       {
         "id": "sub_73z_bpe_3uv_",
@@ -74,25 +74,13 @@ javascript:(function(){
     ]
   },
   {
-    "id": "grp_Snacks_and_Beverages",
-    "group": "Snacks & Beverages",
-    "name": "🍟 Snacks & Beverages",
-    "allLabel": "Snacks & Beverages (All)",
+    "id": "grp_Tea_and_Coffee",
+    "group": "Tea & Coffee",
+    "name": "☕ Tea & Coffee",
+    "allLabel": "Tea & Coffee (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/",
     "subs": [
-      {
-        "id": "sub_73z_ujs_eb9_",
-        "name": "Biscuits",
-        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/",
-        "isOptin": false
-      },
-      {
-        "id": "sub_73z_ujs_dd9_",
-        "name": "Chips, Namkeen and Snacks",
-        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/",
-        "isOptin": false
-      },
       {
         "id": "sub_73z_ujs_amr_",
         "name": "Tea",
@@ -106,26 +94,36 @@ javascript:(function(){
         "isOptin": false
       },
       {
-        "id": "sub_73z_ujs_afd_",
-        "name": "Juices",
-        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/afd/",
-        "isOptin": false
-      },
-      {
         "id": "sub_73z_ujs_vnq_",
-        "name": "Nutritional Drink Mix",
+        "name": "Nutritional & Health Drink Mix",
         "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/vnq/",
         "isOptin": false
-      },
+      }
+    ]
+  },
+  {
+    "id": "grp_Cold_Drinks_and_Juices",
+    "group": "Cold Drinks & Juices",
+    "name": "🧃 Cold Drinks & Juices",
+    "allLabel": "Cold Drinks & Juices (All)",
+    "isGroup": true,
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/",
+    "subs": [
       {
         "id": "sub_73z_ujs_dfw_",
-        "name": "Soft Drinks",
+        "name": "Soft Drinks & Sodas",
         "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/",
         "isOptin": false
       },
       {
+        "id": "sub_73z_ujs_afd_",
+        "name": "Fruit Juices",
+        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/afd/",
+        "isOptin": false
+      },
+      {
         "id": "sub_73z_ujs_iau_",
-        "name": "Instant Drink Mixes, Squash and Syrups",
+        "name": "Instant Drink Mixes, Squash & Syrups",
         "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/iau/",
         "isOptin": false
       },
@@ -138,12 +136,34 @@ javascript:(function(){
     ]
   },
   {
+    "id": "grp_Snacks_and_Munchies",
+    "group": "Snacks & Munchies",
+    "name": "🍟 Snacks & Munchies",
+    "allLabel": "Snacks & Munchies (All)",
+    "isGroup": true,
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/",
+    "subs": [
+      {
+        "id": "sub_73z_ujs_eb9_",
+        "name": "Biscuits & Cookies",
+        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/",
+        "isOptin": false
+      },
+      {
+        "id": "sub_73z_ujs_dd9_",
+        "name": "Chips, Namkeen and Snacks",
+        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/",
+        "isOptin": false
+      }
+    ]
+  },
+  {
     "id": "grp_Dairy,_Bakery_and_Eggs",
     "group": "Dairy, Bakery and Eggs",
     "name": "🥛 Dairy, Bakery and Eggs",
     "allLabel": "Dairy, Bakery and Eggs (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa&p[]=facets.category[]=73z/esa/dt6/",
     "subs": [
       {
         "id": "sub_73z_esa_dt6_",
@@ -171,7 +191,7 @@ javascript:(function(){
     "name": "🥫 Packaged Goods",
     "allLabel": "Packaged Goods (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/u0u/",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/ltz/",
     "subs": [
       {
         "id": "sub_73z_u0u_ltz_",
@@ -211,19 +231,19 @@ javascript:(function(){
       },
       {
         "id": "sub_73z_u0u_td1_",
-        "name": "Baking",
+        "name": "Baking Essentials",
         "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/td1/",
         "isOptin": false
       }
     ]
   },
   {
-    "id": "grp_Personal_and_Baby_Care",
-    "group": "Personal and Baby Care",
-    "name": "🧼 Personal and Baby Care",
-    "allLabel": "Personal and Baby Care (All)",
+    "id": "grp_Personal_Care_and_Wellness",
+    "group": "Personal Care & Wellness",
+    "name": "🧼 Personal Care & Wellness",
+    "allLabel": "Personal Care & Wellness (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/njl/",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/sn6/",
     "subs": [
       {
         "id": "sub_73z_njl_sn6_",
@@ -278,7 +298,17 @@ javascript:(function(){
         "name": "Shaving Needs",
         "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/nw3/",
         "isOptin": false
-      },
+      }
+    ]
+  },
+  {
+    "id": "grp_Baby_Care",
+    "group": "Baby Care",
+    "name": "👶 Baby Care",
+    "allLabel": "Baby Care (All)",
+    "isGroup": true,
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/smb/",
+    "subs": [
       {
         "id": "sub_73z_njl_smb_",
         "name": "Diapers and Wipes",
@@ -305,7 +335,7 @@ javascript:(function(){
     "name": "🍎 Fruits and Vegetables",
     "allLabel": "Fruits and Vegetables (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/mk9/",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9&p[]=facets.category[]=73z/mk9/w9z/",
     "subs": [
       {
         "id": "sub_73z_mk9_w9z_",
@@ -325,9 +355,9 @@ javascript:(function(){
     "id": "grp_Household_Care",
     "group": "Household Care",
     "name": "🧹 Household Care",
-    "allLabel": "Household Care (Excl. Pooja & Pet)",
+    "allLabel": "Household Care (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl/2z2/&p[]=facets.category[]=73z/cwl/bdc/&p[]=facets.category[]=73z/cwl/u3c/&p[]=facets.category[]=73z/cwl/qz9/&p[]=facets.category[]=73z/cwl/2wc/&p[]=facets.category[]=73z/cwl/0s4/",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/2z2/",
     "subs": [
       {
         "id": "sub_73z_cwl_2z2_",
@@ -383,28 +413,10 @@ javascript:(function(){
     "id": "grp_Home_and_Kitchen",
     "group": "Home & Kitchen",
     "name": "🍳 Home & Kitchen",
-    "allLabel": "Home & Kitchen (Clean - Excl. Cases)",
+    "allLabel": "Home & Kitchen (All)",
     "isGroup": true,
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh/lbh/&p[]=facets.category[]=73z/uyk/sgh/ib1/&p[]=facets.category[]=73z/uyk/sgh/nlf/&p[]=facets.category[]=73z/uyk/hho/&p[]=facets.category[]=73z/uyk/vdx/&p[]=facets.category[]=73z/uyk/6f4/",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/hho/",
     "subs": [
-      {
-        "id": "sub_73z_uyk_sgh_lbh_",
-        "name": "Home Utilities",
-        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/lbh/",
-        "isOptin": false
-      },
-      {
-        "id": "sub_73z_uyk_sgh_ib1_",
-        "name": "Home Organisers",
-        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/ib1/",
-        "isOptin": false
-      },
-      {
-        "id": "sub_73z_uyk_sgh_nlf_",
-        "name": "Hand Tools",
-        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/nlf/",
-        "isOptin": false
-      },
       {
         "id": "sub_73z_uyk_hho_",
         "name": "Kitchen Tools and Appliances",
@@ -418,9 +430,27 @@ javascript:(function(){
         "isOptin": false
       },
       {
+        "id": "sub_73z_uyk_sgh_lbh_",
+        "name": "Home Utilities",
+        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/lbh/",
+        "isOptin": false
+      },
+      {
+        "id": "sub_73z_uyk_sgh_ib1_",
+        "name": "Home Organisers",
+        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/ib1/",
+        "isOptin": false
+      },
+      {
         "id": "sub_73z_uyk_6f4_",
         "name": "Bath and Bed Essentials",
         "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/6f4/",
+        "isOptin": false
+      },
+      {
+        "id": "sub_73z_uyk_sgh_nlf_",
+        "name": "Hand Tools",
+        "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh&p[]=facets.category[]=73z/uyk/sgh/nlf/",
         "isOptin": false
       },
       {
@@ -438,30 +468,12 @@ javascript:(function(){
     ]
   },
   {
-    "id": "grp_Office_and_School_Supplies",
-    "group": "Office and School Supplies",
-    "name": "📚 Office and School Supplies",
-    "allLabel": "Office and School Supplies (All)",
-    "isGroup": true,
-    "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/",
-    "subs": []
-  },
-  {
-    "id": "grp_Fashion_and_Accessories",
-    "group": "Fashion & Accessories",
-    "name": "👕 Fashion & Accessories",
-    "allLabel": "Fashion & Accessories (All)",
-    "isGroup": true,
-    "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount",
-    "subs": []
-  },
-  {
     "id": "grp_Electronics_and_Gadgets",
     "group": "Electronics & Gadgets",
     "name": "🔌 Electronics & Gadgets",
     "allLabel": "Electronics & Gadgets (All)",
     "isGroup": true,
-    "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount",
+    "uri": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount",
     "subs": [
       {
         "id": "sub_hloc_0039",
@@ -492,6 +504,12 @@ javascript:(function(){
     "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount",
     "subs": [
       {
+        "id": "sub_hloc_0034",
+        "name": "Ice Creams & Desserts",
+        "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      },
+      {
         "id": "sub_hloc_0081_0806",
         "name": "Sweets & Mithai",
         "uri": "/hyperlocal/hloc/0806/pr?sid=hloc%2F0081%2F0806&marketplace=HYPERLOCAL&sort=discount",
@@ -508,9 +526,47 @@ javascript:(function(){
     "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount",
     "subs": [
       {
+        "id": "sub_hloc_0028",
+        "name": "Toys & Games",
+        "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      },
+      {
         "id": "sub_hloc_0036",
         "name": "Sports & Fitness",
         "uri": "/hyperlocal/Sports-Fitness/pr?sid=hloc%2F0036&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      }
+    ]
+  },
+  {
+    "id": "grp_Office_and_School_Supplies",
+    "group": "Office and School Supplies",
+    "name": "📚 Office and School Supplies",
+    "allLabel": "Office and School Supplies (All)",
+    "isGroup": true,
+    "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/",
+    "subs": [
+      {
+        "id": "sub_73z_pyy_",
+        "name": "Office & School Supplies",
+        "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/",
+        "isOptin": false
+      }
+    ]
+  },
+  {
+    "id": "grp_Fashion_and_Accessories",
+    "group": "Fashion & Accessories",
+    "name": "👕 Fashion & Accessories",
+    "allLabel": "Fashion & Accessories (All)",
+    "isGroup": true,
+    "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount",
+    "subs": [
+      {
+        "id": "sub_hloc_0026",
+        "name": "Fashion & Accessories",
+        "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount",
         "isOptin": false
       }
     ]
@@ -522,7 +578,14 @@ javascript:(function(){
     "allLabel": "Chicken, Meat & Fish (All)",
     "isGroup": true,
     "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount",
-    "subs": []
+    "subs": [
+      {
+        "id": "sub_hloc_7n35",
+        "name": "Chicken, Meat & Fish",
+        "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      }
+    ]
   },
   {
     "id": "grp_Paan_Corner_and_Refreshers",
@@ -531,7 +594,14 @@ javascript:(function(){
     "allLabel": "Paan Corner & Refreshers (All)",
     "isGroup": true,
     "uri": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount",
-    "subs": []
+    "subs": [
+      {
+        "id": "sub_hloc_0049_4901",
+        "name": "Paan Corner & Refreshers",
+        "uri": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount",
+        "isOptin": false
+      }
+    ]
   }
 ];
 
@@ -541,67 +611,73 @@ javascript:(function(){
     "id": "grp_Staples",
     "group": "Staples",
     "name": "🌾 Staples",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe"
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/3uv/"
   },
   {
-    "id": "grp_Snacks_and_Beverages",
-    "group": "Snacks & Beverages",
-    "name": "🍟 Snacks & Beverages",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs"
+    "id": "grp_Tea_and_Coffee",
+    "group": "Tea & Coffee",
+    "name": "☕ Tea & Coffee",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/"
+  },
+  {
+    "id": "grp_Cold_Drinks_and_Juices",
+    "group": "Cold Drinks & Juices",
+    "name": "🧃 Cold Drinks & Juices",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/"
+  },
+  {
+    "id": "grp_Snacks_and_Munchies",
+    "group": "Snacks & Munchies",
+    "name": "🍟 Snacks & Munchies",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/"
   },
   {
     "id": "grp_Dairy,_Bakery_and_Eggs",
     "group": "Dairy, Bakery and Eggs",
     "name": "🥛 Dairy, Bakery and Eggs",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa"
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa&p[]=facets.category[]=73z/esa/dt6/"
   },
   {
     "id": "grp_Packaged_Goods",
     "group": "Packaged Goods",
     "name": "🥫 Packaged Goods",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/u0u/"
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/ltz/"
   },
   {
-    "id": "grp_Personal_and_Baby_Care",
-    "group": "Personal and Baby Care",
-    "name": "🧼 Personal and Baby Care",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/njl/"
+    "id": "grp_Personal_Care_and_Wellness",
+    "group": "Personal Care & Wellness",
+    "name": "🧼 Personal Care & Wellness",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/sn6/"
+  },
+  {
+    "id": "grp_Baby_Care",
+    "group": "Baby Care",
+    "name": "👶 Baby Care",
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/smb/"
   },
   {
     "id": "grp_Fruits_and_Vegetables",
     "group": "Fruits and Vegetables",
     "name": "🍎 Fruits and Vegetables",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z&p[]=facets.category[]=73z/mk9/"
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9&p[]=facets.category[]=73z/mk9/w9z/"
   },
   {
     "id": "grp_Household_Care",
     "group": "Household Care",
     "name": "🧹 Household Care",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl/2z2/&p[]=facets.category[]=73z/cwl/bdc/&p[]=facets.category[]=73z/cwl/u3c/&p[]=facets.category[]=73z/cwl/qz9/&p[]=facets.category[]=73z/cwl/2wc/&p[]=facets.category[]=73z/cwl/0s4/"
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl&p[]=facets.category[]=73z/cwl/2z2/"
   },
   {
     "id": "grp_Home_and_Kitchen",
     "group": "Home & Kitchen",
     "name": "🍳 Home & Kitchen",
-    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh/lbh/&p[]=facets.category[]=73z/uyk/sgh/ib1/&p[]=facets.category[]=73z/uyk/sgh/nlf/&p[]=facets.category[]=73z/uyk/hho/&p[]=facets.category[]=73z/uyk/vdx/&p[]=facets.category[]=73z/uyk/6f4/"
-  },
-  {
-    "id": "grp_Office_and_School_Supplies",
-    "group": "Office and School Supplies",
-    "name": "📚 Office and School Supplies",
-    "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"
-  },
-  {
-    "id": "grp_Fashion_and_Accessories",
-    "group": "Fashion & Accessories",
-    "name": "👕 Fashion & Accessories",
-    "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount"
+    "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk&p[]=facets.category[]=73z/uyk/hho/"
   },
   {
     "id": "grp_Electronics_and_Gadgets",
     "group": "Electronics & Gadgets",
     "name": "🔌 Electronics & Gadgets",
-    "uri": "/hyperlocal/Electronics%20and%20Gadgets/pr?sid=hloc%2F0038&marketplace=HYPERLOCAL&sort=discount"
+    "uri": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount"
   },
   {
     "id": "grp_Ice_Cream_and_Desserts",
@@ -614,6 +690,18 @@ javascript:(function(){
     "group": "Toys, Games & Sports",
     "name": "🧸 Toys, Games & Sports",
     "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount"
+  },
+  {
+    "id": "grp_Office_and_School_Supplies",
+    "group": "Office and School Supplies",
+    "name": "📚 Office and School Supplies",
+    "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"
+  },
+  {
+    "id": "grp_Fashion_and_Accessories",
+    "group": "Fashion & Accessories",
+    "name": "👕 Fashion & Accessories",
+    "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount"
   },
   {
     "id": "grp_Chicken,_Meat_and_Fish",
@@ -1050,6 +1138,31 @@ javascript:(function(){
       cursor: pointer;
       user-select: none;
       flex: 1;
+    }
+    .fkd-expand-all-btn {
+      background: none;
+      border: none;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fkd-green);
+      cursor: pointer;
+      padding: 2px 7px;
+      border-radius: 4px;
+      margin-left: auto;
+      transition: background 0.12s ease;
+      font-family: inherit;
+    }
+    .fkd-expand-all-btn:hover {
+      background: rgba(15, 132, 88, 0.08);
+    }
+    .fkd-sub-count-badge {
+      font-size: 10px;
+      color: #9CA3AF;
+      background: #F3F4F6;
+      padding: 1px 6px;
+      border-radius: 10px;
+      margin-left: auto;
+      font-weight: 600;
     }
 
     .fkd-tree-group {
@@ -1505,21 +1618,24 @@ javascript:(function(){
   /* Update Category Selection Summary Label */
   function updateCategorySummary() {
     var allGrps = CATEGORY_TREE.filter(function(x){ return !x.isMaster; });
-    var checkedGrps = allGrps.filter(function(x){ return selectedNodes.has(x.id); });
-    var isMasterChecked = selectedNodes.has("master_all") || (checkedGrps.length === allGrps.length);
+    var isMasterChecked = selectedNodes.has("master_all") || allGrps.every(function(g){ return selectedNodes.has(g.id); });
 
-    if (isMasterChecked || checkedGrps.length === allGrps.length) {
-      catNameDisplay.textContent = "⚡ All Categories (" + allGrps.length + ")";
-    } else if (checkedGrps.length === 1) {
+    if (isMasterChecked) {
+      catNameDisplay.textContent = "⚡ All Categories (" + allGrps.length + " departments)";
+      return;
+    }
+
+    var checkedGrps = allGrps.filter(function(x){ return selectedNodes.has(x.id); });
+    if (checkedGrps.length === 1) {
       var grp = checkedGrps[0];
       var checkedSubs = grp.subs ? grp.subs.filter(function(s){ return selectedNodes.has(s.id); }) : [];
-      if (checkedSubs.length === 1 && (!grp.subs || checkedSubs.length < grp.subs.length)) {
+      if (checkedSubs.length === 1 && grp.subs && grp.subs.length > 1) {
         catNameDisplay.textContent = grp.name + " › " + checkedSubs[0].name;
       } else {
         catNameDisplay.textContent = grp.name;
       }
     } else if (checkedGrps.length > 1) {
-      catNameDisplay.textContent = "⚡ " + checkedGrps.length + " Categories Selected";
+      catNameDisplay.textContent = "⚡ " + checkedGrps.length + " Departments Selected";
     } else {
       var totalSubs = 0;
       var lastSubName = "";
@@ -1528,7 +1644,7 @@ javascript:(function(){
           g.subs.forEach(function(s) {
             if (selectedNodes.has(s.id)) {
               totalSubs++;
-              lastSubName = g.name + " › " + s.name;
+              lastSubName = (g.subs.length > 1) ? (g.name + " › " + s.name) : g.name;
             }
           });
         }
@@ -1547,21 +1663,25 @@ javascript:(function(){
   function getSelectedEndpoints() {
     var endpoints = [];
     var allGrps = CATEGORY_TREE.filter(function(x){ return !x.isMaster; });
-
-    var checkedGrps = allGrps.filter(function(x){ return selectedNodes.has(x.id); });
-    if (selectedNodes.has("master_all") || checkedGrps.length === allGrps.length) {
-      return MAIN_GROUPS.map(function(g){ return { name: g.name, uri: g.uri }; });
-    }
+    var isMasterAll = selectedNodes.has("master_all");
 
     allGrps.forEach(function(grp) {
-      if (selectedNodes.has(grp.id)) {
-        endpoints.push({ name: grp.name, uri: grp.uri });
-      } else if (grp.subs) {
+      var isGrpChecked = isMasterAll || selectedNodes.has(grp.id);
+      if (grp.subs && grp.subs.length > 0) {
         grp.subs.forEach(function(sub) {
-          if (selectedNodes.has(sub.id)) {
-            endpoints.push({ name: grp.name + " › " + sub.name, uri: sub.uri });
+          // If master or group is checked, include all non-optin subs
+          // If sub is specifically checked, include it
+          if (selectedNodes.has(sub.id) || (isGrpChecked && !sub.isOptin)) {
+            endpoints.push({
+              name: (grp.subs.length > 1) ? (grp.name + " › " + sub.name) : grp.name,
+              uri: sub.uri
+            });
           }
         });
+      } else {
+        if (isGrpChecked || selectedNodes.has(grp.id)) {
+          endpoints.push({ name: grp.name, uri: grp.uri });
+        }
       }
     });
 
@@ -1580,11 +1700,34 @@ javascript:(function(){
   var masterLabel = d.createElement("label");
   masterLabel.htmlFor = "fkd-master-cb";
   masterLabel.className = "fkd-master-label";
-  masterLabel.textContent = "⚡ Scan All Categories (" + MAIN_GROUPS.length + ")";
+  masterLabel.textContent = "⚡ Scan All Categories (" + CATEGORY_TREE.filter(function(x){ return !x.isMaster; }).length + ")";
+
+  var expandAllBtn = d.createElement("button");
+  expandAllBtn.type = "button";
+  expandAllBtn.className = "fkd-expand-all-btn";
+  expandAllBtn.textContent = "Collapse All";
 
   masterRow.appendChild(masterCb);
   masterRow.appendChild(masterLabel);
+  masterRow.appendChild(expandAllBtn);
   catDrawer.appendChild(masterRow);
+
+  var isAllExpanded = true;
+  expandAllBtn.onclick = function(e) {
+    e.stopPropagation();
+    isAllExpanded = !isAllExpanded;
+    expandAllBtn.textContent = isAllExpanded ? "Collapse All" : "Expand All";
+    catDrawer.querySelectorAll(".fkd-sub-container").forEach(function(sc) {
+      if (isAllExpanded) {
+        sc.classList.remove("collapsed");
+      } else {
+        sc.classList.add("collapsed");
+      }
+    });
+    catDrawer.querySelectorAll(".fkd-tree-chevron").forEach(function(ch) {
+      ch.innerHTML = isAllExpanded ? "▾" : "▸";
+    });
+  };
 
   masterCb.onchange = function() {
     var isChecked = masterCb.checked;
@@ -1606,11 +1749,10 @@ javascript:(function(){
     updateCategorySummary();
   };
 
-  masterRow.onclick = function(e) {
-    if (e.target !== masterCb) {
-      masterCb.checked = !masterCb.checked;
-      masterCb.dispatchEvent(new Event("change"));
-    }
+  masterLabel.onclick = function(e) {
+    e.stopPropagation();
+    masterCb.checked = !masterCb.checked;
+    masterCb.dispatchEvent(new Event("change"));
   };
 
   CATEGORY_TREE.forEach(function(item) {
@@ -1627,8 +1769,8 @@ javascript:(function(){
     var chevron = d.createElement("button");
     chevron.type = "button";
     chevron.className = "fkd-tree-chevron" + (hasSubs ? "" : " hidden");
-    chevron.innerHTML = "▸";
-    chevron.title = "Expand subcategories";
+    chevron.innerHTML = hasSubs ? "▾" : "";
+    chevron.title = "Toggle subcategories";
 
     var grpCb = d.createElement("input");
     grpCb.type = "checkbox";
@@ -1643,10 +1785,18 @@ javascript:(function(){
     headerRow.appendChild(chevron);
     headerRow.appendChild(grpCb);
     headerRow.appendChild(titleSpan);
+
+    if (hasSubs) {
+      var badge = d.createElement("span");
+      badge.className = "fkd-sub-count-badge";
+      badge.textContent = item.subs.length;
+      headerRow.appendChild(badge);
+    }
+
     groupWrapper.appendChild(headerRow);
 
     var subContainer = d.createElement("div");
-    subContainer.className = "fkd-sub-container collapsed";
+    subContainer.className = "fkd-sub-container"; // expanded by default
 
     if (hasSubs) {
       item.subs.forEach(function(sub) {
@@ -1671,7 +1821,8 @@ javascript:(function(){
           e.stopPropagation();
           if (subCb.checked) {
             selectedNodes.add(sub.id);
-            var allChecked = item.subs.every(function(s){ return selectedNodes.has(s.id); });
+            var nonOptin = item.subs.filter(function(s){ return !s.isOptin; });
+            var allChecked = nonOptin.every(function(s){ return selectedNodes.has(s.id); });
             if (allChecked) selectedNodes.add(item.id);
           } else {
             selectedNodes.delete(sub.id);
@@ -1692,7 +1843,7 @@ javascript:(function(){
       });
 
       function toggleGroup(e) {
-        e.stopPropagation();
+        if (e) e.stopPropagation();
         var isCol = subContainer.classList.contains("collapsed");
         if (isCol) {
           subContainer.classList.remove("collapsed");
@@ -1704,6 +1855,13 @@ javascript:(function(){
       }
 
       chevron.onclick = toggleGroup;
+      titleSpan.onclick = toggleGroup;
+    } else {
+      titleSpan.onclick = function(e) {
+        e.stopPropagation();
+        grpCb.checked = !grpCb.checked;
+        grpCb.dispatchEvent(new Event("change"));
+      };
     }
 
     grpCb.onchange = function(e) {
@@ -1728,27 +1886,39 @@ javascript:(function(){
       updateCategorySummary();
     };
 
-    titleSpan.onclick = function(e) {
-      e.stopPropagation();
-      grpCb.checked = !grpCb.checked;
-      grpCb.dispatchEvent(new Event("change"));
-    };
-
     groupWrapper.appendChild(subContainer);
     catDrawer.appendChild(groupWrapper);
   });
 
   function syncCheckboxes() {
     var allGrps = CATEGORY_TREE.filter(function(x){ return !x.isMaster; });
-    var allGrpChecked = allGrps.every(function(g){ return selectedNodes.has(g.id); });
-    masterCb.checked = allGrpChecked;
 
-    catDrawer.querySelectorAll(".fkd-grp-check").forEach(function(cb) {
-      cb.checked = selectedNodes.has(cb.dataset.id);
-    });
     catDrawer.querySelectorAll(".fkd-sub-check").forEach(function(cb) {
       cb.checked = selectedNodes.has(cb.dataset.id);
     });
+
+    allGrps.forEach(function(g) {
+      var gcb = catDrawer.querySelector('.fkd-grp-check[data-id="' + g.id + '"]');
+      if (!gcb) return;
+      if (g.subs && g.subs.length > 0) {
+        var nonOptin = g.subs.filter(function(s){ return !s.isOptin; });
+        var allChecked = nonOptin.length > 0 && nonOptin.every(function(s){ return selectedNodes.has(s.id); });
+        var someChecked = g.subs.some(function(s){ return selectedNodes.has(s.id); });
+        gcb.checked = allChecked;
+        gcb.indeterminate = !allChecked && someChecked;
+        if (allChecked) {
+          selectedNodes.add(g.id);
+        } else {
+          selectedNodes.delete(g.id);
+        }
+      } else {
+        gcb.checked = selectedNodes.has(g.id);
+      }
+    });
+
+    var allGrpChecked = allGrps.every(function(g){ return selectedNodes.has(g.id); });
+    masterCb.checked = allGrpChecked;
+    masterCb.indeterminate = !allGrpChecked && selectedNodes.size > 0;
   }
 
   /* Close drawer when clicking outside inside sidebar */
@@ -2604,27 +2774,42 @@ javascript:(function(){
       return;
     }
 
-    setStatus(`Scanning ${endpoints.length} selected categories...`);
+    var totalEps = endpoints.length;
+    var completedCount = 0;
+    var epIndex = 0;
+    var CONCURRENCY = Math.min(3, totalEps);
 
-    for (var i = 0; i < endpoints.length; i++) {
-      if (st.mode !== "RUN" || window.fkDealsStop) break;
-      var ep = endpoints[i];
-      setStatus(`[${i+1}/${endpoints.length}] ${ep.name.trim()}...`);
-      var pUri = ep.uri;
-      if (!pUri.includes("sort=discount")) {
-        pUri += (pUri.includes("?") ? "&" : "?") + "sort=discount";
-      }
-      var res = await fetchAndParsePage(pUri);
-      renderGrid();
+    setStatus(`Scanning ${totalEps} categories with ${CONCURRENCY} parallel workers...`);
 
-      /* If Page 1 has top deals, fetch Page 2 as well */
-      if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 6) {
-        var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
-        await fetchAndParsePage(p2Uri);
+    async function scanWorker() {
+      while (epIndex < totalEps) {
+        if (st.mode !== "RUN" || window.fkDealsStop) break;
+        var myIdx = epIndex++;
+        var ep = endpoints[myIdx];
+        setStatus(`[${completedCount + 1}/${totalEps}] ${ep.name.trim()}...`);
+        var pUri = ep.uri;
+        if (!pUri.includes("sort=discount")) {
+          pUri += (pUri.includes("?") ? "&" : "?") + "sort=discount";
+        }
+        var res = await fetchAndParsePage(pUri);
+        completedCount++;
         renderGrid();
+
+        /* If Page 1 has top deals, fetch Page 2 as well */
+        if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 6) {
+          var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
+          await fetchAndParsePage(p2Uri);
+          renderGrid();
+        }
+        await new Promise(function(r){ setTimeout(r, 100); });
       }
-      await new Promise(function(r){ setTimeout(r, 260); });
     }
+
+    var workers = [];
+    for (var w = 0; w < CONCURRENCY; w++) {
+      workers.push(scanWorker());
+    }
+    await Promise.all(workers);
 
     stopAll();
     var finalIn = st.items.filter(function(x){ return !x.oos && (st.minDiscount <= 0 || x.d >= st.minDiscount); }).length;
