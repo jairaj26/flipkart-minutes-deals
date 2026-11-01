@@ -1,10 +1,16 @@
 javascript:(function(){
+  try {
+    var tToast = document.getElementById("fk-loader-toast");
+    if (tToast) tToast.remove();
+  } catch(e) {}
+
   /* Clean up existing instances */
   ['fk-deals-sidebar', 'fk-deals-pill', 'fk-deals-styles'].forEach(function(id){
     var el = document.getElementById(id);
     if (el) el.remove();
   });
 
+  try {
   var d = document;
 
   /* Verified Category Catalog (Direct Solr Facets Collapsible Tree) */
@@ -2629,4 +2635,7 @@ javascript:(function(){
   /* Initialize */
   updateCategorySummary();
   setStatus("Ready - Click Fetch ⚡ or pick categories");
+  } catch(err) {
+    alert("Flipkart Minutes Deals Error: " + (err.stack || err.message || err));
+  }
 })();

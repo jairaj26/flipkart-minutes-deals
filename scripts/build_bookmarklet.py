@@ -129,12 +129,18 @@ def build_bookmarklet():
     js_excluded_brands = json.dumps(excluded_brands, indent=2, ensure_ascii=False)
 
     template = f"""javascript:(function(){{
+  try {{
+    var tToast = document.getElementById("fk-loader-toast");
+    if (tToast) tToast.remove();
+  }} catch(e) {{}}
+
   /* Clean up existing instances */
   ['fk-deals-sidebar', 'fk-deals-pill', 'fk-deals-styles'].forEach(function(id){{
     var el = document.getElementById(id);
     if (el) el.remove();
   }});
 
+  try {{
   var d = document;
 
   /* Verified Category Catalog (Direct Solr Facets Collapsible Tree) */
@@ -2092,6 +2098,9 @@ def build_bookmarklet():
   /* Initialize */
   updateCategorySummary();
   setStatus("Ready - Click Fetch ⚡ or pick categories");
+  }} catch(err) {{
+    alert("Flipkart Minutes Deals Error: " + (err.stack || err.message || err));
+  }}
 }})();
 """
 
@@ -2119,11 +2128,13 @@ def build_bookmarklet():
         clean_js = clean_js[len("javascript:"):]
     encoded_standalone_js = "javascript:" + urllib.parse.quote(clean_js)
 
-    # Multi-CDN, CSP-compliant short loader (~590 characters)
-    # 1. Uses fetch() (allowed by Flipkart CSP connect-src: *) instead of <script src> (blocked by CSP script-src)
-    # 2. Injects script content as inline script (allowed by Flipkart CSP script-src 'unsafe-inline')
-    # 3. Tries Fastly jsdelivr first (bypassing Indian ISP blocks on cdn.jsdelivr.net), then GitHub raw, then jsdelivr
-    short_loader_js = "javascript:(function(){var u=['https://fastly.jsdelivr.net/gh/jairaj26/flipkart-minutes-deals@main/FKMinutes_Readable.js','https://raw.githubusercontent.com/jairaj26/flipkart-minutes-deals/main/FKMinutes_Readable.js','https://cdn.jsdelivr.net/gh/jairaj26/flipkart-minutes-deals@main/FKMinutes_Readable.js'];function l(i){if(i>=u.length){alert('Failed to load Flipkart Minutes Deals script. Please check your internet connection or use the offline bookmarklet.');return;}fetch(u[i]+'?t='+Date.now()).then(function(r){if(!r.ok)throw 1;return r.text();}).then(function(c){var s=document.createElement('script');s.textContent=c.replace(/^javascript:/i,'');document.head.appendChild(s);}).catch(function(){l(i+1);});}l(0);})();"
+    # Multi-CDN, CSP-compliant mobile loader with instant visual feedback and multi-method execution
+    # 1. Shows instant floating toast '⚡ Loading Minutes Deals...' so mobile users immediately see it triggered
+    # 2. Downloads across Fastly jsdelivr -> GitHub raw -> jsdelivr
+    # 3. Executes via Blob URL script (allowed by Flipkart CSP: script-src ... blob:)
+    #    with fallback to global eval and new Function (allowed by Flipkart CSP: script-src ... 'unsafe-eval')
+    # 4. Removes toast on successful launch or displays helpful red error banner if anything fails
+    short_loader_js = "javascript:(function(){var old=document.getElementById('fk-loader-toast');if(old)old.remove();var t=document.createElement('div');t.id='fk-loader-toast';t.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);background:#0F8458;color:#fff;padding:10px 20px;border-radius:24px;font-size:13px;font-weight:700;z-index:2147483647;box-shadow:0 4px 16px rgba(0,0,0,0.3);font-family:sans-serif;pointer-events:none;white-space:nowrap;';t.textContent='⚡ Loading Minutes Deals...';(document.body||document.documentElement).appendChild(t);function fail(msg){if(t){t.style.background='#DC2626';t.textContent='❌ '+msg;setTimeout(function(){t.remove();},6000);}alert('Flipkart Minutes Deals: '+msg);}var u=['https://fastly.jsdelivr.net/gh/jairaj26/flipkart-minutes-deals@main/FKMinutes_Readable.js','https://raw.githubusercontent.com/jairaj26/flipkart-minutes-deals/main/FKMinutes_Readable.js','https://cdn.jsdelivr.net/gh/jairaj26/flipkart-minutes-deals@main/FKMinutes_Readable.js'];function l(i){if(i>=u.length){fail('Network error: Could not download script from CDN or GitHub.');return;}fetch(u[i]+'?t='+Date.now()).then(function(r){if(!r.ok)throw new Error('HTTP '+r.status);return r.text();}).then(function(c){var code=c.replace(/^javascript:/i,'');try{var blob=new Blob([code],{type:'application/javascript'});var url=URL.createObjectURL(blob);var s=document.createElement('script');s.src=url;s.onload=function(){URL.revokeObjectURL(url);if(t)t.remove();};(document.head||document.documentElement).appendChild(s);}catch(e1){try{(1,eval)(code);if(t)t.remove();}catch(e2){try{new Function(code)();if(t)t.remove();}catch(e3){fail(e3.message||e3);}}}}).catch(function(){l(i+1);});}l(0);})();"
 
     # Update Install_Bookmarklet.html and index.html
     for html_path in ["Install_Bookmarklet.html", "index.html"]:
