@@ -495,6 +495,14 @@
         "category_code": "j9e,abm",
         "default_selected": true,
         "url_path": "/j9e/abm/~cs-sg12jxivk6/pr?sid=j9e%2Cabm&marketplace=HYPERLOCAL&collection-tab-name=Appliances&sort=discount"
+      },
+      {
+        "name": "Mobile Cases & Covers",
+        "group": "Electronics & Gadgets",
+        "parent_code": "hloc/0040",
+        "category_code": "hloc/0040",
+        "default_selected": false,
+        "url_path": "/hyperlocal/Mobile-Accessories/pr?sid=hloc%2F0040&marketplace=HYPERLOCAL&sort=discount"
       }
     ],
     "Ice Cream & Desserts": [

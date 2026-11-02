@@ -44,31 +44,37 @@ def build_bookmarklet():
         "Paan Corner & Refreshers": "🌿"
     }
 
-    # Count total active subcategories across all groups
-    clean_sub_count = 0
-    for gname, subcats in cat_catalog["groups"].items():
-        for sub in subcats:
-            if sub.get("default_selected", True):
-                clean_sub_count += 1
+    # Verified quick scan parent URIs (clean parent routes, free of spam phone cases)
+    parent_uris = {
+        "Staples": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe",
+        "Tea & Coffee": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/&p[]=facets.category[]=73z/ujs/t7k/&p[]=facets.category[]=73z/ujs/vnq/",
+        "Cold Drinks & Juices": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/&p[]=facets.category[]=73z/ujs/afd/&p[]=facets.category[]=73z/ujs/iau/&p[]=facets.category[]=73z/ujs/wsx/",
+        "Snacks & Munchies": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/&p[]=facets.category[]=73z/ujs/dd9/",
+        "Dairy, Bakery and Eggs": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa",
+        "Packaged Goods": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u/",
+        "Personal Care & Wellness": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl/",
+        "Baby Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl/1a7/&p[]=facets.category[]=73z/njl/5w6/&p[]=facets.category[]=73z/njl/y5b/",
+        "Fruits and Vegetables": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/",
+        "Household Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl/2z2/&p[]=facets.category[]=73z/cwl/bdc/&p[]=facets.category[]=73z/cwl/u3c/&p[]=facets.category[]=73z/cwl/qz9/&p[]=facets.category[]=73z/cwl/2wc/&p[]=facets.category[]=73z/cwl/0s4/",
+        "Home & Kitchen": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh/lbh/&p[]=facets.category[]=73z/uyk/sgh/ib1/&p[]=facets.category[]=73z/uyk/sgh/nlf/&p[]=facets.category[]=73z/uyk/hho/&p[]=facets.category[]=73z/uyk/vdx/&p[]=facets.category[]=73z/uyk/6f4/",
+        "Electronics & Gadgets": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount",
+        "Ice Cream & Desserts": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount",
+        "Toys, Games & Sports": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount",
+        "Office and School Supplies": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/",
+        "Fashion & Accessories": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount",
+        "Chicken, Meat & Fish": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount",
+        "Paan Corner & Refreshers": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"
+    }
 
-    # Build hierarchical category tree for Canva-style checkbox dropdown
-    category_tree = [
-        {
-            "id": "master_all",
-            "name": f"⚡ Scan All Categories ({clean_sub_count} Subcategories)",
-            "isMaster": True,
-            "uri": ""
-        }
-    ]
-
+    category_tree = []
     main_groups = []
 
     for group_name, subcats in cat_catalog["groups"].items():
         icon = icons.get(group_name, "📦")
         group_disp_name = f"{icon} {group_name}"
-        group_all_label = f"{group_name} (All)"
+        parent_url = parent_uris.get(group_name, subcats[0]["url_path"])
 
-        # Process subcategories: Clean names, NO enter symbols, direct leaf Solr facets
+        # Process subcategories: Clean names, direct leaf Solr facets
         children = []
         for sub in subcats:
             if "Excl." in sub["name"] or sub["name"].startswith("All "):
@@ -91,9 +97,7 @@ def build_bookmarklet():
             "id": f"grp_{group_name.replace(' ', '_').replace('&', 'and')}",
             "group": group_name,
             "name": group_disp_name,
-            "allLabel": group_all_label,
-            "isGroup": True,
-            "uri": subcats[0]["url_path"],
+            "uri": parent_url,
             "subs": children
         }
         category_tree.append(group_entry)
@@ -101,7 +105,7 @@ def build_bookmarklet():
             "id": group_entry["id"],
             "group": group_name,
             "name": group_disp_name,
-            "uri": group_entry["uri"]
+            "uri": parent_url
         })
 
     print(f"Total category tree nodes generated: {len(category_tree)}")
@@ -167,25 +171,16 @@ def build_bookmarklet():
     mode: "IDLE",
     sort: "discount",
     searchQuery: "",
-    minDiscount: DEFAULT_MIN_DISCOUNT,
     items: [],
     seen: new Set(),
     hideOos: true,
-    isCollapsed: false
+    isCollapsed: false,
+    allowPhoneCases: false
   }};
 
-  /* Checked Categories Set */
-  var selectedNodes = new Set();
-  selectedNodes.add("master_all");
-  CATEGORY_TREE.forEach(function(grp) {{
-    if (grp.isMaster) return;
-    selectedNodes.add(grp.id);
-    if (grp.subs) {{
-      grp.subs.forEach(function(sub) {{
-        if (!sub.isOptin) selectedNodes.add(sub.id);
-      }});
-    }}
-  }});
+  /* Selected Subcategories & Parent Groups (None selected by default; Max 2 parent groups) */
+  var selectedSubIds = new Set();
+  var selectedParentGroups = new Set();
 
   window.fkDealsStop = false;
 
@@ -463,202 +458,203 @@ def build_bookmarklet():
       display: none;
     }}
 
-    /* Canva Checkbox Tree View */
-    .fkd-checkbox {{
-      accent-color: var(--fkd-green);
-      width: 16px;
-      height: 16px;
+    /* Quick Scan & Subcategory Pills Drawer */
+    .fkd-quick-scan-box {{
+      padding: 8px 10px;
+      margin-bottom: 6px;
+      border-radius: 8px;
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }}
+    .fkd-quick-scan-btn {{
+      width: 100%;
+      height: 32px;
+      border-radius: 6px;
+      background: var(--fkd-green);
+      color: #FFFFFF;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
       cursor: pointer;
-      margin: 0;
-      flex: none;
-      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-family: inherit;
+      box-shadow: 0 1px 3px rgba(15, 132, 88, 0.25);
+      transition: background 0.15s ease;
+    }}
+    .fkd-quick-scan-btn:hover {{
+      background: var(--fkd-green-hover);
+    }}
+    .fkd-quick-scan-sub {{
+      font-size: 10.5px;
+      color: #166534;
+      text-align: center;
+      font-weight: 500;
+    }}
+    .fkd-drawer-hint {{
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--fkd-text-sub);
+      padding: 4px 6px 6px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
     }}
 
-    .fkd-tree-master {{
-      padding: 8px 10px;
+    .fkd-dept-item {{
+      display: flex;
+      flex-direction: column;
       border-radius: 7px;
+      margin-bottom: 2px;
+    }}
+    .fkd-dept-header {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 7px 9px;
+      border-radius: 7px;
+      cursor: pointer;
+      user-select: none;
+      background: #FAFAFA;
+      border: 1px solid #F0F0F0;
+      transition: all 0.12s ease;
+    }}
+    .fkd-dept-header:hover {{
+      background: #F4F4F5;
+      border-color: #E4E4E7;
+    }}
+    .fkd-dept-chevron {{
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--fkd-text-sub);
+      width: 14px;
+      text-align: center;
+      display: inline-block;
+      transition: transform 0.15s ease;
+    }}
+    .fkd-dept-chevron.expanded {{
+      transform: rotate(90deg);
+    }}
+    .fkd-dept-name {{
+      flex: 1;
       font-size: 12px;
       font-weight: 600;
       color: var(--fkd-text-main);
-      background: #F8F9FA;
-      border: 1px solid #E5E7EB;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }}
+    .fkd-dept-badge {{
+      font-size: 10px;
+      font-weight: 700;
+      color: #FFFFFF;
+      background: var(--fkd-green);
+      padding: 1px 7px;
+      border-radius: 10px;
+      flex-shrink: 0;
+    }}
+    .fkd-dept-badge.hidden {{
+      display: none;
+    }}
+
+    .fkd-sub-panel {{
+      padding: 6px 8px 8px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }}
+    .fkd-sub-panel.collapsed {{
+      display: none;
+    }}
+    .fkd-sub-toolbar {{
       display: flex;
       align-items: center;
-      gap: 9px;
-      margin-bottom: 4px;
-      cursor: pointer;
-      transition: background 0.12s ease;
+      gap: 6px;
+      padding-bottom: 2px;
     }}
-    .fkd-tree-master:hover {{
-      background: #F3F4F6;
-    }}
-    .fkd-master-label {{
-      cursor: pointer;
-      user-select: none;
-      flex: 1;
-    }}
-    .fkd-expand-all-btn {{
+    .fkd-link-btn {{
       background: none;
       border: none;
+      padding: 2px 5px;
+      border-radius: 4px;
       font-size: 11px;
       font-weight: 600;
       color: var(--fkd-green);
       cursor: pointer;
-      padding: 2px 7px;
-      border-radius: 4px;
-      margin-left: auto;
-      transition: background 0.12s ease;
       font-family: inherit;
+      transition: background 0.12s ease;
     }}
-    .fkd-expand-all-btn:hover {{
+    .fkd-link-btn:hover {{
       background: rgba(15, 132, 88, 0.08);
     }}
-    .fkd-sub-count-badge {{
+    .fkd-toolbar-sep {{
+      color: #D1D5DB;
       font-size: 10px;
-      color: #9CA3AF;
-      background: #F3F4F6;
-      padding: 1px 6px;
-      border-radius: 10px;
-      margin-left: auto;
-      font-weight: 600;
     }}
 
-    .fkd-tree-group {{
+    .fkd-pills-wrap {{
       display: flex;
-      flex-direction: column;
-    }}
-    .fkd-group-row {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 8px;
-      border-radius: 6px;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.12s ease;
-    }}
-    .fkd-group-row:hover {{
-      background: #F3F4F6;
-    }}
-
-    .fkd-tree-chevron {{
-      width: 20px;
-      height: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: none;
-      background: transparent;
-      color: var(--fkd-text-sub);
-      font-size: 11px;
-      cursor: pointer;
-      border-radius: 4px;
-      transition: background 0.12s ease, transform 0.15s ease;
-      flex: none;
-      padding: 0;
-    }}
-    .fkd-tree-chevron:hover {{
-      background: #E5E7EB;
-      color: var(--fkd-text-main);
-    }}
-    .fkd-tree-chevron.hidden {{
-      visibility: hidden;
-    }}
-
-    .fkd-group-title {{
-      flex: 1;
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--fkd-text-main);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }}
-
-    .fkd-sub-container {{
-      margin-left: 20px;
-      padding-left: 10px;
-      border-left: 1.5px solid var(--fkd-border);
-      display: flex;
-      flex-direction: column;
-      gap: 1px;
-      margin-top: 2px;
-      margin-bottom: 4px;
-    }}
-    .fkd-sub-container.collapsed {{
-      display: none;
-    }}
-
-    .fkd-sub-item {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 5px 8px;
-      border-radius: 5px;
-      cursor: pointer;
-      user-select: none;
-      transition: background 0.12s ease;
-    }}
-    .fkd-sub-item:hover {{
-      background: #F3F4F6;
-    }}
-    .fkd-sub-title {{
-      flex: 1;
-      font-size: 11.5px;
-      font-weight: 400;
-      color: #374151;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }}
-
-    /* Discount Filter Bar */
-    .fkd-disc-bar {{
-      display: flex;
-      align-items: center;
+      flex-wrap: wrap;
       gap: 6px;
-      width: 100%;
     }}
-    .fkd-disc-bar-label {{
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--fkd-text-sub);
-      flex: none;
-    }}
-    .fkd-disc-pills {{
-      display: flex;
-      gap: 4px;
-      flex: 1;
-    }}
-    .fkd-disc-pill {{
-      flex: 1 1 0;
-      min-width: 0;
-      height: 25px;
-      padding: 0 2px;
-      border-radius: 5px;
-      background: #FFFFFF;
-      color: var(--fkd-text-sub);
-      border: 1px solid #D1D5DB;
+    .fkd-sub-pill {{
+      background: #F4F4F5;
+      color: #3F3F46;
+      border: 1px solid #E4E4E7;
+      border-radius: 14px;
+      padding: 4px 10px;
       font-size: 11px;
       font-weight: 500;
       font-family: inherit;
       cursor: pointer;
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      white-space: nowrap;
+      gap: 4px;
       transition: all 0.12s ease;
+      user-select: none;
       outline: none;
+      line-height: 1.2;
     }}
-    .fkd-disc-pill:hover {{
-      background: #F3F4F6;
-      border-color: #9CA3AF;
+    .fkd-sub-pill:hover {{
+      background: #E4E4E7;
+      border-color: #D4D4D8;
+      color: #18181B;
     }}
-    .fkd-disc-pill.active {{
+    .fkd-sub-pill.active {{
       background: var(--fkd-green);
       color: #FFFFFF;
       border-color: var(--fkd-green);
       font-weight: 600;
+      box-shadow: 0 1px 3px rgba(15, 132, 88, 0.25);
+    }}
+
+    .fkd-toast {{
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      right: 12px;
+      background: #18181B;
+      color: #FFFFFF;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 600;
+      text-align: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+      z-index: 100;
+      pointer-events: none;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }}
+    .fkd-toast.show {{
+      opacity: 1;
+      transform: translateY(0);
     }}
 
     /* Toolbar Controls (Off-White & Green Palette) */
@@ -912,36 +908,26 @@ def build_bookmarklet():
       </div>
       <div class="fkd-row-2">
         <button class="fkd-cat-toggle" id="fkd-cat-toggle" type="button" title="Browse & select Flipkart Minutes categories">
-          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">⚡ All Categories (${{MAIN_GROUPS.length}})</span>
+          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">📂 Select Categories (or Quick Scan)</span>
           <span class="fkd-caret" id="fkd-cat-caret">▾</span>
         </button>
         <div id="fkd-cat-drawer" class="fkd-cat-drawer hidden"></div>
-      </div>
-      <div class="fkd-disc-bar">
-        <span class="fkd-disc-bar-label">Min Discount:</span>
-        <div class="fkd-disc-pills">
-          <button type="button" class="fkd-disc-pill" data-min="0">All</button>
-          <button type="button" class="fkd-disc-pill" data-min="40">40%+</button>
-          <button type="button" class="fkd-disc-pill active" data-min="45">45%+</button>
-          <button type="button" class="fkd-disc-pill" data-min="50">50%+</button>
-          <button type="button" class="fkd-disc-pill" data-min="60">60%+</button>
-          <button type="button" class="fkd-disc-pill" data-min="70">70%+</button>
-        </div>
       </div>
       <div class="fkd-toolbar">
         <button class="fkd-pill" id="fkd-sort-price" title="Sort by lowest price">Sort ₹</button>
         <button class="fkd-pill active" id="fkd-sort-disc" title="Sort by highest discount">Sort %</button>
         <button class="fkd-pill active" id="fkd-toggle-oos" title="Toggle Out of Stock items">In Stock</button>
-        <button class="fkd-pill fkd-pill-action" id="fkd-btn-fetch" title="Fetch category deals">Fetch ⚡</button>
+        <button class="fkd-pill fkd-pill-action" id="fkd-btn-fetch" title="Run Quick Scan or Fetch Selected Categories">Quick Scan ⚡</button>
       </div>
       <div class="fkd-status-bar">
         <span class="fkd-status-dot"></span>
         <span class="fkd-status-text" id="fkd-status-msg">Ready</span>
       </div>
     </div>
-    <div id="fkd-grid" class="fkd-grid">
-      <div class="fkd-empty">Click <b>Fetch ⚡</b> to scan top deals across Flipkart Minutes, or pick categories above.</div>
+        <div id="fkd-grid" class="fkd-grid">
+      <div class="fkd-empty">Click <b>Quick Scan ⚡</b> to scan top deals across Flipkart Minutes, or pick categories above.</div>
     </div>
+    <div id="fkd-toast" class="fkd-toast"></div>
   `;
   d.body.appendChild(sb);
 
@@ -973,311 +959,232 @@ def build_bookmarklet():
     toggleCatDrawer();
   }};
 
-  /* Update Category Selection Summary Label */
-  function updateCategorySummary() {{
-    var allGrps = CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }});
-    var isMasterChecked = selectedNodes.has("master_all") || allGrps.every(function(g){{ return selectedNodes.has(g.id); }});
+  /* Toast Notification */
+  var toastTimer = null;
+  function showToast(msg) {{
+    var toast = d.getElementById("fkd-toast");
+    if (!toast) return;
+    toast.textContent = msg;
+    toast.classList.add("show");
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function() {{
+      toast.classList.remove("show");
+    }}, 2800);
+  }}
 
-    if (isMasterChecked) {{
-      catNameDisplay.textContent = "⚡ All Categories (" + allGrps.length + " departments)";
+  /* Update Category Selection Summary Label & Fetch Button */
+  function updateCategorySummary() {{
+    if (selectedSubIds.size === 0) {{
+      catNameDisplay.textContent = "📂 Select Categories (or Quick Scan)";
+      btnFetch.textContent = "Quick Scan ⚡";
+      btnFetch.title = "Quick Scan across all 18 top departments";
       return;
     }}
 
-    var checkedGrps = allGrps.filter(function(x){{ return selectedNodes.has(x.id); }});
-    if (checkedGrps.length === 1) {{
-      var grp = checkedGrps[0];
-      var checkedSubs = grp.subs ? grp.subs.filter(function(s){{ return selectedNodes.has(s.id); }}) : [];
-      if (checkedSubs.length === 1 && grp.subs && grp.subs.length > 1) {{
-        catNameDisplay.textContent = grp.name + " › " + checkedSubs[0].name;
-      }} else {{
-        catNameDisplay.textContent = grp.name;
+    var selectedGrpNames = [];
+    CATEGORY_TREE.forEach(function(g) {{
+      var count = (g.subs || []).filter(function(s){{ return selectedSubIds.has(s.id); }}).length;
+      if (count > 0) {{
+        selectedGrpNames.push(g.group + " (" + count + ")");
       }}
-    }} else if (checkedGrps.length > 1) {{
-      catNameDisplay.textContent = "⚡ " + checkedGrps.length + " Departments Selected";
+    }});
+
+    catNameDisplay.textContent = selectedGrpNames.join(", ");
+    btnFetch.textContent = "Fetch (" + selectedSubIds.size + ") ⚡";
+    btnFetch.title = "Fetch " + selectedSubIds.size + " selected subcategories";
+  }}
+
+  function updateDeptBadge(grp) {{
+    var deptEl = catDrawer.querySelector(`.fkd-dept-item[data-grp-id="${{grp.id}}"]`);
+    if (!deptEl) return;
+    var badge = deptEl.querySelector(".fkd-dept-badge");
+    if (!badge) return;
+    var count = (grp.subs || []).filter(function(s){{ return selectedSubIds.has(s.id); }}).length;
+    if (count > 0) {{
+      badge.textContent = count + " selected";
+      badge.classList.remove("hidden");
     }} else {{
-      var totalSubs = 0;
-      var lastSubName = "";
-      allGrps.forEach(function(g) {{
-        if (g.subs) {{
-          g.subs.forEach(function(s) {{
-            if (selectedNodes.has(s.id)) {{
-              totalSubs++;
-              lastSubName = (g.subs.length > 1) ? (g.name + " › " + s.name) : g.name;
-            }}
-          }});
-        }}
-      }});
-      if (totalSubs === 1) {{
-        catNameDisplay.textContent = lastSubName;
-      }} else if (totalSubs > 1) {{
-        catNameDisplay.textContent = "⚡ " + totalSubs + " Subcategories Selected";
-      }} else {{
-        catNameDisplay.textContent = "Select Categories";
-      }}
+      badge.textContent = "";
+      badge.classList.add("hidden");
     }}
   }}
 
-  /* Determine which category endpoints to fetch based on checked checkboxes */
-  function getSelectedEndpoints() {{
-    var endpoints = [];
-    var allGrps = CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }});
-    var isMasterAll = selectedNodes.has("master_all");
-
-    allGrps.forEach(function(grp) {{
-      var isGrpChecked = isMasterAll || selectedNodes.has(grp.id);
-      if (grp.subs && grp.subs.length > 0) {{
-        grp.subs.forEach(function(sub) {{
-          // If master or group is checked, include all non-optin subs
-          // If sub is specifically checked, include it
-          if (selectedNodes.has(sub.id) || (isGrpChecked && !sub.isOptin)) {{
-            endpoints.push({{
-              name: (grp.subs.length > 1) ? (grp.name + " › " + sub.name) : grp.name,
-              uri: sub.uri
-            }});
-          }}
-        }});
-      }} else {{
-        if (isGrpChecked || selectedNodes.has(grp.id)) {{
-          endpoints.push({{ name: grp.name, uri: grp.uri }});
-        }}
+  function toggleSubcategory(sub, grp, pillEl) {{
+    if (selectedSubIds.has(sub.id)) {{
+      selectedSubIds.delete(sub.id);
+      pillEl.classList.remove("active");
+      var hasOther = (grp.subs || []).some(function(s){{ return selectedSubIds.has(s.id); }});
+      if (!hasOther) {{
+        selectedParentGroups.delete(grp.id);
       }}
-    }});
-
-    return endpoints;
+    }} else {{
+      if (!selectedParentGroups.has(grp.id) && selectedParentGroups.size >= 2) {{
+        showToast("⚠️ Select subcategories from up to 2 departments only. Clear one first!");
+        return;
+      }}
+      selectedSubIds.add(sub.id);
+      selectedParentGroups.add(grp.id);
+      pillEl.classList.add("active");
+    }}
+    updateDeptBadge(grp);
+    updateCategorySummary();
   }}
 
-  /* Render Canva Checkbox Category Tree */
-  var masterRow = d.createElement("div");
-  masterRow.className = "fkd-tree-master";
-  var masterCb = d.createElement("input");
-  masterCb.type = "checkbox";
-  masterCb.className = "fkd-checkbox";
-  masterCb.id = "fkd-master-cb";
-  masterCb.checked = true;
-
-  var masterLabel = d.createElement("label");
-  masterLabel.htmlFor = "fkd-master-cb";
-  masterLabel.className = "fkd-master-label";
-  masterLabel.textContent = "⚡ Scan All Categories (" + CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }}).length + ")";
-
-  var expandAllBtn = d.createElement("button");
-  expandAllBtn.type = "button";
-  expandAllBtn.className = "fkd-expand-all-btn";
-  expandAllBtn.textContent = "Collapse All";
-
-  masterRow.appendChild(masterCb);
-  masterRow.appendChild(masterLabel);
-  masterRow.appendChild(expandAllBtn);
-  catDrawer.appendChild(masterRow);
-
-  var isAllExpanded = true;
-  expandAllBtn.onclick = function(e) {{
-    e.stopPropagation();
-    isAllExpanded = !isAllExpanded;
-    expandAllBtn.textContent = isAllExpanded ? "Collapse All" : "Expand All";
-    catDrawer.querySelectorAll(".fkd-sub-container").forEach(function(sc) {{
-      if (isAllExpanded) {{
-        sc.classList.remove("collapsed");
-      }} else {{
-        sc.classList.add("collapsed");
+  function selectAllInDept(grp) {{
+    if (!selectedParentGroups.has(grp.id) && selectedParentGroups.size >= 2) {{
+      showToast("⚠️ Select subcategories from up to 2 departments only. Clear one first!");
+      return;
+    }}
+    selectedParentGroups.add(grp.id);
+    (grp.subs || []).forEach(function(sub) {{
+      if (!sub.isOptin) {{
+        selectedSubIds.add(sub.id);
+        var p = catDrawer.querySelector(`.fkd-sub-pill[data-sub-id="${{sub.id}}"]`);
+        if (p) p.classList.add("active");
       }}
     }});
-    catDrawer.querySelectorAll(".fkd-tree-chevron").forEach(function(ch) {{
-      ch.innerHTML = isAllExpanded ? "▾" : "▸";
+    updateDeptBadge(grp);
+    updateCategorySummary();
+  }}
+
+  function clearDept(grp) {{
+    (grp.subs || []).forEach(function(sub) {{
+      selectedSubIds.delete(sub.id);
+      var p = catDrawer.querySelector(`.fkd-sub-pill[data-sub-id="${{sub.id}}"]`);
+      if (p) p.classList.remove("active");
     }});
+    selectedParentGroups.delete(grp.id);
+    updateDeptBadge(grp);
+    updateCategorySummary();
+  }}
+
+  /* Render Drawer: Top Quick Scan Box + Department Accordions with Pills */
+  catDrawer.innerHTML = `
+    <div class="fkd-quick-scan-box">
+      <button type="button" class="fkd-quick-scan-btn" id="fkd-btn-quick-scan">
+        ⚡ Quick Scan (All 18 Departments)
+      </button>
+      <div class="fkd-quick-scan-sub">Scans top store departments with 1 click</div>
+    </div>
+    <div class="fkd-drawer-hint">
+      <span>Or pick subcategories (max 2 departments):</span>
+      <button type="button" class="fkd-link-btn" id="fkd-btn-clear-all" style="font-size:10.5px;">Clear All</button>
+    </div>
+  `;
+
+  var btnDrawerQuickScan = d.getElementById("fkd-btn-quick-scan");
+  btnDrawerQuickScan.onclick = function(e) {{
+    e.stopPropagation();
+    closeCatDrawer();
+    startFetch(true);
   }};
 
-  masterCb.onchange = function() {{
-    var isChecked = masterCb.checked;
-    if (isChecked) {{
-      selectedNodes.add("master_all");
-      CATEGORY_TREE.forEach(function(grp) {{
-        if (grp.isMaster) return;
-        selectedNodes.add(grp.id);
-        if (grp.subs) {{
-          grp.subs.forEach(function(sub) {{
-            if (!sub.isOptin) selectedNodes.add(sub.id);
-          }});
-        }}
-      }});
-    }} else {{
-      selectedNodes.clear();
-    }}
-    syncCheckboxes();
+  var btnClearAll = d.getElementById("fkd-btn-clear-all");
+  btnClearAll.onclick = function(e) {{
+    e.stopPropagation();
+    selectedSubIds.clear();
+    selectedParentGroups.clear();
+    catDrawer.querySelectorAll(".fkd-sub-pill.active").forEach(function(p){{ p.classList.remove("active"); }});
+    catDrawer.querySelectorAll(".fkd-dept-badge").forEach(function(b){{ b.classList.add("hidden"); b.textContent = ""; }});
     updateCategorySummary();
   }};
 
-  masterLabel.onclick = function(e) {{
-    e.stopPropagation();
-    masterCb.checked = !masterCb.checked;
-    masterCb.dispatchEvent(new Event("change"));
-  }};
-
   CATEGORY_TREE.forEach(function(item) {{
-    if (item.isMaster) return;
-
-    var groupWrapper = d.createElement("div");
-    groupWrapper.className = "fkd-tree-group";
+    var deptEl = d.createElement("div");
+    deptEl.className = "fkd-dept-item";
+    deptEl.dataset.grpId = item.id;
 
     var headerRow = d.createElement("div");
-    headerRow.className = "fkd-group-row";
+    headerRow.className = "fkd-dept-header";
 
-    var hasSubs = item.subs && item.subs.length > 0;
+    var chevron = d.createElement("span");
+    chevron.className = "fkd-dept-chevron";
+    chevron.textContent = "›";
 
-    var chevron = d.createElement("button");
-    chevron.type = "button";
-    chevron.className = "fkd-tree-chevron" + (hasSubs ? "" : " hidden");
-    chevron.innerHTML = hasSubs ? "▾" : "";
-    chevron.title = "Toggle subcategories";
+    var nameSpan = d.createElement("span");
+    nameSpan.className = "fkd-dept-name";
+    nameSpan.textContent = item.name;
 
-    var grpCb = d.createElement("input");
-    grpCb.type = "checkbox";
-    grpCb.className = "fkd-checkbox fkd-grp-check";
-    grpCb.dataset.id = item.id;
-    grpCb.checked = selectedNodes.has(item.id);
-
-    var titleSpan = d.createElement("div");
-    titleSpan.className = "fkd-group-title";
-    titleSpan.textContent = item.name;
+    var badge = d.createElement("span");
+    badge.className = "fkd-dept-badge hidden";
 
     headerRow.appendChild(chevron);
-    headerRow.appendChild(grpCb);
-    headerRow.appendChild(titleSpan);
+    headerRow.appendChild(nameSpan);
+    headerRow.appendChild(badge);
+    deptEl.appendChild(headerRow);
 
-    if (hasSubs) {{
-      var badge = d.createElement("span");
-      badge.className = "fkd-sub-count-badge";
-      badge.textContent = item.subs.length;
-      headerRow.appendChild(badge);
-    }}
+    var subPanel = d.createElement("div");
+    subPanel.className = "fkd-sub-panel collapsed";
 
-    groupWrapper.appendChild(headerRow);
+    var toolbar = d.createElement("div");
+    toolbar.className = "fkd-sub-toolbar";
 
-    var subContainer = d.createElement("div");
-    subContainer.className = "fkd-sub-container"; // expanded by default
+    var btnSelectAll = d.createElement("button");
+    btnSelectAll.type = "button";
+    btnSelectAll.className = "fkd-link-btn";
+    btnSelectAll.textContent = "Select All";
 
-    if (hasSubs) {{
-      item.subs.forEach(function(sub) {{
-        var subEl = d.createElement("div");
-        subEl.className = "fkd-sub-item";
+    var sep = d.createElement("span");
+    sep.className = "fkd-toolbar-sep";
+    sep.textContent = "•";
 
-        var subCb = d.createElement("input");
-        subCb.type = "checkbox";
-        subCb.className = "fkd-checkbox fkd-sub-check";
-        subCb.dataset.id = sub.id;
-        subCb.dataset.grpId = item.id;
-        subCb.checked = selectedNodes.has(sub.id);
+    var btnClearDept = d.createElement("button");
+    btnClearDept.type = "button";
+    btnClearDept.className = "fkd-link-btn";
+    btnClearDept.textContent = "Clear";
 
-        var subTitle = d.createElement("span");
-        subTitle.className = "fkd-sub-title";
-        subTitle.textContent = sub.name;
+    toolbar.appendChild(btnSelectAll);
+    toolbar.appendChild(sep);
+    toolbar.appendChild(btnClearDept);
+    subPanel.appendChild(toolbar);
 
-        subEl.appendChild(subCb);
-        subEl.appendChild(subTitle);
+    var pillsWrap = d.createElement("div");
+    pillsWrap.className = "fkd-pills-wrap";
 
-        subCb.onchange = function(e) {{
-          e.stopPropagation();
-          if (subCb.checked) {{
-            selectedNodes.add(sub.id);
-            var nonOptin = item.subs.filter(function(s){{ return !s.isOptin; }});
-            var allChecked = nonOptin.every(function(s){{ return selectedNodes.has(s.id); }});
-            if (allChecked) selectedNodes.add(item.id);
-          }} else {{
-            selectedNodes.delete(sub.id);
-            selectedNodes.delete(item.id);
-            selectedNodes.delete("master_all");
-          }}
-          syncCheckboxes();
-          updateCategorySummary();
-        }};
+    (item.subs || []).forEach(function(sub) {{
+      var pill = d.createElement("button");
+      pill.type = "button";
+      pill.className = "fkd-sub-pill" + (selectedSubIds.has(sub.id) ? " active" : "");
+      pill.dataset.subId = sub.id;
+      pill.textContent = sub.name;
 
-        subTitle.onclick = function(e) {{
-          e.stopPropagation();
-          subCb.checked = !subCb.checked;
-          subCb.dispatchEvent(new Event("change"));
-        }};
-
-        subContainer.appendChild(subEl);
-      }});
-
-      function toggleGroup(e) {{
-        if (e) e.stopPropagation();
-        var isCol = subContainer.classList.contains("collapsed");
-        if (isCol) {{
-          subContainer.classList.remove("collapsed");
-          chevron.innerHTML = "▾";
-        }} else {{
-          subContainer.classList.add("collapsed");
-          chevron.innerHTML = "▸";
-        }}
-      }}
-
-      chevron.onclick = toggleGroup;
-      titleSpan.onclick = toggleGroup;
-    }} else {{
-      titleSpan.onclick = function(e) {{
+      pill.onclick = function(e) {{
         e.stopPropagation();
-        grpCb.checked = !grpCb.checked;
-        grpCb.dispatchEvent(new Event("change"));
+        toggleSubcategory(sub, item, pill);
       }};
-    }}
 
-    grpCb.onchange = function(e) {{
+      pillsWrap.appendChild(pill);
+    }});
+
+    subPanel.appendChild(pillsWrap);
+    deptEl.appendChild(subPanel);
+
+    headerRow.onclick = function(e) {{
       e.stopPropagation();
-      if (grpCb.checked) {{
-        selectedNodes.add(item.id);
-        if (item.subs) {{
-          item.subs.forEach(function(s){{
-            if (!s.isOptin) selectedNodes.add(s.id);
-          }});
-        }}
+      var isCol = subPanel.classList.contains("collapsed");
+      if (isCol) {{
+        subPanel.classList.remove("collapsed");
+        chevron.classList.add("expanded");
+        chevron.textContent = "▾";
       }} else {{
-        selectedNodes.delete(item.id);
-        selectedNodes.delete("master_all");
-        if (item.subs) {{
-          item.subs.forEach(function(s){{
-            selectedNodes.delete(s.id);
-          }});
-        }}
+        subPanel.classList.add("collapsed");
+        chevron.classList.remove("expanded");
+        chevron.textContent = "›";
       }}
-      syncCheckboxes();
-      updateCategorySummary();
     }};
 
-    groupWrapper.appendChild(subContainer);
-    catDrawer.appendChild(groupWrapper);
+    btnSelectAll.onclick = function(e) {{
+      e.stopPropagation();
+      selectAllInDept(item);
+    }};
+
+    btnClearDept.onclick = function(e) {{
+      e.stopPropagation();
+      clearDept(item);
+    }};
+
+    catDrawer.appendChild(deptEl);
   }});
-
-  function syncCheckboxes() {{
-    var allGrps = CATEGORY_TREE.filter(function(x){{ return !x.isMaster; }});
-
-    catDrawer.querySelectorAll(".fkd-sub-check").forEach(function(cb) {{
-      cb.checked = selectedNodes.has(cb.dataset.id);
-    }});
-
-    allGrps.forEach(function(g) {{
-      var gcb = catDrawer.querySelector('.fkd-grp-check[data-id="' + g.id + '"]');
-      if (!gcb) return;
-      if (g.subs && g.subs.length > 0) {{
-        var nonOptin = g.subs.filter(function(s){{ return !s.isOptin; }});
-        var allChecked = nonOptin.length > 0 && nonOptin.every(function(s){{ return selectedNodes.has(s.id); }});
-        var someChecked = g.subs.some(function(s){{ return selectedNodes.has(s.id); }});
-        gcb.checked = allChecked;
-        gcb.indeterminate = !allChecked && someChecked;
-        if (allChecked) {{
-          selectedNodes.add(g.id);
-        }} else {{
-          selectedNodes.delete(g.id);
-        }}
-      }} else {{
-        gcb.checked = selectedNodes.has(g.id);
-      }}
-    }});
-
-    var allGrpChecked = allGrps.every(function(g){{ return selectedNodes.has(g.id); }});
-    masterCb.checked = allGrpChecked;
-    masterCb.indeterminate = !allGrpChecked && selectedNodes.size > 0;
-  }}
 
   /* Close drawer when clicking outside inside sidebar */
   sb.addEventListener("click", function(e){{
@@ -1299,17 +1206,6 @@ def build_bookmarklet():
   var headCount = d.getElementById("fkd-head-count");
   var pillCount = d.getElementById("fkd-pill-count");
 
-  /* Discount Filter Pills Handling */
-  sb.querySelectorAll(".fkd-disc-pill").forEach(function(pillEl) {{
-    pillEl.onclick = function() {{
-      var minVal = parseInt(pillEl.dataset.min, 10) || 0;
-      st.minDiscount = minVal;
-      sb.querySelectorAll(".fkd-disc-pill").forEach(function(p){{ p.classList.remove("active"); }});
-      pillEl.classList.add("active");
-      renderGrid();
-    }};
-  }});
-
   function setStatus(txt) {{
     if (statusMsg) statusMsg.textContent = txt;
   }}
@@ -1328,8 +1224,12 @@ def build_bookmarklet():
   function stopAll() {{
     window.fkDealsStop = true;
     st.mode = "STOPPED";
-    btnFetch.textContent = "Fetch ⚡";
     btnFetch.className = "fkd-pill fkd-pill-action";
+    if (selectedSubIds.size === 0) {{
+      btnFetch.textContent = "Quick Scan ⚡";
+    }} else {{
+      btnFetch.textContent = `Fetch (${{selectedSubIds.size}}) ⚡`;
+    }}
     if (btnSearch) {{
       btnSearch.textContent = "Search";
       btnSearch.className = "fkd-btn-search";
@@ -1396,15 +1296,14 @@ def build_bookmarklet():
       stopAll();
       setStatus("Stopped (" + st.items.length + " items)");
     }} else {{
-      startFetch();
+      startFetch(selectedSubIds.size === 0);
     }}
   }};
 
-  function renderGrid() {{
+    function renderGrid() {{
     grid.innerHTML = "";
     var filtered = st.items.filter(function(it){{
       if (st.hideOos && it.oos) return false;
-      if (st.minDiscount > 0 && it.d < st.minDiscount) return false;
       return true;
     }});
 
@@ -1422,7 +1321,7 @@ def build_bookmarklet():
     pillCount.textContent = filtered.length;
 
     if (!filtered.length) {{
-      grid.innerHTML = `<div class="fkd-empty">${{st.items.length ? 'No items match current criteria.<br><br>(Total scanned: ' + st.items.length + (st.minDiscount > 0 ? ', Discount filter: ' + st.minDiscount + '%+' : '') + (st.hideOos ? ', Out of stock hidden' : '') + ')' : 'No deals loaded yet. Click Fetch ⚡ or search above.'}}</div>`;
+      grid.innerHTML = `<div class="fkd-empty">${{st.items.length ? 'No items match current criteria.<br><br>(Total scanned: ' + st.items.length + (st.hideOos ? ', Out of stock hidden' : '') + ')' : 'No deals loaded yet. Click <b>Quick Scan ⚡</b> or select categories.'}}</div>`;
       return;
     }}
 
@@ -1496,7 +1395,7 @@ def build_bookmarklet():
     return 0;
   }}
 
-  function addProduct(title, fsp, mrp, disc, img, lnk, isOos) {{
+  function addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep) {{
     if (!fsp) return false;
     fsp = parseInt(fsp, 10);
     if (isNaN(fsp) || fsp <= 0) return false;
@@ -1507,13 +1406,25 @@ def build_bookmarklet():
       title = urlTitle || title || "Product";
     }}
 
-    /* Negative keyword & brand filtration (Junk prevention) */
     var tLower = (title || "").toLowerCase();
+
+    /* Phone Case / Cover Filter for Electronics & Gadgets */
+    if (!st.allowPhoneCases) {{
+      if (/\\b(back\\s*cover|phone\\s*case|tempered\\s*glass|camera\\s*lens\\s*protector|screen\\s*protector|mobile\\s*pouch|silicone\\s*case|flip\\s*cover|mobile\\s*skin|bumper\\s*case)\\b/i.test(tLower)) {{
+        return false;
+      }}
+      if (/\\b(cover|case|glass|protector|pouch|sleeve|skin)\\b/i.test(tLower) &&
+          /\\b(iphone|galaxy|samsung|redmi|oneplus|realme|vivo|oppo|pixel|moto|xiaomi|iqoo|apple|ipad|airpods)\\b/i.test(tLower)) {{
+        return false;
+      }}
+    }}
+
+    /* Negative keyword & brand filtration (Junk prevention) */
     for (var k = 0; k < EXCLUDED_KEYWORDS.length; k++) {{
       if (tLower.includes(EXCLUDED_KEYWORDS[k])) return false;
     }}
     /* Religious brands exclusion (starts with reli... except relish) */
-    var words = tLower.match(/\\b[a-z]+/g) || [];
+    var words = tLower.match(/\b[a-z]+/g) || [];
     for (var w = 0; w < words.length; w++) {{
       if (words[w].startsWith("reli") && !words[w].startsWith("relish")) return false;
     }}
@@ -1532,8 +1443,7 @@ def build_bookmarklet():
       mrp = tmp;
     }}
 
-    /* If discount is present but MRP was not found (or mrp == fsp), derive MRP from selling price! */
-    /* NEVER discount fsp a second time! fsp is what the customer actually pays! */
+    /* Derive MRP if discount given but MRP missing */
     if (disc > 0 && disc < 100 && fsp === mrp) {{
       mrp = Math.round(fsp / (1 - disc / 100));
     }}
@@ -1543,7 +1453,7 @@ def build_bookmarklet():
       disc = (mrp > fsp) ? Math.round(((mrp - fsp) / mrp) * 100) : 0;
     }}
 
-    /* Bug Fix: Concatenated MRP and Discount (e.g. 750 MRP + 37% off = 75037) */
+    /* Bug Fix: Concatenated MRP and Discount */
     if (mrp > fsp * 4 && disc > 0 && String(mrp).endsWith(String(disc))) {{
       var cleanMrp = parseInt(String(mrp).slice(0, -String(disc).length), 10);
       if (cleanMrp >= fsp) {{
@@ -1552,21 +1462,21 @@ def build_bookmarklet():
       }}
     }}
 
-    /* In search mode, include all matching items.
-       In category mode, keep items with at least min(35, st.minDiscount)% so the user can easily switch filter pills in the UI without re-fetching */
+    /* Min keep check: for Page 2+, items below threshold (50% or 40% for Staples) are dropped */
+    if (minKeep && disc < minKeep) return false;
+
+    /* Brand-specific high thresholds (e.g. 13 junk home brands gated at 90%) */
     var isSearchMode = !!(st.searchQuery && st.searchQuery.trim().length > 0);
     if (!isSearchMode) {{
-      var effectiveMin = Math.min(35, st.minDiscount);
       for (var bt in BRAND_THRESHOLDS) {{
         if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {{
-          effectiveMin = Math.max(effectiveMin, BRAND_THRESHOLDS[bt]);
+          if (disc < BRAND_THRESHOLDS[bt]) return false;
           break;
         }}
       }}
-      if (disc < effectiveMin) return false;
     }}
 
-    /* Ensure deal links open directly in Flipkart Minutes */
+      /* Ensure deal links open directly in Flipkart Minutes */
     if (lnk && !lnk.includes("marketplace=HYPERLOCAL")) {{
       lnk += (lnk.includes("?") ? "&" : "?") + "marketplace=HYPERLOCAL";
     }}
@@ -1594,7 +1504,9 @@ def build_bookmarklet():
   }}
 
   /* Parse products from Rome API JSON structure */
-  function parseProducts(json) {{
+  function parseProducts(json, minKeep) {{
+    var count = 0;
+    var pageDiscounts = [];
     var count = 0;
     if (!json) return count;
     var slots = json.RESPONSE?.slots || json.slots || json.pageData?.slots || json.multiWidgetState?.widgetsData?.slots || json.multiWidgetState?.pageDataResponse?.slots || [];
@@ -1635,7 +1547,7 @@ def build_bookmarklet():
                         (v.action?.params?.isAvailable === false) ||
                         (v.availability && v.availability.displayState && v.availability.displayState !== "IN_STOCK");
 
-            if (addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
+            pageDiscounts.push(disc || 0); if (addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep)) count++;
           }}
         }} catch (e) {{}}
       }});
@@ -1697,7 +1609,7 @@ def build_bookmarklet():
                   }}
                   img = img.replace("{{@width}}", "200").replace("{{@height}}", "200").replace("?q={{@quality}}", "?q=80");
 
-                  if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
+                  pageDiscounts.push(disc || 0); if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep)) count++;
                   return;
                 }}
 
@@ -1754,7 +1666,7 @@ def build_bookmarklet():
                   img = img.replace("{{@width}}", "200").replace("{{@height}}", "200").replace("?q={{@quality}}", "?q=80");
 
                   var isOos = (stepperAction.enabled === false) || (pcard.button_0?.value?.actionType === "NOTIFY_ME") || (pcard.button_0?.value?.text && /notify/i.test(pcard.button_0.value.text));
-                  if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos)) count++;
+                  pageDiscounts.push(disc || 0); if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep)) count++;
                 }}
               }} catch (err) {{}}
             }});
@@ -1762,11 +1674,15 @@ def build_bookmarklet():
         }}
       }}
     }});
-    return count;
+    var tailDisc = pageDiscounts.length ? pageDiscounts[pageDiscounts.length - 1] : 0;
+    return {{ count: count, tailDiscount: tailDisc, totalFound: pageDiscounts.length }};
   }}
 
   /* Scrape items from DOM */
-  function parseDomProducts(rootDoc) {{
+  function parseDomProducts(rootDoc, minKeep) {{
+    var doc = rootDoc || document;
+    var count = 0;
+    var pageDiscounts = [];
     var doc = rootDoc || document;
     var count = 0;
     var anchors = doc.querySelectorAll('a[href*="/p/itm"], a[href*="/p/"], a[href*="pid="]');
@@ -1876,7 +1792,8 @@ def build_bookmarklet():
         if (addProduct(title, fsp, mrp, disc, img, href, isOos)) count++;
       }} catch (e) {{}}
     }});
-    return count;
+    var tailDisc = pageDiscounts.length ? pageDiscounts[pageDiscounts.length - 1] : 0;
+    return {{ count: count, tailDiscount: tailDisc, totalFound: pageDiscounts.length }};
   }}
 
   /* Safe URI sanitizer */
@@ -2034,41 +1951,42 @@ def build_bookmarklet():
   }}
 
   /* Parse products from raw HTML text */
-  function parseHtmlString(html) {{
-    var count = 0;
-    if (!html) return 0;
+  function parseHtmlString(html, minKeep) {{
+    if (!html) return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
     try {{
       var json = extractStateJsonFromHtml(html);
       if (json) {{
-        count += parseProducts(json);
+        var r = parseProducts(json, minKeep);
+        if (r && r.totalFound > 0) return r;
       }}
     }} catch(e) {{}}
 
     try {{
       var parser = new DOMParser();
       var doc = parser.parseFromString(html, "text/html");
-      count += parseDomProducts(doc);
+      return parseDomProducts(doc, minKeep);
     }} catch(e) {{}}
 
-    return count;
+    return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
   }}
 
   /* Unified page fetcher */
-  async function fetchAndParsePage(uri) {{
-    if (!uri) return {{ count: 0 }};
+  async function fetchAndParsePage(uri, minKeep) {{
+    if (!uri) return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
+    minKeep = minKeep || 0;
     // 1. Same-origin HTML fetch with session cookies
     var html = await fetchCategoryHtml(uri);
     if (html) {{
-      var c = parseHtmlString(html);
-      if (c > 0) return {{ count: c, html: html }};
+      var r1 = parseHtmlString(html, minKeep);
+      if (r1 && r1.totalFound > 0) return r1;
     }}
     // 2. Fallback: Rome API with credentials included
     var json = await fetchRomePage(uri);
     if (json) {{
-      var c2 = parseProducts(json);
-      if (c2 > 0) return {{ count: c2, json: json }};
+      var r2 = parseProducts(json, minKeep);
+      if (r2 && r2.totalFound > 0) return r2;
     }}
-    return {{ count: 0 }};
+    return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
   }}
 
   /* Search Flipkart Minutes via unified fetcher */
@@ -2079,6 +1997,7 @@ def build_bookmarklet():
     }}
     query = query.trim();
     st.searchQuery = query;
+    st.allowPhoneCases = true;
     window.fkDealsStop = false;
     st.mode = "RUN";
     if (btnSearch) {{
@@ -2096,13 +2015,13 @@ def build_bookmarklet():
     var sortParam = (st.sort === "discount") ? "&sort=discount" : "&sort=price_asc";
     var searchUri = "/hyperlocal/pr?q=" + encodeURIComponent(query) + "&marketplace=HYPERLOCAL&searchSourceContext=experience%3D&widgetUniqueId=1&sid=search.flipkart.com&as-show=on" + sortParam;
 
-    await fetchAndParsePage(searchUri);
+    var res1 = await fetchAndParsePage(searchUri, 0);
     renderGrid();
 
-    if (st.mode === "RUN" && !window.fkDealsStop && st.items.length > 0) {{
+    if (st.mode === "RUN" && !window.fkDealsStop && res1 && res1.totalFound >= 6 && res1.tailDiscount >= 50) {{
       setStatus(`Loading more "${{query}}"...`);
       var p2Uri = searchUri + "&page=2";
-      await fetchAndParsePage(p2Uri);
+      await fetchAndParsePage(p2Uri, 50);
       renderGrid();
     }}
 
@@ -2112,7 +2031,7 @@ def build_bookmarklet():
   }}
 
   /* Multi-Category Scanning based on checked categories */
-  async function startFetch() {{
+  async function startFetch(forceQuickScan) {{
     closeCatDrawer();
     st.searchQuery = "";
     if (inputSearch) inputSearch.value = "";
@@ -2125,10 +2044,41 @@ def build_bookmarklet():
     st.seen.clear();
     renderGrid();
 
-    var endpoints = getSelectedEndpoints();
+    // Check if phone cases allowed (opt-in)
+    st.allowPhoneCases = Array.from(selectedSubIds).some(function(id){{
+      return id.includes("0040") || id.includes("sgh_jaa");
+    }});
+
+    var isQuick = !!forceQuickScan || (selectedSubIds.size === 0);
+    var endpoints = [];
+
+    if (isQuick) {{
+      endpoints = MAIN_GROUPS.map(function(mg) {{
+        return {{
+          name: mg.name,
+          uri: mg.uri,
+          isStaples: (mg.group === "Staples")
+        }};
+      }});
+      setStatus(`Quick Scan across ${{endpoints.length}} top departments...`);
+    }} else {{
+      CATEGORY_TREE.forEach(function(grp) {{
+        (grp.subs || []).forEach(function(sub) {{
+          if (selectedSubIds.has(sub.id)) {{
+            endpoints.push({{
+              name: grp.name + " › " + sub.name,
+              uri: sub.uri,
+              isStaples: (grp.group === "Staples")
+            }});
+          }}
+        }});
+      }});
+      setStatus(`Scanning ${{endpoints.length}} selected subcategories...`);
+    }}
+
     if (!endpoints.length) {{
       stopAll();
-      setStatus("Please select at least 1 category above");
+      setStatus("No categories to scan");
       return;
     }}
 
@@ -2136,8 +2086,6 @@ def build_bookmarklet():
     var completedCount = 0;
     var epIndex = 0;
     var CONCURRENCY = Math.min(3, totalEps);
-
-    setStatus(`Scanning ${{totalEps}} categories with ${{CONCURRENCY}} parallel workers...`);
 
     async function scanWorker() {{
       while (epIndex < totalEps) {{
@@ -2149,15 +2097,30 @@ def build_bookmarklet():
         if (!pUri.includes("sort=discount")) {{
           pUri += (pUri.includes("?") ? "&" : "?") + "sort=discount";
         }}
-        var res = await fetchAndParsePage(pUri);
+
+        // Requirements 5 & 6:
+        // Staples threshold = 40%
+        // Other departments threshold = 50%
+        var threshold = ep.isStaples ? 40 : 50;
+
+        // Page 1 is ALWAYS fetched and displayed (minDiscKeep = 0)
+        var res1 = await fetchAndParsePage(pUri, 0);
         completedCount++;
         renderGrid();
 
-        /* If Page 1 has top deals, fetch Page 2 as well */
-        if (st.mode === "RUN" && !window.fkDealsStop && res && res.count >= 6) {{
+        // If Page 1 ends with discount >= threshold, fetch Page 2!
+        // Stop when the last row items of the page is less than threshold
+        if (st.mode === "RUN" && !window.fkDealsStop && res1 && res1.totalFound >= 6 && res1.tailDiscount >= threshold) {{
           var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
-          await fetchAndParsePage(p2Uri);
+          var res2 = await fetchAndParsePage(p2Uri, threshold);
           renderGrid();
+
+          // If Page 2 also ends with discount >= threshold, can fetch Page 3
+          if (st.mode === "RUN" && !window.fkDealsStop && res2 && res2.totalFound >= 6 && res2.tailDiscount >= threshold) {{
+            var p3Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=3&sort=discount";
+            await fetchAndParsePage(p3Uri, threshold);
+            renderGrid();
+          }}
         }}
         await new Promise(function(r){{ setTimeout(r, 100); }});
       }}
@@ -2170,12 +2133,11 @@ def build_bookmarklet():
     await Promise.all(workers);
 
     stopAll();
-    var finalIn = st.items.filter(function(x){{ return !x.oos && (st.minDiscount <= 0 || x.d >= st.minDiscount); }}).length;
-    var totalDeals = st.items.filter(function(x){{ return st.minDiscount <= 0 || x.d >= st.minDiscount; }}).length;
-    setStatus(`Done! Found ${{totalDeals}} deals (${{finalIn}} in stock)`);
+    var finalIn = st.items.filter(function(x){{ return !x.oos; }}).length;
+    setStatus(`Done! Found ${{st.items.length}} deals (${{finalIn}} in stock)`);
   }}
 
-  /* Initialize */
+    /* Initialize */
   updateCategorySummary();
   setStatus("Ready - Click Fetch ⚡ or pick categories");
   }} catch(err) {{
