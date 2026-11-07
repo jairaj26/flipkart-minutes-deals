@@ -24,76 +24,126 @@ def build_bookmarklet():
 
     # Group icons for all quick-commerce categories
     icons = {
+        "Fruits and Vegetables": "🍎",
         "Staples": "🌾",
+        "Dairy, Bakery and Eggs": "🥛",
+        "Chicken, Meat & Fish": "🍗",
         "Tea & Coffee": "☕",
         "Cold Drinks & Juices": "🧃",
-        "Snacks & Munchies": "🍟",
-        "Dairy, Bakery and Eggs": "🥛",
+        "Sweets, Snacks and Chocolates": "🍫",
         "Packaged Goods": "🥫",
+        "Ice Cream & Desserts": "🍦",
         "Personal Care & Wellness": "🧼",
         "Baby Care": "👶",
-        "Fruits and Vegetables": "🍎",
         "Household Care": "🧹",
         "Home & Kitchen": "🍳",
+        "Electronics & Gadgets": "🔌",
+        "Toys, Games & Sports": "🧸",
         "Office and School Supplies": "📚",
         "Fashion & Accessories": "👕",
-        "Electronics & Gadgets": "🔌",
-        "Ice Cream & Desserts": "🍦",
-        "Toys, Games & Sports": "🧸",
-        "Chicken, Meat & Fish": "🍗",
         "Paan Corner & Refreshers": "🌿"
     }
 
-    # Verified quick scan parent URIs (clean parent routes, free of spam phone cases)
+    # Verified parent URIs (clean parent routes, free of spam phone cases)
     parent_uris = {
+        "Fruits and Vegetables": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/",
         "Staples": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe",
+        "Dairy, Bakery and Eggs": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa",
+        "Chicken, Meat & Fish": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount",
         "Tea & Coffee": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/",
         "Cold Drinks & Juices": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/",
-        "Snacks & Munchies": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/",
-        "Dairy, Bakery and Eggs": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa",
+        "Sweets, Snacks and Chocolates": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/",
         "Packaged Goods": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u/",
+        "Ice Cream & Desserts": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount",
         "Personal Care & Wellness": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl/",
         "Baby Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/smb/",
-        "Fruits and Vegetables": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/",
         "Household Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl",
         "Home & Kitchen": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk",
         "Electronics & Gadgets": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount",
-        "Ice Cream & Desserts": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount",
         "Toys, Games & Sports": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount",
         "Office and School Supplies": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/",
         "Fashion & Accessories": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount",
-        "Chicken, Meat & Fish": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount",
         "Paan Corner & Refreshers": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"
     }
 
-    # Dedicated clean Quick Scan targets (20 verified high-priority endpoints)
+    # Desired hierarchical order:
+    # 1. Fruits & Vegetables at top (above Staples)
+    # 2. Staples
+    # 3. Dairy, Bakery & Eggs (below Staples)
+    # 4. Chicken, Meat & Fish (below Dairy, Bakery & Eggs)
+    ordered_group_names = [
+        "Fruits and Vegetables",
+        "Staples",
+        "Dairy, Bakery and Eggs",
+        "Chicken, Meat & Fish",
+        "Tea & Coffee",
+        "Cold Drinks & Juices",
+        "Sweets, Snacks and Chocolates",
+        "Packaged Goods",
+        "Ice Cream & Desserts",
+        "Personal Care & Wellness",
+        "Baby Care",
+        "Household Care",
+        "Home & Kitchen",
+        "Electronics & Gadgets",
+        "Toys, Games & Sports",
+        "Office and School Supplies",
+        "Fashion & Accessories",
+        "Paan Corner & Refreshers"
+    ]
+
+    # Dedicated clean Quick Scan targets (ordered with same top priority)
     quick_scan_targets = [
+        {"id": "grp_Fruits_Veg", "group": "Fruits and Vegetables", "name": "🍎 Fruits & Vegetables", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/"},
         {"id": "grp_Staples", "group": "Staples", "name": "🌾 Staples", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe"},
+        {"id": "grp_Dairy", "group": "Dairy, Bakery and Eggs", "name": "🥛 Dairy, Bakery & Eggs", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa"},
+        {"id": "grp_Chicken_Meat", "group": "Chicken, Meat & Fish", "name": "🍗 Chicken, Meat & Fish", "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount"},
         {"id": "grp_Tea", "group": "Tea & Coffee", "name": "☕ Tea", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/"},
         {"id": "grp_Coffee", "group": "Tea & Coffee", "name": "☕ Coffee", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/t7k/"},
         {"id": "grp_Cold_Drinks", "group": "Cold Drinks & Juices", "name": "🧃 Cold Drinks & Juices", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/"},
-        {"id": "grp_Snacks", "group": "Snacks & Munchies", "name": "🍟 Snacks & Namkeen", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/"},
-        {"id": "grp_Biscuits", "group": "Snacks & Munchies", "name": "🍪 Biscuits & Cookies", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/"},
-        {"id": "grp_Dairy", "group": "Dairy, Bakery and Eggs", "name": "🥛 Dairy, Bakery & Eggs", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa"},
+        {"id": "grp_Snacks", "group": "Sweets, Snacks and Chocolates", "name": "🍟 Snacks & Namkeen", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/"},
+        {"id": "grp_Biscuits", "group": "Sweets, Snacks and Chocolates", "name": "🍪 Biscuits & Cookies", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/"},
+        {"id": "grp_Chocolates", "group": "Sweets, Snacks and Chocolates", "name": "🍫 Chocolates & Sweets", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u&p[]=facets.category[]=73z/u0u/7o6/"},
         {"id": "grp_Packaged_Goods", "group": "Packaged Goods", "name": "🥫 Packaged Goods", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u/"},
+        {"id": "grp_Ice_Cream", "group": "Ice Cream & Desserts", "name": "🍦 Ice Cream & Desserts", "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount"},
         {"id": "grp_Personal_Care", "group": "Personal Care & Wellness", "name": "🧼 Personal Care & Wellness", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl/"},
         {"id": "grp_Baby_Care", "group": "Baby Care", "name": "👶 Baby Care (Diapers & Wipes)", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/smb/"},
-        {"id": "grp_Fruits_Veg", "group": "Fruits and Vegetables", "name": "🍎 Fruits & Vegetables", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/"},
         {"id": "grp_Household_Care", "group": "Household Care", "name": "🧹 Household Care", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl"},
         {"id": "grp_Home_Kitchen", "group": "Home & Kitchen", "name": "🍳 Home & Kitchen", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk"},
         {"id": "grp_Electronics", "group": "Electronics & Gadgets", "name": "🔌 Electronics & Gadgets", "uri": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount"},
-        {"id": "grp_Ice_Cream", "group": "Ice Cream & Desserts", "name": "🍦 Ice Cream & Desserts", "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount"},
         {"id": "grp_Toys_Games", "group": "Toys, Games & Sports", "name": "🧸 Toys, Games & Sports", "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount"},
         {"id": "grp_Office_School", "group": "Office and School Supplies", "name": "📚 Office & School Supplies", "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"},
         {"id": "grp_Fashion", "group": "Fashion & Accessories", "name": "👕 Fashion & Accessories", "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount"},
-        {"id": "grp_Chicken_Meat", "group": "Chicken, Meat & Fish", "name": "🍗 Chicken, Meat & Fish", "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount"},
         {"id": "grp_Paan_Corner", "group": "Paan Corner & Refreshers", "name": "🌿 Paan Corner & Refreshers", "uri": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"}
     ]
+
+    # Combine Snacks & Munchies and Chocolates & Sweets into "Sweets, Snacks and Chocolates"
+    groups_data = dict(cat_catalog["groups"])
+    choco_sub = None
+    if "Packaged Goods" in groups_data:
+        for s in list(groups_data["Packaged Goods"]):
+            if "chocolate" in s["name"].lower():
+                choco_sub = s
+                groups_data["Packaged Goods"] = [x for x in groups_data["Packaged Goods"] if x != s]
+                break
+
+    snacks_subs = list(groups_data.get("Snacks & Munchies", []))
+    if choco_sub:
+        choco_copy = dict(choco_sub)
+        choco_copy["group"] = "Sweets, Snacks and Chocolates"
+        snacks_subs.append(choco_copy)
+
+    if "Snacks & Munchies" in groups_data:
+        del groups_data["Snacks & Munchies"]
+    groups_data["Sweets, Snacks and Chocolates"] = snacks_subs
 
     category_tree = []
     main_groups = quick_scan_targets
 
-    for group_name, subcats in cat_catalog["groups"].items():
+    for group_name in ordered_group_names:
+        subcats = groups_data.get(group_name, [])
+        if not subcats:
+            continue
         icon = icons.get(group_name, "📦")
         group_disp_name = f"{icon} {group_name}"
         parent_url = parent_uris.get(group_name, subcats[0]["url_path"])
