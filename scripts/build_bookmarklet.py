@@ -47,16 +47,16 @@ def build_bookmarklet():
     # Verified quick scan parent URIs (clean parent routes, free of spam phone cases)
     parent_uris = {
         "Staples": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe",
-        "Tea & Coffee": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/&p[]=facets.category[]=73z/ujs/t7k/&p[]=facets.category[]=73z/ujs/vnq/",
-        "Cold Drinks & Juices": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/&p[]=facets.category[]=73z/ujs/afd/&p[]=facets.category[]=73z/ujs/iau/&p[]=facets.category[]=73z/ujs/wsx/",
-        "Snacks & Munchies": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/&p[]=facets.category[]=73z/ujs/dd9/",
+        "Tea & Coffee": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/",
+        "Cold Drinks & Juices": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/",
+        "Snacks & Munchies": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/",
         "Dairy, Bakery and Eggs": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa",
         "Packaged Goods": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u/",
         "Personal Care & Wellness": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl/",
-        "Baby Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl/1a7/&p[]=facets.category[]=73z/njl/5w6/&p[]=facets.category[]=73z/njl/y5b/",
+        "Baby Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/smb/",
         "Fruits and Vegetables": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/",
-        "Household Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl/2z2/&p[]=facets.category[]=73z/cwl/bdc/&p[]=facets.category[]=73z/cwl/u3c/&p[]=facets.category[]=73z/cwl/qz9/&p[]=facets.category[]=73z/cwl/2wc/&p[]=facets.category[]=73z/cwl/0s4/",
-        "Home & Kitchen": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk/sgh/lbh/&p[]=facets.category[]=73z/uyk/sgh/ib1/&p[]=facets.category[]=73z/uyk/sgh/nlf/&p[]=facets.category[]=73z/uyk/hho/&p[]=facets.category[]=73z/uyk/vdx/&p[]=facets.category[]=73z/uyk/6f4/",
+        "Household Care": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl",
+        "Home & Kitchen": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk",
         "Electronics & Gadgets": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount",
         "Ice Cream & Desserts": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount",
         "Toys, Games & Sports": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount",
@@ -66,8 +66,32 @@ def build_bookmarklet():
         "Paan Corner & Refreshers": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"
     }
 
+    # Dedicated clean Quick Scan targets (20 verified high-priority endpoints)
+    quick_scan_targets = [
+        {"id": "grp_Staples", "group": "Staples", "name": "🌾 Staples", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe"},
+        {"id": "grp_Tea", "group": "Tea & Coffee", "name": "☕ Tea", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/amr/"},
+        {"id": "grp_Coffee", "group": "Tea & Coffee", "name": "☕ Coffee", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/t7k/"},
+        {"id": "grp_Cold_Drinks", "group": "Cold Drinks & Juices", "name": "🧃 Cold Drinks & Juices", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dfw/"},
+        {"id": "grp_Snacks", "group": "Snacks & Munchies", "name": "🍟 Snacks & Namkeen", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/dd9/"},
+        {"id": "grp_Biscuits", "group": "Snacks & Munchies", "name": "🍪 Biscuits & Cookies", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/ujs&p[]=facets.category[]=73z/ujs/eb9/"},
+        {"id": "grp_Dairy", "group": "Dairy, Bakery and Eggs", "name": "🥛 Dairy, Bakery & Eggs", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa"},
+        {"id": "grp_Packaged_Goods", "group": "Packaged Goods", "name": "🥫 Packaged Goods", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/u0u/"},
+        {"id": "grp_Personal_Care", "group": "Personal Care & Wellness", "name": "🧼 Personal Care & Wellness", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl/"},
+        {"id": "grp_Baby_Care", "group": "Baby Care", "name": "👶 Baby Care (Diapers & Wipes)", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/njl&p[]=facets.category[]=73z/njl/smb/"},
+        {"id": "grp_Fruits_Veg", "group": "Fruits and Vegetables", "name": "🍎 Fruits & Vegetables", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/"},
+        {"id": "grp_Household_Care", "group": "Household Care", "name": "🧹 Household Care", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/cwl"},
+        {"id": "grp_Home_Kitchen", "group": "Home & Kitchen", "name": "🍳 Home & Kitchen", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/uyk"},
+        {"id": "grp_Electronics", "group": "Electronics & Gadgets", "name": "🔌 Electronics & Gadgets", "uri": "/hyperlocal/Speakers%20nd%20Earphones/pr?sid=hloc%2F0039&marketplace=HYPERLOCAL&sort=discount"},
+        {"id": "grp_Ice_Cream", "group": "Ice Cream & Desserts", "name": "🍦 Ice Cream & Desserts", "uri": "/hyperlocal/IceCream-Desserts/pr?sid=hloc%2F0034&marketplace=HYPERLOCAL&sort=discount"},
+        {"id": "grp_Toys_Games", "group": "Toys, Games & Sports", "name": "🧸 Toys, Games & Sports", "uri": "/hyperlocal/Toys-Games/pr?sid=hloc%2F0028&marketplace=HYPERLOCAL&sort=discount"},
+        {"id": "grp_Office_School", "group": "Office and School Supplies", "name": "📚 Office & School Supplies", "uri": "/grocery/office-school-supplies/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z,pyy&p[]=facets.category[]=73z&p[]=facets.category[]=73z/pyy/"},
+        {"id": "grp_Fashion", "group": "Fashion & Accessories", "name": "👕 Fashion & Accessories", "uri": "/hyperlocal/Fashion-Accessories/pr?sid=hloc%2F0026&marketplace=HYPERLOCAL&sort=discount"},
+        {"id": "grp_Chicken_Meat", "group": "Chicken, Meat & Fish", "name": "🍗 Chicken, Meat & Fish", "uri": "/hyperlocal/hloc/3106/pr?sid=hloc%2F7n35&marketplace=HYPERLOCAL&sort=discount"},
+        {"id": "grp_Paan_Corner", "group": "Paan Corner & Refreshers", "name": "🌿 Paan Corner & Refreshers", "uri": "/hyperlocal/hloc/4901/pr?sid=hloc%2F0049%2F4901&marketplace=HYPERLOCAL&sort=discount"}
+    ]
+
     category_tree = []
-    main_groups = []
+    main_groups = quick_scan_targets
 
     for group_name, subcats in cat_catalog["groups"].items():
         icon = icons.get(group_name, "📦")
@@ -101,12 +125,6 @@ def build_bookmarklet():
             "subs": children
         }
         category_tree.append(group_entry)
-        main_groups.append({
-            "id": group_entry["id"],
-            "group": group_name,
-            "name": group_disp_name,
-            "uri": parent_url
-        })
 
     print(f"Total category tree nodes generated: {len(category_tree)}")
     print(f"Total main scan groups: {len(main_groups)}")
@@ -175,7 +193,8 @@ def build_bookmarklet():
     seen: new Set(),
     hideOos: true,
     isCollapsed: false,
-    allowPhoneCases: false
+    allowPhoneCases: false,
+    activeAction: null
   }};
 
   /* Selected Subcategories & Parent Groups (None selected by default; Max 2 parent groups) */
@@ -380,9 +399,9 @@ def build_bookmarklet():
     }}
 
     .fkd-btn-search {{
-      background: var(--fkd-green);
+      background: #334155;
       color: #FFFFFF;
-      border: 1px solid var(--fkd-green);
+      border: 1px solid #334155;
       border-radius: 7px;
       padding: 0 12px;
       height: 32px;
@@ -390,11 +409,22 @@ def build_bookmarklet():
       font-weight: 600;
       cursor: pointer;
       font-family: inherit;
-      transition: background 0.12s ease;
+      transition: background 0.12s ease, opacity 0.15s ease;
       flex: none;
     }}
     .fkd-btn-search:hover {{
-      background: var(--fkd-green-hover);
+      background: #1E293B;
+      border-color: #1E293B;
+    }}
+
+    .fkd-btn-search:disabled,
+    .fkd-btn-quick:disabled,
+    .fkd-btn-fetch-main:disabled,
+    .fkd-cat-toggle:disabled,
+    .fkd-drawer-fetch-btn:disabled {{
+      opacity: 0.38 !important;
+      cursor: not-allowed !important;
+      pointer-events: none !important;
     }}
 
     .fkd-btn-quick {{
@@ -1293,40 +1323,109 @@ def build_bookmarklet():
     }}
   }}
 
-  function updateActionButtons(isRunning) {{
-    if (isRunning) {{
-      btnFetch.textContent = "Stop ⏹";
-      btnFetch.className = "fkd-btn-fetch-main fkd-btn-danger";
-      if (drawerBtnFetch) {{
-        drawerBtnFetch.textContent = "Stop ⏹";
-        drawerBtnFetch.className = "fkd-drawer-fetch-btn fkd-btn-danger";
+  function updateActionButtons(actionType) {{
+    st.activeAction = actionType || null;
+    var isRunning = !!actionType;
+
+    if (!isRunning) {{
+      [btnQuickScan, btnFetch, drawerBtnFetch, btnSearch, catToggle].forEach(function(btn) {{
+        if (!btn) return;
+        btn.disabled = false;
+        btn.style.opacity = "";
+        btn.style.cursor = "";
+        btn.style.pointerEvents = "";
+      }});
+      if (inputSearch) {{
+        inputSearch.disabled = false;
+        inputSearch.style.opacity = "";
       }}
-      if (btnQuickScan) {{
-        btnQuickScan.textContent = "Stop ⏹";
-        btnQuickScan.style.background = "#DC2626";
-      }}
-      if (btnSearch) {{
-        btnSearch.textContent = "Stop ⏹";
-        btnSearch.className = "fkd-btn-search";
-        btnSearch.style.background = "#DC2626";
-      }}
-    }} else {{
-      var count = selectedSubIds.size;
-      var fetchLabel = count > 0 ? `Fetch (${{count}}) ⚡` : "Fetch ⚡";
-      btnFetch.textContent = fetchLabel;
-      btnFetch.className = "fkd-btn-fetch-main";
-      if (drawerBtnFetch) {{
-        drawerBtnFetch.textContent = count > 0 ? `Fetch (${{count}}) ⚡` : "Fetch Selected ⚡";
-        drawerBtnFetch.className = "fkd-drawer-fetch-btn";
-      }}
+
       if (btnQuickScan) {{
         btnQuickScan.textContent = "⚡ Quick Scan";
         btnQuickScan.style.background = "#7C3AED";
       }}
+      var count = selectedSubIds.size;
+      var fetchLabel = count > 0 ? `Fetch (${{count}}) ⚡` : "Fetch ⚡";
+      if (btnFetch) {{
+        btnFetch.textContent = fetchLabel;
+        btnFetch.className = "fkd-btn-fetch-main";
+        btnFetch.style.background = "var(--fkd-green)";
+      }}
+      if (drawerBtnFetch) {{
+        drawerBtnFetch.textContent = count > 0 ? `Fetch (${{count}}) ⚡` : "Fetch Selected ⚡";
+        drawerBtnFetch.className = "fkd-drawer-fetch-btn";
+        drawerBtnFetch.style.background = "var(--fkd-green)";
+      }}
       if (btnSearch) {{
         btnSearch.textContent = "Search";
         btnSearch.className = "fkd-btn-search";
-        btnSearch.style.background = "var(--fkd-green)";
+        btnSearch.style.background = "#334155";
+      }}
+    }} else {{
+      if (actionType === "QUICK_SCAN") {{
+        if (btnQuickScan) {{
+          btnQuickScan.disabled = false;
+          btnQuickScan.textContent = "Stop ⏹";
+          btnQuickScan.style.background = "#DC2626";
+          btnQuickScan.style.opacity = "1";
+          btnQuickScan.style.cursor = "pointer";
+          btnQuickScan.style.pointerEvents = "auto";
+        }}
+        [btnFetch, drawerBtnFetch, btnSearch, catToggle].forEach(function(btn) {{
+          if (!btn) return;
+          btn.disabled = true;
+          btn.style.opacity = "0.38";
+          btn.style.cursor = "not-allowed";
+          btn.style.pointerEvents = "none";
+        }});
+        if (inputSearch) {{
+          inputSearch.disabled = true;
+          inputSearch.style.opacity = "0.5";
+        }}
+      }} else if (actionType === "FETCH") {{
+        if (btnFetch) {{
+          btnFetch.disabled = false;
+          btnFetch.textContent = "Stop ⏹";
+          btnFetch.style.background = "#DC2626";
+          btnFetch.style.opacity = "1";
+          btnFetch.style.cursor = "pointer";
+          btnFetch.style.pointerEvents = "auto";
+        }}
+        if (drawerBtnFetch) {{
+          drawerBtnFetch.disabled = false;
+          drawerBtnFetch.textContent = "Stop ⏹";
+          drawerBtnFetch.style.background = "#DC2626";
+          drawerBtnFetch.style.opacity = "1";
+          drawerBtnFetch.style.cursor = "pointer";
+          drawerBtnFetch.style.pointerEvents = "auto";
+        }}
+        [btnQuickScan, btnSearch, catToggle].forEach(function(btn) {{
+          if (!btn) return;
+          btn.disabled = true;
+          btn.style.opacity = "0.38";
+          btn.style.cursor = "not-allowed";
+          btn.style.pointerEvents = "none";
+        }});
+        if (inputSearch) {{
+          inputSearch.disabled = true;
+          inputSearch.style.opacity = "0.5";
+        }}
+      }} else if (actionType === "SEARCH") {{
+        if (btnSearch) {{
+          btnSearch.disabled = false;
+          btnSearch.textContent = "Stop ⏹";
+          btnSearch.style.background = "#DC2626";
+          btnSearch.style.opacity = "1";
+          btnSearch.style.cursor = "pointer";
+          btnSearch.style.pointerEvents = "auto";
+        }}
+        [btnQuickScan, btnFetch, drawerBtnFetch, catToggle].forEach(function(btn) {{
+          if (!btn) return;
+          btn.disabled = true;
+          btn.style.opacity = "0.38";
+          btn.style.cursor = "not-allowed";
+          btn.style.pointerEvents = "none";
+        }});
       }}
     }}
   }}
@@ -1334,28 +1433,39 @@ def build_bookmarklet():
   function stopAll() {{
     window.fkDealsStop = true;
     st.mode = "STOPPED";
-    updateActionButtons(false);
+    updateActionButtons(null);
   }}
 
   btnSearch.onclick = function() {{
-    if (st.mode === "RUN") {{
+    if (st.mode === "RUN" && st.activeAction === "SEARCH") {{
       stopAll();
-      setStatus("Stopped (" + st.items.length + " items)");
-    }} else {{
+      setStatus("Search stopped (" + st.items.length + " items)");
+    }} else if (st.mode !== "RUN") {{
       startSearch(inputSearch.value);
     }}
   }};
 
   inputSearch.onkeydown = function(e) {{
     if (e.key === "Enter") {{
-      if (st.mode === "RUN") {{
+      if (st.mode === "RUN" && st.activeAction === "SEARCH") {{
         stopAll();
+      }} else if (st.mode !== "RUN") {{
+        startSearch(inputSearch.value);
       }}
-      startSearch(inputSearch.value);
     }}
   }};
 
-  btnMin.onclick = function() {{ toggleCollapse(true); }};
+  btnQuickScan.onclick = function() {{
+    if (st.mode === "RUN" && st.activeAction === "QUICK_SCAN") {{
+      stopAll();
+      setStatus("Quick Scan stopped (" + st.items.length + " items)");
+    }} else if (st.mode !== "RUN") {{
+      closeCatDrawer();
+      startFetch(true);
+    }}
+  }};
+
+    btnMin.onclick = function() {{ toggleCollapse(true); }};
   pill.onclick = function() {{ toggleCollapse(false); }};
 
   btnClose.onclick = function() {{
@@ -1391,15 +1501,7 @@ def build_bookmarklet():
     renderGrid();
   }};
 
-  btnQuickScan.onclick = function() {{
-    if (st.mode === "RUN") {{
-      stopAll();
-      setStatus("Stopped (" + st.items.length + " items)");
-    }} else {{
-      closeCatDrawer();
-      startFetch(true);
-    }}
-  }};
+
 
   function handleFetchClick() {{
     if (st.mode === "RUN") {{
@@ -2151,7 +2253,7 @@ def build_bookmarklet():
     st.allowPhoneCases = true;
     window.fkDealsStop = false;
     st.mode = "RUN";
-    updateActionButtons(true);
+    updateActionButtons("SEARCH");
 
     st.items = [];
     st.seen.clear();
@@ -2183,7 +2285,6 @@ def build_bookmarklet():
     if (inputSearch) inputSearch.value = "";
     window.fkDealsStop = false;
     st.mode = "RUN";
-    updateActionButtons(true);
 
     st.items = [];
     st.seen.clear();
@@ -2195,6 +2296,8 @@ def build_bookmarklet():
     }});
 
     var isQuick = !!forceQuickScan || (!customEndpoints && selectedSubIds.size === 0);
+    var actionType = isQuick ? "QUICK_SCAN" : "FETCH";
+    updateActionButtons(actionType);
     var endpoints = [];
 
     if (customEndpoints && customEndpoints.length > 0) {{
