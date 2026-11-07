@@ -7,3 +7,6 @@ __pycache__/
 *.pyc
 scratch/
 data/posted_deals.json
+tea.txt
+ourScript.txt
+
