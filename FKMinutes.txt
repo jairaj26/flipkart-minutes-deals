@@ -986,7 +986,7 @@ javascript:(function(){
       color: #FFFFFF;
       border: 1px solid var(--fkd-green);
       border-radius: 7px;
-      padding: 0 13px;
+      padding: 0 12px;
       height: 32px;
       font-size: 12px;
       font-weight: 600;
@@ -999,18 +999,48 @@ javascript:(function(){
       background: var(--fkd-green-hover);
     }
 
-    /* Canva-Style Category Dropdown */
+    .fkd-btn-quick {
+      background: #7C3AED;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 7px;
+      padding: 0 11px;
+      height: 32px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.12s ease;
+      flex: none;
+      white-space: nowrap;
+      display: inline-flex;
+      align-items: center;
+      gap: 3px;
+    }
+    .fkd-btn-quick:hover {
+      background: #6D28D9;
+    }
+
+    /* Canva-Style Category Bar & Primary Fetch Button */
     .fkd-row-2 {
       position: relative;
       width: 100%;
     }
-    .fkd-cat-toggle {
+    .fkd-cat-bar {
+      display: flex;
+      gap: 6px;
+      align-items: center;
       width: 100%;
+    }
+    .fkd-cat-toggle {
+      flex: 1;
+      min-width: 0;
       background: #FFFFFF;
       color: var(--fkd-text-main);
       border: 1px solid #D1D5DB;
       border-radius: 7px;
       padding: 7px 11px;
+      height: 32px;
       font-size: 12px;
       font-weight: 500;
       font-family: inherit;
@@ -1022,6 +1052,7 @@ javascript:(function(){
       gap: 8px;
       outline: none;
       transition: border-color 0.15s ease, background 0.15s ease;
+      box-sizing: border-box;
     }
     .fkd-cat-toggle:hover {
       border-color: #9CA3AF;
@@ -1038,6 +1069,28 @@ javascript:(function(){
       color: var(--fkd-text-sub);
       transition: transform 0.15s ease;
     }
+    .fkd-btn-fetch-main {
+      flex: none;
+      background: var(--fkd-green);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 7px;
+      padding: 0 14px;
+      height: 32px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.12s ease;
+      white-space: nowrap;
+      box-shadow: 0 1px 3px rgba(15, 132, 88, 0.25);
+    }
+    .fkd-btn-fetch-main:hover {
+      background: var(--fkd-green-hover);
+    }
+    .fkd-btn-fetch-main.fkd-btn-danger {
+      background: var(--fkd-danger) !important;
+    }
 
     .fkd-cat-drawer {
       position: absolute;
@@ -1049,54 +1102,13 @@ javascript:(function(){
       border: 1px solid #E5E7EB;
       box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
       max-height: 380px;
-      overflow-y: auto;
       z-index: 50;
       padding: 7px;
       display: flex;
       flex-direction: column;
-      gap: 2px;
     }
     .fkd-cat-drawer.hidden {
       display: none;
-    }
-
-    /* Quick Scan & Subcategory Pills Drawer */
-    .fkd-quick-scan-box {
-      padding: 8px 10px;
-      margin-bottom: 6px;
-      border-radius: 8px;
-      background: #F0FDF4;
-      border: 1px solid #BBF7D0;
-      display: flex;
-      flex-direction: column;
-      gap: 3px;
-    }
-    .fkd-quick-scan-btn {
-      width: 100%;
-      height: 32px;
-      border-radius: 6px;
-      background: var(--fkd-green);
-      color: #FFFFFF;
-      border: none;
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-family: inherit;
-      box-shadow: 0 1px 3px rgba(15, 132, 88, 0.25);
-      transition: background 0.15s ease;
-    }
-    .fkd-quick-scan-btn:hover {
-      background: var(--fkd-green-hover);
-    }
-    .fkd-quick-scan-sub {
-      font-size: 10.5px;
-      color: #166534;
-      text-align: center;
-      font-weight: 500;
     }
     .fkd-drawer-hint {
       font-size: 11px;
@@ -1106,6 +1118,49 @@ javascript:(function(){
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex: none;
+    }
+    .fkd-drawer-list {
+      overflow-y: auto;
+      max-height: 290px;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-right: 2px;
+    }
+    .fkd-drawer-footer {
+      position: sticky;
+      bottom: 0;
+      background: #FFFFFF;
+      padding: 7px 2px 2px;
+      border-top: 1px solid #F3F4F6;
+      margin-top: 4px;
+      z-index: 10;
+      flex: none;
+    }
+    .fkd-drawer-fetch-btn {
+      width: 100%;
+      height: 32px;
+      background: var(--fkd-green);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 7px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: inherit;
+      transition: background 0.12s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      box-shadow: 0 1px 3px rgba(15, 132, 88, 0.25);
+    }
+    .fkd-drawer-fetch-btn:hover {
+      background: var(--fkd-green-hover);
+    }
+    .fkd-drawer-fetch-btn.fkd-btn-danger {
+      background: var(--fkd-danger) !important;
     }
 
     .fkd-dept-item {
@@ -1259,63 +1314,77 @@ javascript:(function(){
       transform: translateY(0);
     }
 
-    /* Toolbar Controls (Off-White & Green Palette) */
+    /* Toolbar Controls (Segmented Sort Symbols & In-Stock) */
     .fkd-toolbar {
       display: flex;
-      gap: 6px;
+      gap: 8px;
       align-items: center;
       width: 100%;
     }
-    .fkd-pill {
-      flex: 1 1 0;
-      min-width: 0;
-      height: 30px;
-      padding: 0 4px;
-      border-radius: 7px;
-      background: #FFFFFF;
-      color: var(--fkd-text-main);
-      border: 1px solid #D1D5DB;
-      font-size: 11px;
-      font-weight: 500;
-      font-family: inherit;
-      cursor: pointer;
-      display: flex;
+    .fkd-sort-group {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-      transition: all 0.12s ease;
-      user-select: none;
-      outline: none;
-    }
-    .fkd-pill:hover {
+      gap: 3px;
       background: #F3F4F6;
-      border-color: #9CA3AF;
+      padding: 3px 4px;
+      border-radius: 8px;
     }
-    .fkd-pill.active {
-      background: var(--fkd-green);
-      color: #FFFFFF;
-      border-color: var(--fkd-green);
+    .fkd-sort-label {
+      font-size: 11px;
+      color: #6B7280;
+      font-weight: 500;
+      margin-left: 3px;
+      margin-right: 2px;
+      user-select: none;
+    }
+    .fkd-sort-btn {
+      border: none;
+      background: transparent;
+      color: #6B7280;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
       font-weight: 600;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      outline: none;
+      line-height: 1;
+    }
+    .fkd-sort-btn:hover {
+      color: #111827;
+    }
+    .fkd-sort-btn.active {
+      background: #FFFFFF;
+      color: #111827;
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     }
 
-    .fkd-pill-action {
-      background: var(--fkd-green) !important;
-      color: #FFFFFF !important;
-      border-color: var(--fkd-green) !important;
-      font-weight: 700;
+    .fkd-oos-btn {
+      border: 1px solid #E5E7EB;
+      background: #FFFFFF;
+      color: #4B5563;
+      padding: 5px 11px;
+      border-radius: 7px;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      font-family: inherit;
+      transition: all 0.15s ease;
+      outline: none;
+      white-space: nowrap;
     }
-    .fkd-pill-action:hover {
-      background: var(--fkd-green-hover) !important;
+    .fkd-oos-btn:hover {
+      background: #F9FAFB;
+      color: #111827;
+      border-color: #D1D5DB;
     }
-
-    .fkd-pill-danger {
-      background: var(--fkd-danger) !important;
-      color: #FFFFFF !important;
-      border-color: var(--fkd-danger) !important;
-      font-weight: 700;
-    }
-    .fkd-pill-danger:hover {
-      background: var(--fkd-danger-hover) !important;
+    .fkd-oos-btn.active {
+      background: #E5E7EB;
+      border-color: #D1D5DB;
+      color: #111827;
+      font-weight: 600;
     }
 
     .fkd-status-bar {
@@ -1505,21 +1574,28 @@ javascript:(function(){
         </div>
       </div>
       <div class="fkd-search-row">
-        <input type="text" class="fkd-input" id="fkd-input-search" placeholder="🔍 Search e.g. cake, ghee, surf..." style="flex:1" title="Type keyword and press Enter or click Search">
-        <button class="fkd-btn-search" id="fkd-btn-search">Search</button>
+        <input type="text" class="fkd-input" id="fkd-input-search" placeholder="🔍 Search e.g. tea, cake, ghee..." style="flex:1" title="Type keyword and press Enter or click Search">
+        <button class="fkd-btn-search" id="fkd-btn-search" title="Search deals">Search</button>
+        <button class="fkd-btn-quick" id="fkd-btn-quick-scan" title="Quick Scan across top 18 departments">⚡ Quick Scan</button>
       </div>
       <div class="fkd-row-2">
-        <button class="fkd-cat-toggle" id="fkd-cat-toggle" type="button" title="Browse & select Flipkart Minutes categories">
-          <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">📂 Select Categories (or Quick Scan)</span>
-          <span class="fkd-caret" id="fkd-cat-caret">▾</span>
-        </button>
+        <div class="fkd-cat-bar">
+          <button class="fkd-cat-toggle" id="fkd-cat-toggle" type="button" title="Browse & select Flipkart Minutes categories">
+            <span class="fkd-cat-toggle-text" id="fkd-selected-cat-name">📂 Select Categories</span>
+            <span class="fkd-caret" id="fkd-cat-caret">▾</span>
+          </button>
+          <button class="fkd-btn-fetch-main" id="fkd-btn-fetch" type="button" title="Fetch selected categories">Fetch ⚡</button>
+        </div>
         <div id="fkd-cat-drawer" class="fkd-cat-drawer hidden"></div>
       </div>
       <div class="fkd-toolbar">
-        <button class="fkd-pill" id="fkd-sort-price" title="Sort by lowest price">Sort ₹</button>
-        <button class="fkd-pill active" id="fkd-sort-disc" title="Sort by highest discount">Sort %</button>
-        <button class="fkd-pill active" id="fkd-toggle-oos" title="Toggle Out of Stock items">In Stock</button>
-        <button class="fkd-pill fkd-pill-action" id="fkd-btn-fetch" title="Run Quick Scan or Fetch Selected Categories">Quick Scan ⚡</button>
+        <div class="fkd-sort-group">
+          <span class="fkd-sort-label">Sort:</span>
+          <button class="fkd-sort-btn active" id="fkd-sort-disc" title="Sort by highest discount">% ↓</button>
+          <button class="fkd-sort-btn" id="fkd-sort-price" title="Sort by lowest price">₹ ↑</button>
+        </div>
+        <div style="flex:1"></div>
+        <button class="fkd-oos-btn active" id="fkd-toggle-oos" title="Toggle Out of Stock items">In Stock</button>
       </div>
       <div class="fkd-status-bar">
         <span class="fkd-status-dot"></span>
@@ -1527,7 +1603,7 @@ javascript:(function(){
       </div>
     </div>
         <div id="fkd-grid" class="fkd-grid">
-      <div class="fkd-empty">Click <b>Quick Scan ⚡</b> to scan top deals across Flipkart Minutes, or pick categories above.</div>
+      <div class="fkd-empty">Click <b>⚡ Quick Scan</b> to scan top deals across Flipkart Minutes, or pick categories above.</div>
     </div>
     <div id="fkd-toast" class="fkd-toast"></div>
   `;
@@ -1576,24 +1652,25 @@ javascript:(function(){
 
   /* Update Category Selection Summary Label & Fetch Button */
   function updateCategorySummary() {
-    if (selectedSubIds.size === 0) {
-      catNameDisplay.textContent = "📂 Select Categories (or Quick Scan)";
-      btnFetch.textContent = "Quick Scan ⚡";
-      btnFetch.title = "Quick Scan across all 18 top departments";
+    var count = selectedSubIds.size;
+    var fetchLabel = count > 0 ? `Fetch (${count}) ⚡` : "Fetch ⚡";
+    btnFetch.textContent = fetchLabel;
+    if (drawerBtnFetch) drawerBtnFetch.textContent = count > 0 ? `Fetch (${count}) ⚡` : "Fetch Selected ⚡";
+
+    if (count === 0) {
+      catNameDisplay.textContent = "📂 Select Categories";
       return;
     }
 
     var selectedGrpNames = [];
     CATEGORY_TREE.forEach(function(g) {
-      var count = (g.subs || []).filter(function(s){ return selectedSubIds.has(s.id); }).length;
-      if (count > 0) {
-        selectedGrpNames.push(g.group + " (" + count + ")");
+      var c = (g.subs || []).filter(function(s){ return selectedSubIds.has(s.id); }).length;
+      if (c > 0) {
+        selectedGrpNames.push(g.group + " (" + c + ")");
       }
     });
 
     catNameDisplay.textContent = selectedGrpNames.join(", ");
-    btnFetch.textContent = "Fetch (" + selectedSubIds.size + ") ⚡";
-    btnFetch.title = "Fetch " + selectedSubIds.size + " selected subcategories";
   }
 
   function updateDeptBadge(grp) {
@@ -1662,26 +1739,20 @@ javascript:(function(){
 
   /* Render Drawer: Top Quick Scan Box + Department Accordions with Pills */
   catDrawer.innerHTML = `
-    <div class="fkd-quick-scan-box">
-      <button type="button" class="fkd-quick-scan-btn" id="fkd-btn-quick-scan">
-        ⚡ Quick Scan (All 18 Departments)
-      </button>
-      <div class="fkd-quick-scan-sub">Scans top store departments with 1 click</div>
-    </div>
     <div class="fkd-drawer-hint">
-      <span>Or pick subcategories (max 2 departments):</span>
+      <span>Pick subcategories (max 2 departments):</span>
       <button type="button" class="fkd-link-btn" id="fkd-btn-clear-all" style="font-size:10.5px;">Clear All</button>
+    </div>
+    <div class="fkd-drawer-list" id="fkd-drawer-list"></div>
+    <div class="fkd-drawer-footer">
+      <button type="button" class="fkd-drawer-fetch-btn" id="fkd-drawer-btn-fetch">Fetch Selected ⚡</button>
     </div>
   `;
 
-  var btnDrawerQuickScan = d.getElementById("fkd-btn-quick-scan");
-  btnDrawerQuickScan.onclick = function(e) {
-    e.stopPropagation();
-    closeCatDrawer();
-    startFetch(true);
-  };
-
+  var drawerList = d.getElementById("fkd-drawer-list");
+  var drawerBtnFetch = d.getElementById("fkd-drawer-btn-fetch");
   var btnClearAll = d.getElementById("fkd-btn-clear-all");
+
   btnClearAll.onclick = function(e) {
     e.stopPropagation();
     selectedSubIds.clear();
@@ -1785,7 +1856,7 @@ javascript:(function(){
       clearDept(item);
     };
 
-    catDrawer.appendChild(deptEl);
+    drawerList.appendChild(deptEl);
   });
 
   /* Close drawer when clicking outside inside sidebar */
@@ -1801,6 +1872,7 @@ javascript:(function(){
   var btnSortDisc = d.getElementById("fkd-sort-disc");
   var btnSortPrice = d.getElementById("fkd-sort-price");
   var btnFetch = d.getElementById("fkd-btn-fetch");
+  var btnQuickScan = d.getElementById("fkd-btn-quick-scan");
   var inputSearch = d.getElementById("fkd-input-search");
   var btnSearch = d.getElementById("fkd-btn-search");
   var grid = d.getElementById("fkd-grid");
@@ -1823,19 +1895,48 @@ javascript:(function(){
     }
   }
 
+  function updateActionButtons(isRunning) {
+    if (isRunning) {
+      btnFetch.textContent = "Stop ⏹";
+      btnFetch.className = "fkd-btn-fetch-main fkd-btn-danger";
+      if (drawerBtnFetch) {
+        drawerBtnFetch.textContent = "Stop ⏹";
+        drawerBtnFetch.className = "fkd-drawer-fetch-btn fkd-btn-danger";
+      }
+      if (btnQuickScan) {
+        btnQuickScan.textContent = "Stop ⏹";
+        btnQuickScan.style.background = "#DC2626";
+      }
+      if (btnSearch) {
+        btnSearch.textContent = "Stop ⏹";
+        btnSearch.className = "fkd-btn-search";
+        btnSearch.style.background = "#DC2626";
+      }
+    } else {
+      var count = selectedSubIds.size;
+      var fetchLabel = count > 0 ? `Fetch (${count}) ⚡` : "Fetch ⚡";
+      btnFetch.textContent = fetchLabel;
+      btnFetch.className = "fkd-btn-fetch-main";
+      if (drawerBtnFetch) {
+        drawerBtnFetch.textContent = count > 0 ? `Fetch (${count}) ⚡` : "Fetch Selected ⚡";
+        drawerBtnFetch.className = "fkd-drawer-fetch-btn";
+      }
+      if (btnQuickScan) {
+        btnQuickScan.textContent = "⚡ Quick Scan";
+        btnQuickScan.style.background = "#7C3AED";
+      }
+      if (btnSearch) {
+        btnSearch.textContent = "Search";
+        btnSearch.className = "fkd-btn-search";
+        btnSearch.style.background = "var(--fkd-green)";
+      }
+    }
+  }
+
   function stopAll() {
     window.fkDealsStop = true;
     st.mode = "STOPPED";
-    btnFetch.className = "fkd-pill fkd-pill-action";
-    if (selectedSubIds.size === 0) {
-      btnFetch.textContent = "Quick Scan ⚡";
-    } else {
-      btnFetch.textContent = `Fetch (${selectedSubIds.size}) ⚡`;
-    }
-    if (btnSearch) {
-      btnSearch.textContent = "Search";
-      btnSearch.className = "fkd-btn-search";
-    }
+    updateActionButtons(false);
   }
 
   btnSearch.onclick = function() {
@@ -1892,15 +1993,59 @@ javascript:(function(){
     renderGrid();
   };
 
-  btnFetch.onclick = function() {
-    closeCatDrawer();
+  btnQuickScan.onclick = function() {
     if (st.mode === "RUN") {
       stopAll();
       setStatus("Stopped (" + st.items.length + " items)");
     } else {
-      startFetch(selectedSubIds.size === 0);
+      closeCatDrawer();
+      startFetch(true);
     }
   };
+
+  function handleFetchClick() {
+    if (st.mode === "RUN") {
+      stopAll();
+      setStatus("Stopped (" + st.items.length + " items)");
+      return;
+    }
+    if (selectedSubIds.size === 0) {
+      showToast("⚠️ Pick subcategories to fetch, or click ⚡ Quick Scan");
+      return;
+    }
+
+    // Collect selected endpoints before clearing
+    var endpointsToScan = [];
+    CATEGORY_TREE.forEach(function(grp) {
+      (grp.subs || []).forEach(function(sub) {
+        if (selectedSubIds.has(sub.id)) {
+          endpointsToScan.push({
+            name: grp.name + " › " + sub.name,
+            uri: sub.uri,
+            isStaples: (grp.group === "Staples")
+          });
+        }
+      });
+    });
+
+    // Requirement: When I click on fetch, the subcategories need to be unchecked and the dropdown needs to be collapsed back.
+    selectedSubIds.clear();
+    selectedParentGroups.clear();
+    catDrawer.querySelectorAll(".fkd-sub-pill.active").forEach(function(p){
+      p.classList.remove("active");
+    });
+    catDrawer.querySelectorAll(".fkd-dept-badge").forEach(function(b){
+      b.textContent = "";
+      b.classList.add("hidden");
+    });
+    updateCategorySummary();
+    closeCatDrawer();
+
+    startFetch(false, endpointsToScan);
+  }
+
+  btnFetch.onclick = handleFetchClick;
+  if (drawerBtnFetch) drawerBtnFetch.onclick = handleFetchClick;
 
     function renderGrid() {
     grid.innerHTML = "";
@@ -2055,12 +2200,18 @@ javascript:(function(){
       disc = (mrp > fsp) ? Math.round(((mrp - fsp) / mrp) * 100) : 0;
     }
 
-    /* Bug Fix: Concatenated MRP and Discount */
-    if (mrp > fsp * 4 && disc > 0 && String(mrp).endsWith(String(disc))) {
-      var cleanMrp = parseInt(String(mrp).slice(0, -String(disc).length), 10);
-      if (cleanMrp >= fsp) {
-        mrp = cleanMrp;
-        disc = Math.round(((mrp - fsp) / mrp) * 100);
+    /* Bug Fix: Concatenated MRP and Discount (only if current MRP does not match discount, and cleanMrp does match discount) */
+    if (mrp > fsp && disc > 0 && String(mrp).endsWith(String(disc))) {
+      var currentMathDisc = Math.round(((mrp - fsp) / mrp) * 100);
+      if (Math.abs(currentMathDisc - disc) > 2) {
+        var cleanMrp = parseInt(String(mrp).slice(0, -String(disc).length), 10);
+        if (cleanMrp > fsp) {
+          var cleanMathDisc = Math.round(((cleanMrp - fsp) / cleanMrp) * 100);
+          if (Math.abs(cleanMathDisc - disc) <= 2) {
+            mrp = cleanMrp;
+            disc = cleanMathDisc;
+          }
+        }
       }
     }
 
@@ -2602,12 +2753,7 @@ javascript:(function(){
     st.allowPhoneCases = true;
     window.fkDealsStop = false;
     st.mode = "RUN";
-    if (btnSearch) {
-      btnSearch.textContent = "Stop ⏹";
-      btnSearch.className = "fkd-btn-search";
-      btnSearch.style.background = "#DC2626";
-      btnSearch.style.borderColor = "#DC2626";
-    }
+    updateActionButtons(true);
 
     st.items = [];
     st.seen.clear();
@@ -2633,14 +2779,13 @@ javascript:(function(){
   }
 
   /* Multi-Category Scanning based on checked categories */
-  async function startFetch(forceQuickScan) {
+  async function startFetch(forceQuickScan, customEndpoints) {
     closeCatDrawer();
     st.searchQuery = "";
     if (inputSearch) inputSearch.value = "";
     window.fkDealsStop = false;
     st.mode = "RUN";
-    btnFetch.textContent = "Stop ⏹";
-    btnFetch.className = "fkd-pill fkd-pill-danger";
+    updateActionButtons(true);
 
     st.items = [];
     st.seen.clear();
@@ -2651,10 +2796,13 @@ javascript:(function(){
       return id.includes("0040") || id.includes("sgh_jaa");
     });
 
-    var isQuick = !!forceQuickScan || (selectedSubIds.size === 0);
+    var isQuick = !!forceQuickScan || (!customEndpoints && selectedSubIds.size === 0);
     var endpoints = [];
 
-    if (isQuick) {
+    if (customEndpoints && customEndpoints.length > 0) {
+      endpoints = customEndpoints;
+      setStatus(`Scanning ${endpoints.length} selected subcategories...`);
+    } else if (isQuick) {
       endpoints = MAIN_GROUPS.map(function(mg) {
         return {
           name: mg.name,

@@ -458,12 +458,16 @@ class FlipkartScraper:
         if not disc or disc <= 0 or disc >= 100:
             disc = round(((mrp - fsp) / mrp) * 100) if mrp > fsp else 0
 
-        # Fix concatenated discount bug (e.g. mrp 75037 -> 750 with 37% disc)
-        if mrp > fsp * 4 and disc > 0 and str(mrp).endswith(str(disc)):
-            clean_mrp = int(str(mrp)[:-len(str(disc))])
-            if clean_mrp >= fsp:
-                mrp = clean_mrp
-                disc = round(((mrp - fsp) / mrp) * 100)
+        # Fix concatenated discount bug (only if current MRP does not match discount, and clean_mrp does match discount)
+        if mrp > fsp and disc > 0 and str(mrp).endswith(str(disc)):
+            current_math_disc = round(((mrp - fsp) / mrp) * 100)
+            if abs(current_math_disc - disc) > 2:
+                clean_mrp = int(str(mrp)[:-len(str(disc))])
+                if clean_mrp > fsp:
+                    clean_math_disc = round(((clean_mrp - fsp) / clean_mrp) * 100)
+                    if abs(clean_math_disc - disc) <= 2:
+                        mrp = clean_mrp
+                        disc = clean_math_disc
 
         uid = f"{title}_{fsp}"
         return {
