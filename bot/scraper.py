@@ -3,6 +3,7 @@ import re
 import urllib.parse
 import urllib.request
 import ssl
+import requests
 from . import config
 
 ctx = ssl.create_default_context()
@@ -125,6 +126,24 @@ def build_product_link(base_lnk, cval=None, stepper_action=None):
     new_query = urllib.parse.urlencode(qs, doseq=True)
     return urllib.parse.urlunparse((parsed.scheme, parsed.netloc, parsed.path, parsed.params, new_query, parsed.fragment))
 
+def extract_product_uid(lnk, title, fsp):
+    """
+    Extracts a robust unique product identifier from the deal link or fallback title+price.
+    Checks for pid, itm, or lid in URL, and normalizes title.
+    """
+    if lnk:
+        m_pid = re.search(r"[?&]pid=([a-zA-Z0-9_-]+)", lnk, re.I)
+        if m_pid and m_pid.group(1):
+            return f"pid_{m_pid.group(1)}"
+        m_itm = re.search(r"/p/(itm[a-zA-Z0-9_-]+)", lnk, re.I)
+        if m_itm and m_itm.group(1):
+            return f"pid_{m_itm.group(1)}"
+        m_lid = re.search(r"[?&]lid=([a-zA-Z0-9_-]+)", lnk, re.I)
+        if m_lid and m_lid.group(1):
+            return f"lid_{m_lid.group(1)}"
+    norm_title = re.sub(r"\s+", " ", (title or "").lower()).strip()
+    return f"{norm_title}_{fsp}"
+
 class FlipkartScraper:
     def __init__(self, pincode=None):
         self.pincode = int(pincode or config.DEFAULT_PINCODE)
@@ -156,6 +175,10 @@ class FlipkartScraper:
                 self.session_cookies["deliveryPincode"] = cookie_pc
                 self.session_cookies["pincode"] = cookie_pc
 
+        self.session = requests.Session()
+        self.session.headers.update(config.DEFAULT_HEADERS)
+        self.session.cookies.update(self.session_cookies)
+
     def fetch_rome_page(self, page_uri, redirect_count=0):
         """Fetches a page from Rome API, automatically following 302 redirects."""
         if redirect_count > 3:
@@ -183,43 +206,39 @@ class FlipkartScraper:
             }
         }
 
-        headers = dict(config.DEFAULT_HEADERS)
-        if self.session_cookies:
-            headers["cookie"] = "; ".join([f"{k}={v}" for k, v in self.session_cookies.items()])
-
-        req = urllib.request.Request(
-            config.ROME_API_URL,
-            data=json.dumps(payload).encode("utf-8"),
-            headers=headers,
-            method="POST"
-        )
+        self.session.cookies.update(self.session_cookies)
 
         try:
-            with urllib.request.urlopen(req, context=ctx, timeout=12) as res:
-                if res.status != 200:
-                    return None
-                data = res.read().decode("utf-8")
-                parsed_json = json.loads(data)
+            res = self.session.post(
+                config.ROME_API_URL,
+                json=payload,
+                timeout=12
+            )
+            if res.status_code != 200:
+                return None
+            parsed_json = res.json()
 
-                # Capture session tokens if returned
-                session_info = parsed_json.get("SESSION", {})
-                if session_info.get("sn"):
-                    self.session_cookies["SN"] = session_info["sn"]
-                if session_info.get("at"):
-                    self.session_cookies["at"] = session_info["at"]
+            # Capture session tokens if returned
+            session_info = parsed_json.get("SESSION", {})
+            if session_info.get("sn"):
+                self.session_cookies["SN"] = session_info["sn"]
+                self.session.cookies.set("SN", session_info["sn"])
+            if session_info.get("at"):
+                self.session_cookies["at"] = session_info["at"]
+                self.session.cookies.set("at", session_info["at"])
 
-                # Handle internal 302 redirect
-                slots = parsed_json.get("RESPONSE", {}).get("slots", [])
-                redir = parsed_json.get("RESPONSE", {}).get("pageMeta", {}).get("redirectionObject", {})
-                redir_url = redir.get("url")
+            # Handle internal 302 redirect
+            slots = parsed_json.get("RESPONSE", {}).get("slots", [])
+            redir = parsed_json.get("RESPONSE", {}).get("pageMeta", {}).get("redirectionObject", {})
+            redir_url = redir.get("url")
 
-                if (not slots or len(slots) == 0) and redir_url:
-                    redir_parsed = urllib.parse.urlparse(redir_url)
-                    target_path = redir_parsed.path + ("?" + redir_parsed.query if redir_parsed.query else "")
-                    if target_path and target_path != clean_uri:
-                        return self.fetch_rome_page(target_path, redirect_count + 1)
+            if (not slots or len(slots) == 0) and redir_url:
+                redir_parsed = urllib.parse.urlparse(redir_url)
+                target_path = redir_parsed.path + ("?" + redir_parsed.query if redir_parsed.query else "")
+                if target_path and target_path != clean_uri:
+                    return self.fetch_rome_page(target_path, redirect_count + 1)
 
-                return parsed_json
+            return parsed_json
         except Exception:
             return None
 
@@ -260,15 +279,17 @@ class FlipkartScraper:
                     pricing = v.get("pricing", {})
                     final_price = pricing.get("finalPrice", {})
 
-                    if final_price and final_price.get("value"):
-                        fsp = int(final_price.get("value", 0))
+                    fsp = extract_price(final_price.get("value")) if final_price else 0
+                    if fsp > 0:
                         mrp = fsp
                         prices = pricing.get("prices", [])
                         for p in prices:
                             ptype = str(p.get("priceType", "")).upper()
                             if ptype in ("MRP", "MAXIMUM_RETAIL_PRICE", "LIST_PRICE", "STRIKE_OFF", "STRIKEOFF") and p.get("value"):
-                                mrp = int(p["value"])
-                                break
+                                p_val = extract_price(p.get("value"))
+                                if p_val > 0:
+                                    mrp = p_val
+                                    break
 
                         if mrp == fsp and pricing.get("mrp"):
                             mrp = extract_price(pricing.get("mrp")) or mrp
@@ -286,7 +307,8 @@ class FlipkartScraper:
                         img = images[0].get("url", "") if images else ""
                         img = img.replace("{@width}", "400").replace("{@height}", "400").replace("?q={@quality}", "?q=80")
 
-                        is_oos = (v.get("availability", {}).get("displayState") == "OUT_OF_STOCK" or
+                        disp_state = v.get("availability", {}).get("displayState")
+                        is_oos = (disp_state not in (None, "", "IN_STOCK") or
                                   v.get("productAction", {}).get("value", {}).get("enabled") is False or
                                   v.get("productAction", {}).get("value", {}).get("actionType") == "NOTIFY_ME" or
                                   v.get("buyability", {}).get("intent") == "negative" or
@@ -364,6 +386,40 @@ class FlipkartScraper:
                                 if prod and prod["id"] not in seen_uids:
                                     seen_uids.add(prod["id"])
                                     products.append(prod)
+
+                                # Parse embedded multi-variant swatches (scrollToListData_0)
+                                swatch_list = (stepper.get("params", {}).get("widgetData", {}).get("data", {}).get("dlsData", {}).get("swatch_list_0_0", {}).get("value", {}).get("scrollToListData_0", {}).get("value")
+                                               if isinstance(stepper, dict) else None)
+                                if isinstance(swatch_list, list):
+                                    for sw in swatch_list:
+                                        try:
+                                            sv = sw.get("value", {}) if isinstance(sw, dict) else {}
+                                            sw_action = sv.get("stepperData_0", {}).get("action", {})
+                                            sw_params = sw_action.get("params", {})
+                                            sw_fsp = extract_price(sw_params.get("fspUnlocked") or sw_params.get("fspLocked") or sv.get("label_3") or sw_params.get("price"))
+                                            sw_mrp = extract_price(sw_params.get("mrp") or sv.get("label_2")) or sw_fsp
+                                            sw_disc_str = str(sw_params.get("discountPercentage") or "")
+                                            sw_disc_m = re.search(r"(\d+)%", sw_disc_str)
+                                            sw_disc = int(sw_disc_m.group(1)) if sw_disc_m else 0
+                                            sw_attr = sw_params.get("attributeValue") or sv.get("label_0", {}).get("value", {}).get("text") or ""
+                                            sw_pid = sw_params.get("productId") or ""
+                                            sw_lid = sw_params.get("listingId") or ""
+                                            sw_title = f"{title} ({sw_attr})" if sw_attr else title
+                                            sw_img = (sw_params.get("imageUrl") or sw_params.get("productImage") or img or "")
+                                            sw_img = sw_img.replace("{@width}", "400").replace("{@height}", "400").replace("?q={@quality}", "?q=80")
+                                            sw_lnk = lnk
+                                            if sw_lnk and sw_pid:
+                                                sw_lnk = re.sub(r"([?&]pid=)[^&]+", r"\g<1>" + sw_pid, sw_lnk)
+                                                if sw_lid:
+                                                    sw_lnk = re.sub(r"([?&]lid=)[^&]+", r"\g<1>" + sw_lid, sw_lnk)
+                                            sw_oos = (sw_action.get("enabled") is False or sw_action.get("tracking", {}).get("isAvailable") == "false")
+                                            if sw_fsp:
+                                                sw_prod = self._normalize_product(sw_title, sw_fsp, sw_mrp, sw_disc, sw_img, sw_lnk, sw_oos)
+                                                if sw_prod and sw_prod["id"] not in seen_uids:
+                                                    seen_uids.add(sw_prod["id"])
+                                                    products.append(sw_prod)
+                                        except Exception:
+                                            continue
                                 continue
 
                             # Case B: MRCSV / Product Cards (product-card / productCard / hp_reco_pmu_product-card)
@@ -469,7 +525,7 @@ class FlipkartScraper:
                         mrp = clean_mrp
                         disc = clean_math_disc
 
-        uid = f"{title}_{fsp}"
+        uid = extract_product_uid(lnk, title, fsp)
         return {
             "id": uid,
             "title": title,
@@ -493,7 +549,7 @@ class FlipkartScraper:
 
         clutter_terms = [
             "diaper", "baby", "mobile", "cable", "case", "cover", "earphone", "headphone",
-            "speaker", "gadget", "appliance", "kitchen", "cookware", "toy", "stationery",
+            "speaker", "gadget", "toy", "stationery",
             "electrical", "tool", "bedding", "furnishing", "fashion"
         ]
 
@@ -501,7 +557,8 @@ class FlipkartScraper:
             text = (name + " " + url).lower()
             return any(t in text for t in clutter_terms)
 
-        for s in slots:
+        for raw_s in slots:
+            s = raw_s.get("slotData", raw_s) if isinstance(raw_s, dict) else {}
             w = s.get("widget", {})
             wtype = w.get("type", "")
             view_type = w.get("viewType", "")
@@ -545,7 +602,7 @@ class FlipkartScraper:
 
         return subcats
 
-    def fetch_category_deals(self, category_info, min_discount=None, max_pages=3):
+    def fetch_category_deals(self, category_info, min_discount=None, max_pages=None):
         """
         Fetches and parses deals for a category across pages.
         Uses smart discount-aware pagination:
@@ -565,16 +622,27 @@ class FlipkartScraper:
 
         seen_uids = {p["id"] for p in products}
 
-        # Smart multi-page pagination
+        # Smart multi-page pagination (max_pages defaults to config.DEFAULT_MAX_PAGES)
+        limit_pages = max_pages if max_pages is not None else getattr(config, "DEFAULT_MAX_PAGES", 2)
+        is_phone_case_cat = any(x in cat_name.lower() for x in ("case", "cover", "pouch"))
+        effective_max_pages = min(2, limit_pages) if is_phone_case_cat else limit_pages
         curr_page = 1
-        while curr_page < max_pages and products:
-            qualifying = [p for p in products if p.get("discount", 0) >= min_disc]
-            if not qualifying:
+        page_prods = products
+        is_glitch_scan = bool(category_info.get("is_price_error_scan") or "price_asc" in uri)
+        while curr_page < effective_max_pages and page_prods:
+            if len(page_prods) < 6:
                 break
 
-            min_disc_found = min(p.get("discount", 0) for p in products)
-            if min_disc_found < min_disc and len(qualifying) < 12:
-                break
+            if is_glitch_scan:
+                max_fsp_found = max(p.get("fsp", 999) for p in page_prods)
+                glitch_thresh = getattr(config, "PRICE_ERROR_MAX_FSP", 4)
+                if max_fsp_found > glitch_thresh:
+                    break
+            else:
+                min_disc_found = min(p.get("discount", 0) for p in page_prods)
+                qualifying = [p for p in page_prods if p.get("discount", 0) >= min_disc]
+                if min_disc_found < min_disc and len(qualifying) < 12:
+                    break
 
             next_page = curr_page + 1
             next_uri = build_page_uri(uri, next_page)
@@ -596,6 +664,7 @@ class FlipkartScraper:
             if new_count == 0:
                 break
 
+            page_prods = next_prods
             curr_page = next_page
 
         for p in products:

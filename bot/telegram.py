@@ -4,6 +4,7 @@ import time
 import urllib.parse
 import urllib.request
 import ssl
+import requests
 from . import config
 
 ctx = ssl.create_default_context()
@@ -13,6 +14,7 @@ class TelegramNotifier:
         self.bot_token = (bot_token or config.TELEGRAM_BOT_TOKEN).strip()
         self.chat_id = (chat_id or config.TELEGRAM_CHAT_ID).strip()
         self.base_url = f"https://api.telegram.org/bot{self.bot_token}"
+        self.session = requests.Session()
 
     @property
     def is_configured(self):
@@ -30,9 +32,16 @@ class TelegramNotifier:
         mrp = deal.get("mrp", fsp)
         disc = deal.get("discount", 0)
         link = deal.get("link", "https://www.flipkart.com")
+        safe_link = html.escape(link, quote=True)
         mrp_str = f" (MRP: ₹{mrp})" if mrp > fsp else ""
 
-        return f"<b>{title}</b>\n🔥 <b>{disc}% OFF</b> | 💰 <b>₹{fsp}</b>{mrp_str}\n<a href=\"{link}\">Click here</a>"
+        if deal.get("is_price_error") or (0 < fsp < 5) or (fsp == 5 and disc >= 80):
+            disc_label = f"⚡ <b>PRICE ERROR / ₹{fsp} LOOT</b>"
+            if disc > 0:
+                disc_label += f" ({disc}% OFF)"
+            return f"🚨 {disc_label}\n<b>{title}</b>\n💰 <b>Price: ₹{fsp}</b>{mrp_str}\n<a href=\"{safe_link}\">Click here</a>"
+
+        return f"<b>{title}</b>\n🔥 <b>{disc}% OFF</b> | 💰 <b>₹{fsp}</b>{mrp_str}\n<a href=\"{safe_link}\">Click here</a>"
 
     def format_deal_message(self, deal):
         """Single deal format for backward compatibility."""
@@ -93,17 +102,33 @@ class TelegramNotifier:
             "parse_mode": "HTML",
             "disable_web_page_preview": True
         }
-        try:
-            data = json.dumps(payload).encode("utf-8")
-            req = urllib.request.Request(
-                url,
-                data=data,
-                headers={"Content-Type": "application/json"},
-                method="POST"
-            )
-            with urllib.request.urlopen(req, context=ctx, timeout=10) as res:
-                res_data = json.loads(res.read().decode("utf-8"))
-                return res_data.get("ok", False)
-        except Exception as e:
-            print(f"[Telegram Error] {e}")
-            return False
+        max_retries = 2
+        for attempt in range(max_retries + 1):
+            try:
+                res = self.session.post(url, json=payload, timeout=10)
+                res_data = {}
+                try:
+                    res_data = res.json()
+                except Exception:
+                    pass
+
+                if res.status_code == 200 and res_data.get("ok"):
+                    return True
+
+                if res.status_code == 429:
+                    retry_after = res_data.get("parameters", {}).get("retry_after", 5)
+                    print(f"[Telegram 429] Rate limited. Retrying after {retry_after}s (attempt {attempt + 1}/{max_retries + 1})...")
+                    if attempt < max_retries:
+                        time.sleep(retry_after)
+                        continue
+
+                error_desc = res_data.get("description") or res.text
+                print(f"[Telegram Error HTTP {res.status_code}] {error_desc}")
+                return False
+            except Exception as e:
+                print(f"[Telegram Error] {e}")
+                if attempt < max_retries:
+                    time.sleep(2)
+                    continue
+                return False
+        return False

@@ -26,15 +26,26 @@ COOLDOWN_SECONDS = 30 * 24 * 3600
 def get_deal_key(deal):
     """
     Derives a stable unique product identifier.
-    Extracts 'pid' (Product ID) from product URL if present; otherwise falls back to normalized title.
+    Extracts 'pid', '/p/(itm...)', or 'lid' from product URL if present;
+    otherwise falls back to normalized title + fsp or deal id.
     """
     lnk = deal.get("link", "")
-    m = re.search(r"[?&]pid=([a-zA-Z0-9]+)", lnk)
-    if m:
-        return m.group(1).upper()
+    if lnk:
+        m_pid = re.search(r"[?&]pid=([a-zA-Z0-9_-]+)", lnk, re.I)
+        if m_pid and m_pid.group(1):
+            return f"pid_{m_pid.group(1)}"
+        m_itm = re.search(r"/p/(itm[a-zA-Z0-9_-]+)", lnk, re.I)
+        if m_itm and m_itm.group(1):
+            return f"pid_{m_itm.group(1)}"
+        m_lid = re.search(r"[?&]lid=([a-zA-Z0-9_-]+)", lnk, re.I)
+        if m_lid and m_lid.group(1):
+            return f"lid_{m_lid.group(1)}"
     title = deal.get("title", "")
-    norm = re.sub(r"[^a-zA-Z0-9]", "", title.lower())
-    return norm or deal.get("id", "")
+    fsp = deal.get("fsp", "")
+    norm_title = re.sub(r"\s+", " ", (title or "").lower()).strip()
+    if norm_title:
+        return f"{norm_title}_{fsp}" if fsp else norm_title
+    return deal.get("id", "")
 
 def load_cache(cache_path):
     """Loads previously posted deals from cache."""
@@ -48,7 +59,9 @@ def load_cache(cache_path):
 
 def save_cache(cache, cache_path):
     """Saves posted deals to cache, pruning records older than 60 days."""
-    os.makedirs(os.path.dirname(cache_path), exist_ok=True)
+    cache_dir = os.path.dirname(cache_path)
+    if cache_dir:
+        os.makedirs(cache_dir, exist_ok=True)
     now = time.time()
     retention_period = 60 * 24 * 3600  # 60 days retention to preserve 30-day cooldown history
 
@@ -107,6 +120,13 @@ def is_deal_blacklisted(deal):
         if kw in title:
             return True
 
+    # Phone case / mobile accessory pattern
+    if re.search(r"\b(back\s*cover|phone\s*case|tempered\s*glass|camera\s*lens\s*protector|screen\s*protector|mobile\s*pouch|silicone\s*case|flip\s*cover|mobile\s*skin|bumper\s*case)\b", title, re.I):
+        return True
+    if re.search(r"\b(cover|case|glass|protector|pouch|sleeve|skin)\b", title, re.I) and \
+       re.search(r"\b(iphone|galaxy|samsung|redmi|oneplus|realme|vivo|oppo|pixel|moto|xiaomi|iqoo|apple|ipad|airpods)\b", title, re.I):
+        return True
+
     # 2. Religious brand / keyword pattern (starts with reli... except relish)
     for word in re.findall(r"\b[a-z]+", title):
         if word.startswith("reli") and not word.startswith("relish"):
@@ -140,7 +160,7 @@ def get_effective_min_discount(deal, category_name=None, default_min=None):
     # Priority 2: Brand thresholds
     for b_name, thresh in config.BRAND_THRESHOLDS.items():
         b_lower = b_name.lower()
-        if title.startswith(b_lower + " ") or f" by {b_lower}" in title or title == b_lower or f" {b_lower} " in title:
+        if re.search(r"\b" + re.escape(b_lower) + r"\b", title):
             return thresh
 
     # Priority 3: Category thresholds
@@ -155,13 +175,13 @@ def get_effective_min_discount(deal, category_name=None, default_min=None):
     # Priority 4: Fallback to CLI argument or config default
     return default_min if default_min is not None else config.DEFAULT_MIN_DISCOUNT
 
-def scan_worker(category_info, pincode, min_discount=None):
+def scan_worker(category_info, pincode, min_discount=None, max_pages=None):
     """Worker function to scrape deals for a single category with smart multi-page pagination."""
     scraper = FlipkartScraper(pincode=pincode)
     cat_name = category_info.get("name", "")
-    cat_thresh = config.CATEGORY_THRESHOLDS.get(cat_name)
-    scan_min = cat_thresh if cat_thresh is not None else (min_discount if min_discount is not None else config.DEFAULT_MIN_DISCOUNT)
-    return scraper.fetch_category_deals(category_info, min_discount=scan_min, max_pages=3)
+    scan_min = get_effective_min_discount({}, cat_name, default_min=min_discount)
+    pages = max_pages if max_pages is not None else getattr(config, "DEFAULT_MAX_PAGES", 2)
+    return scraper.fetch_category_deals(category_info, min_discount=scan_min, max_pages=pages)
 
 def main():
     parser = argparse.ArgumentParser(description="Flipkart Minutes Deals Scraper & Telegram Bot")
@@ -169,6 +189,7 @@ def main():
     parser.add_argument("--pincode", default=config.DEFAULT_PINCODE, help="Target delivery pincode (default: 560045)")
     parser.add_argument("--min-discount", type=int, default=config.MIN_DISCOUNT, help="Minimum discount percentage threshold")
     parser.add_argument("--workers", type=int, default=config.MAX_WORKERS, help="Number of concurrent worker threads")
+    parser.add_argument("--max-pages", type=int, default=config.DEFAULT_MAX_PAGES, help="Maximum pages to scan per category (default: 2)")
     parser.add_argument("--cache", default=config.CACHE_FILE, help="Path to cache JSON file")
     args = parser.parse_args()
 
@@ -179,6 +200,7 @@ def main():
     print(f"⏰ Current IST Time: {ist_now.strftime('%Y-%m-%d %H:%M:%S')} IST")
     print(f"📍 Target Pincode: {args.pincode}")
     print(f"🔥 Min Discount: {args.min_discount}%")
+    print(f"📄 Max Pages / Category: {args.max_pages}")
     print(f"⚙️ Workers: {args.workers}")
     print(f"🛡️ Dry Run: {'YES (Alerts disabled)' if args.dry_run else 'NO (Live Telegram posting)'}")
 
@@ -215,7 +237,7 @@ def main():
     visited_uris = {normalize_cat_uri(c["uri"]) for c in categories}
 
     with concurrent.futures.ThreadPoolExecutor(max_workers=args.workers) as executor:
-        future_to_cat = {executor.submit(scan_worker, cat, args.pincode, args.min_discount): cat for cat in categories}
+        future_to_cat = {executor.submit(scan_worker, cat, args.pincode, args.min_discount, args.max_pages): cat for cat in categories}
         while future_to_cat:
             done, _ = concurrent.futures.wait(future_to_cat, return_when=concurrent.futures.FIRST_COMPLETED)
             for future in done:
@@ -238,8 +260,9 @@ def main():
                             sub_uri = sub["uri"]
                             if "sort=discount" not in sub_uri:
                                 sub_uri += ("&" if "?" in sub_uri else "?") + "sort=discount"
-                            sub_copy = {"name": sub["name"], "uri": sub_uri}
-                            future_to_cat[executor.submit(scan_worker, sub_copy, args.pincode, args.min_discount)] = sub_copy
+                            sub_name = f"{cat['name']} › {sub['name']}" if cat.get("name") not in sub.get("name", "") else sub["name"]
+                            sub_copy = {"name": sub_name, "uri": sub_uri}
+                            future_to_cat[executor.submit(scan_worker, sub_copy, args.pincode, args.min_discount, args.max_pages)] = sub_copy
                             print(f"    ↳ Discovered subcategory: [{sub_copy['name']}]")
                 except Exception as e:
                     print(f"  ✗ [{cat['name']}] Failed: {e}")
@@ -254,21 +277,26 @@ def main():
     dropped_oos = 0
 
     for p in all_products:
-        if is_deal_blacklisted(p):
+        is_price_error = (0 < p.get("fsp", 999999) < 5) or (p.get("fsp", 999999) == 5 and p.get("discount", 0) >= 80)
+        if not is_price_error and is_deal_blacklisted(p):
             dropped_blacklisted += 1
             continue
         if p.get("oos"):
             dropped_oos += 1
             continue
         effective_threshold = get_effective_min_discount(p, p.get("category"), default_min=args.min_discount)
-        if p.get("discount", 0) >= effective_threshold:
+        if is_price_error:
+            p["is_price_error"] = True
+            p["effective_threshold"] = 0
+            qualifying_deals.append(p)
+        elif p.get("discount", 0) >= effective_threshold:
             p["effective_threshold"] = effective_threshold
             qualifying_deals.append(p)
         else:
             dropped_threshold += 1
 
-    # Sort highest discount first
-    qualifying_deals.sort(key=lambda x: x["discount"], reverse=True)
+    # Sort price errors first, then highest discount first
+    qualifying_deals.sort(key=lambda x: (not x.get("is_price_error", False), -x.get("discount", 0), x.get("fsp", 0)))
 
     print(f"[*] Filtering summary: {len(qualifying_deals)} qualified deals (Excluded: {dropped_blacklisted} blacklisted/junk, {dropped_oos} OOS, {dropped_threshold} below threshold)")
 
@@ -281,12 +309,16 @@ def main():
     now = time.time()
 
     deals_to_post = []
+    queued_keys = set()
     for deal in qualifying_deals:
         key = get_deal_key(deal)
+        if key in queued_keys:
+            continue
         thresh = deal.get("effective_threshold", args.min_discount)
         if should_post_deal(deal, cache):
             print(f"  🔥 QUALIFIED DEAL: [{deal['discount']}% OFF] {deal['title']} - ₹{deal['fsp']} (MRP: ₹{deal['mrp']}) [Req: >={thresh}%] [Key: {key}]")
             deals_to_post.append(deal)
+            queued_keys.add(key)
         else:
             suppressed_count += 1
 

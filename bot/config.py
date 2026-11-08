@@ -10,8 +10,14 @@ FLIPKART_COOKIE = os.getenv("FLIPKART_COOKIE", "").strip()
 DEFAULT_MIN_DISCOUNT = int(os.getenv("MIN_DISCOUNT", "65"))
 MIN_DISCOUNT = DEFAULT_MIN_DISCOUNT
 MAX_WORKERS = int(os.getenv("MAX_WORKERS", "5"))
+DEFAULT_MAX_PAGES = int(os.getenv("MAX_PAGES", "2"))
+MAX_PAGES = DEFAULT_MAX_PAGES
 CACHE_FILE = os.getenv("CACHE_FILE", os.path.join("data", "posted_deals.json"))
 DRY_RUN = os.getenv("DRY_RUN", "false").lower() in ("true", "1", "yes")
+
+# Price Error & Loot Glitch Configuration
+ENABLE_PRICE_ERROR_SCAN = os.getenv("ENABLE_PRICE_ERROR_SCAN", "true").lower() in ("true", "1", "yes")
+PRICE_ERROR_MAX_FSP = int(os.getenv("PRICE_ERROR_MAX_FSP", "4"))  # Catches items < Rs 5 (Rs 1 - Rs 4) without Parle-G/Dairy Milk false positives
 
 # HTTP & API Headers
 ROME_API_URL = "https://1.rome.api.flipkart.com/api/4/page/fetch?cacheFirst=false"
@@ -43,20 +49,52 @@ CATEGORY_THRESHOLDS = {
 # 2. Brand-specific threshold overrides (percentage)
 # Lowercase keys for case-insensitive matching
 BRAND_THRESHOLDS = {
-    # 13 Home & Kitchen brands gated at >= 90% (allowed, not blacklisted)
-    "clothology": 90,
-    "decent home": 90,
-    "qxore": 90,
-    "sarvoch": 90,
-    "elegant weavers": 90,
-    "perpetual": 90,
-    "xbey": 90,
-    "fezora": 90,
-    "flipkart smartbuy": 90,
-    "crea4": 90,
-    "omortex": 90,
-    "bombay kookware": 90,
-    "deodap": 90,
+    # --- 95% Gated Brands (Severe MRP inflation) ---
+    "j k international": 95,
+    "jk international": 95,
+    "j.k. international": 95,
+
+    # --- 89% Gated Brands (Inflated MRP / Noise brands) ---
+    "clothology": 89,
+    "decent home": 89,
+    "qxore": 89,
+    "sarvoch": 89,
+    "elegant weavers": 89,
+    "perpetual": 89,
+    "xbey": 89,
+    "fezora": 89,
+    "flipkart smartbuy": 89,
+    "crea4": 89,
+    "omortex": 89,
+    "bombay kookware": 89,
+    "deodap": 89,
+
+    # --- 89% Gated Brands (User-specified brands with inflated MRPs / noise) ---
+    "babique": 89,
+    "bandhan": 89,
+    "neel": 89,
+    "cara mia": 89,
+    "beardo": 89,
+    "boldfit": 89,
+    "ecovacs": 89,
+    "zouk": 89,
+    "clovia": 89,
+    "lino perros": 89,
+    "boat": 89,
+    "daluci": 89,
+    "lifelong": 89,
+    "minara": 89,
+    "fire-boltt": 89,
+    "fire boltt": 89,
+    "fireboltt": 89,
+    "goboult": 89,
+    "boult": 89,
+    "boult audio": 89,
+    "eco soul": 89,
+    "ecosoul": 89,
+    "flipkart supermart": 89,
+    "flipkart supemart": 89,
+    "kuber industries": 89,
 }
 
 # 3. Keyword / Substring threshold overrides: list of (keyword_phrase, threshold_pct)
@@ -88,24 +126,30 @@ EXCLUDED_KEYWORDS = [
 
 # Excluded brands (case-insensitive check against title start/by brand)
 EXCLUDED_BRANDS = [
-    # Rakhi & Puja brands
-    "designer rakhi", "rudraksh", "religious ganesha rakhi", "d1769",
-    "tied ribbons", "craftvatika",
-    # Pet food brands
-    "pedigree", "whiskas", "drools", "purepet", "royal canin", "me-o",
-    # Phone case / junk brands
-    "100percent", "abt", "adofys", "aircase", "amazer", "amzer", "annprash",
-    "casotec", "cease", "cover alive", "doubleshot",
-    "golden tree collection", "hritika", "hyper mob", "kartik crafts",
-    "kavish", "maru", "mixtron", "mudrika", "mumbai creations",
-    "paper plane design", "parasnath", "shine craft", "sunshine sale",
-    "vanya"
+    "100percent", "abt", "adofys", "aircase",
+    "amazer", "amzer", "annprash", "artistique",
+    "casotec", "cease", "cedo xpro", "cover alive",
+    "craftvatika", "d1769", "designer rakhi", "doubleshot",
+    "drools", "ecraftindia", "golden tree collection", "house of festivals", "hritika",
+    "hyper mob", "kartik crafts", "kavish", "kwine case",
+    "kyaso", "mad over print", "maru", "me-o",
+    "mixtron", "mudrika", "mumbai creations", "oye happy",
+    "paper plane design", "parasnath", "parth", "parv craft",
+    "pedigree", "picfest", "purepet", "quace",
+    "quickoo", "religious ganesha rakhi", "royal canin", "rudraksh",
+    "shine craft", "spigen", "sunshine sale", "tied ribbons",
+    "tomuncle", "unbranded", "vanya", "whiskas"
 ]
 
 # -----------------------------------------------------------------------------
 # 63 Clean Solr Grocery & Minutes Categories (Direct Solr Facets)
 # -----------------------------------------------------------------------------
 CATEGORIES = [
+    {
+        "name": "⚡ Price Errors & ₹1-₹4 Loot",
+        "uri": "/hyperlocal/pr?sid=73z&marketplace=HYPERLOCAL&sort=price_asc",
+        "is_price_error_scan": True
+    },
     {
         "name": "Staples › Dal & Pulses",
         "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe&p[]=facets.category[]=73z/bpe/3uv/"

@@ -24,6 +24,7 @@ def build_bookmarklet():
 
     # Group icons for all quick-commerce categories
     icons = {
+        "Price Errors & Loot": "⚡",
         "Fruits and Vegetables": "🍎",
         "Staples": "🌾",
         "Dairy, Bakery and Eggs": "🥛",
@@ -46,6 +47,7 @@ def build_bookmarklet():
 
     # Verified parent URIs (clean parent routes, free of spam phone cases)
     parent_uris = {
+        "Price Errors & Loot": "/hyperlocal/pr?sid=73z&marketplace=HYPERLOCAL&sort=price_asc",
         "Fruits and Vegetables": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/",
         "Staples": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe",
         "Dairy, Bakery and Eggs": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa",
@@ -67,11 +69,13 @@ def build_bookmarklet():
     }
 
     # Desired hierarchical order:
-    # 1. Fruits & Vegetables at top (above Staples)
+    # 0. Price Errors & Loot at very top
+    # 1. Fruits & Vegetables
     # 2. Staples
-    # 3. Dairy, Bakery & Eggs (below Staples)
-    # 4. Chicken, Meat & Fish (below Dairy, Bakery & Eggs)
+    # 3. Dairy, Bakery & Eggs
+    # 4. Chicken, Meat & Fish
     ordered_group_names = [
+        "Price Errors & Loot",
         "Fruits and Vegetables",
         "Staples",
         "Dairy, Bakery and Eggs",
@@ -94,6 +98,7 @@ def build_bookmarklet():
 
     # Dedicated clean Quick Scan targets (ordered with same top priority)
     quick_scan_targets = [
+        {"id": "grp_Glitch_Loot", "group": "Price Errors & Loot", "name": "⚡ ₹1 to ₹4 Loot & Glitches", "uri": "/hyperlocal/pr?sid=73z&marketplace=HYPERLOCAL&sort=price_asc"},
         {"id": "grp_Fruits_Veg", "group": "Fruits and Vegetables", "name": "🍎 Fruits & Vegetables", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/mk9/"},
         {"id": "grp_Staples", "group": "Staples", "name": "🌾 Staples", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/bpe"},
         {"id": "grp_Dairy", "group": "Dairy, Bakery and Eggs", "name": "🥛 Dairy, Bakery & Eggs", "uri": "/grocery/pr?marketplace=HYPERLOCAL&sort=discount&sid=73z&p[]=facets.category[]=73z/esa"},
@@ -119,6 +124,15 @@ def build_bookmarklet():
 
     # Combine Snacks & Munchies and Chocolates & Sweets into "Sweets, Snacks and Chocolates"
     groups_data = dict(cat_catalog["groups"])
+    groups_data["Price Errors & Loot"] = [
+        {
+            "category_code": "glitch_loot_01",
+            "name": "⚡ ₹1 to ₹4 Loot & Price Glitches",
+            "url_path": "/hyperlocal/pr?sid=73z&marketplace=HYPERLOCAL&sort=price_asc",
+            "group": "Price Errors & Loot",
+            "default_selected": True
+        }
+    ]
     choco_sub = None
     if "Packaged Goods" in groups_data:
         for s in list(groups_data["Packaged Goods"]):
@@ -217,21 +231,53 @@ def build_bookmarklet():
   var EXCLUDED_BRANDS = {js_excluded_brands};
 
   /* Dynamic Threshold Rules */
-  var DEFAULT_MIN_DISCOUNT = 45;
   var BRAND_THRESHOLDS = {{
-    "clothology": 90,
-    "decent home": 90,
-    "qxore": 90,
-    "sarvoch": 90,
-    "elegant weavers": 90,
-    "perpetual": 90,
-    "xbey": 90,
-    "fezora": 90,
-    "flipkart smartbuy": 90,
-    "crea4": 90,
-    "omortex": 90,
-    "bombay kookware": 90,
-    "deodap": 90
+    /* 95% Gated Brands (Severe MRP inflation) */
+    "j k international": 95,
+    "jk international": 95,
+    "j.k. international": 95,
+
+    /* 89% Gated Brands (13 Home & Kitchen noise brands) */
+    "clothology": 89,
+    "decent home": 89,
+    "qxore": 89,
+    "sarvoch": 89,
+    "elegant weavers": 89,
+    "perpetual": 89,
+    "xbey": 89,
+    "fezora": 89,
+    "flipkart smartbuy": 89,
+    "crea4": 89,
+    "omortex": 89,
+    "bombay kookware": 89,
+    "deodap": 89,
+
+    /* 89% Gated Brands (User-specified brands with inflated MRPs / noise) */
+    "babique": 89,
+    "bandhan": 89,
+    "neel": 89,
+    "cara mia": 89,
+    "beardo": 89,
+    "boldfit": 89,
+    "ecovacs": 89,
+    "zouk": 89,
+    "clovia": 89,
+    "lino perros": 89,
+    "boat": 89,
+    "daluci": 89,
+    "lifelong": 89,
+    "minara": 89,
+    "fire-boltt": 89,
+    "fire boltt": 89,
+    "fireboltt": 89,
+    "goboult": 89,
+    "boult": 89,
+    "boult audio": 89,
+    "eco soul": 89,
+    "ecosoul": 89,
+    "flipkart supermart": 89,
+    "flipkart supemart": 89,
+    "kuber industries": 89
   }};
 
   /* State Management */
@@ -1054,7 +1100,7 @@ def build_bookmarklet():
       <div class="fkd-search-row">
         <input type="text" class="fkd-input" id="fkd-input-search" placeholder="🔍 Search e.g. tea, cake, ghee..." style="flex:1" title="Type keyword and press Enter or click Search">
         <button class="fkd-btn-search" id="fkd-btn-search" title="Search deals">Search</button>
-        <button class="fkd-btn-quick" id="fkd-btn-quick-scan" title="Quick Scan across top 18 departments">⚡ Quick Scan</button>
+        <button class="fkd-btn-quick" id="fkd-btn-quick-scan" title="Quick Scan across top 22 departments">⚡ Quick Scan</button>
       </div>
       <div class="fkd-row-2">
         <div class="fkd-cat-bar">
@@ -1572,7 +1618,8 @@ def build_bookmarklet():
           endpointsToScan.push({{
             name: grp.name + " › " + sub.name,
             uri: sub.uri,
-            isStaples: (grp.group === "Staples")
+            isStaples: (grp.group === "Staples"),
+            allowPhoneCases: (sub.id.includes("0040") || sub.id.includes("sgh_jaa"))
           }});
         }}
       }});
@@ -1605,7 +1652,12 @@ def build_bookmarklet():
     }});
 
     if (st.sort === "discount") {{
-      filtered.sort(function(a, b){{ return b.d - a.d; }});
+      filtered.sort(function(a, b){{
+        var aLoot = (a.isPriceError || (a.f > 0 && a.f < 5)) ? 1 : 0;
+        var bLoot = (b.isPriceError || (b.f > 0 && b.f < 5)) ? 1 : 0;
+        if (aLoot !== bLoot) return bLoot - aLoot;
+        return b.d - a.d;
+      }});
     }} else {{
       filtered.sort(function(a, b){{ return a.f - b.f; }});
     }}
@@ -1630,12 +1682,17 @@ def build_bookmarklet():
       card.innerHTML = `
         <div class="fkd-img-box">
           <img src="${{safeImg}}" class="fkd-img" loading="lazy" onerror="this.src='https://rukminim1.flixcart.com/flap/200/200/image/placeholder.png'">
-          ${{it.d > 0 ? `
+          ${{ (it.isPriceError || (it.f > 0 && it.f < 5)) ? `
+            <div class="fkd-disc-tag" style="background:#dc2626!important;color:#fff!important;">
+              <span class="fkd-disc-pct">₹${{it.f}}</span>
+              <span class="fkd-disc-off">LOOT</span>
+            </div>
+          ` : (it.d > 0 ? `
             <div class="fkd-disc-tag">
               <span class="fkd-disc-pct">${{it.d}}%</span>
               <span class="fkd-disc-off">OFF</span>
             </div>
-          ` : ''}}
+          ` : '') }}
           ${{it.oos ? `<div class="fkd-oos-tag">OUT OF STOCK</div>` : ''}}
         </div>
         <div class="fkd-card-title" title="${{safeTitle}}">${{safeTitle}}</div>
@@ -1692,6 +1749,35 @@ def build_bookmarklet():
     return 0;
   }}
 
+  /* Normalize and recalculate discount accurately across all card formats */
+  function normalizeDiscount(fsp, mrp, disc) {{
+    if (!fsp) return 0;
+    fsp = parseInt(fsp, 10);
+    if (isNaN(fsp) || fsp <= 0) return 0;
+    mrp = mrp ? parseInt(mrp, 10) : fsp;
+    if (isNaN(mrp) || mrp <= 0) mrp = fsp;
+    if (fsp > mrp) {{ var tmp = fsp; fsp = mrp; mrp = tmp; }}
+    if (disc > 0 && disc < 100 && fsp === mrp) {{
+      mrp = Math.round(fsp / (1 - disc / 100));
+    }}
+    if (disc === undefined || isNaN(disc) || disc > 99 || disc <= 0) {{
+      disc = (mrp > fsp) ? Math.round(((mrp - fsp) / mrp) * 100) : 0;
+    }}
+    if (mrp > fsp && disc > 0 && String(mrp).endsWith(String(disc))) {{
+      var currentMathDisc = Math.round(((mrp - fsp) / mrp) * 100);
+      if (Math.abs(currentMathDisc - disc) > 2) {{
+        var cleanMrp = parseInt(String(mrp).slice(0, -String(disc).length), 10);
+        if (cleanMrp > fsp) {{
+          var cleanMathDisc = Math.round(((cleanMrp - fsp) / cleanMrp) * 100);
+          if (Math.abs(cleanMathDisc - disc) <= 2) {{
+            disc = cleanMathDisc;
+          }}
+        }}
+      }}
+    }}
+    return disc || 0;
+  }}
+
   function addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep) {{
     if (!fsp) return false;
     fsp = parseInt(fsp, 10);
@@ -1704,31 +1790,6 @@ def build_bookmarklet():
     }}
 
     var tLower = (title || "").toLowerCase();
-
-    /* Phone Case / Cover Filter for Electronics & Gadgets */
-    if (!st.allowPhoneCases) {{
-      if (/\\b(back\\s*cover|phone\\s*case|tempered\\s*glass|camera\\s*lens\\s*protector|screen\\s*protector|mobile\\s*pouch|silicone\\s*case|flip\\s*cover|mobile\\s*skin|bumper\\s*case)\\b/i.test(tLower)) {{
-        return false;
-      }}
-      if (/\\b(cover|case|glass|protector|pouch|sleeve|skin)\\b/i.test(tLower) &&
-          /\\b(iphone|galaxy|samsung|redmi|oneplus|realme|vivo|oppo|pixel|moto|xiaomi|iqoo|apple|ipad|airpods)\\b/i.test(tLower)) {{
-        return false;
-      }}
-    }}
-
-    /* Negative keyword & brand filtration (Junk prevention) */
-    for (var k = 0; k < EXCLUDED_KEYWORDS.length; k++) {{
-      if (tLower.includes(EXCLUDED_KEYWORDS[k])) return false;
-    }}
-    /* Religious brands exclusion (starts with reli... except relish) */
-    var words = tLower.match(/\b[a-z]+/g) || [];
-    for (var w = 0; w < words.length; w++) {{
-      if (words[w].startsWith("reli") && !words[w].startsWith("relish")) return false;
-    }}
-    for (var b = 0; b < EXCLUDED_BRANDS.length; b++) {{
-      var eb = EXCLUDED_BRANDS[b].toLowerCase();
-      if (tLower.startsWith(eb + " ") || tLower.includes(" by " + eb) || tLower === eb || tLower.includes(" " + eb + " ")) return false;
-    }}
 
     mrp = mrp ? parseInt(mrp, 10) : fsp;
     if (isNaN(mrp) || mrp <= 0) mrp = fsp;
@@ -1765,14 +1826,45 @@ def build_bookmarklet():
       }}
     }}
 
-    /* Min keep check: for Page 2+, items below threshold (50% or 40% for Staples) are dropped */
-    if (minKeep && disc < minKeep) return false;
+    /* Price Error / Loot Deals: items strictly below Rs 5 (Rs 1 - Rs 4) OR Rs 5 with massive discount (>= 80%) */
+    var isPriceError = (fsp > 0 && fsp < 5) || (fsp === 5 && disc >= 80);
 
-    /* Brand-specific high thresholds (e.g. 13 junk home brands gated at 90%) */
+    /* Negative keyword & brand filtration (Junk prevention) - only if NOT a price error */
+    if (!isPriceError) {{
+      /* Phone Case / Cover Filter for Electronics & Gadgets */
+      if (!st.allowPhoneCases) {{
+        if (/\\b(back\\s*cover|phone\\s*case|tempered\\s*glass|camera\\s*lens\\s*protector|screen\\s*protector|mobile\\s*pouch|silicone\\s*case|flip\\s*cover|mobile\\s*skin|bumper\\s*case)\\b/i.test(tLower)) {{
+          return false;
+        }}
+        if (/\\b(cover|case|glass|protector|pouch|sleeve|skin)\\b/i.test(tLower) &&
+            /\\b(iphone|galaxy|samsung|redmi|oneplus|realme|vivo|oppo|pixel|moto|xiaomi|iqoo|apple|ipad|airpods)\\b/i.test(tLower)) {{
+          return false;
+        }}
+      }}
+
+      for (var k = 0; k < EXCLUDED_KEYWORDS.length; k++) {{
+        if (tLower.includes(EXCLUDED_KEYWORDS[k])) return false;
+      }}
+      /* Religious brands exclusion (starts with reli... except relish) */
+      var words = tLower.match(/\\b[a-z]+/g) || [];
+      for (var w = 0; w < words.length; w++) {{
+        if (words[w].startsWith("reli") && !words[w].startsWith("relish")) return false;
+      }}
+      for (var b = 0; b < EXCLUDED_BRANDS.length; b++) {{
+        var eb = EXCLUDED_BRANDS[b].toLowerCase();
+        if (tLower.startsWith(eb + " ") || tLower.includes(" by " + eb) || tLower === eb || tLower.includes(" " + eb + " ")) return false;
+      }}
+    }}
+
+    /* Min keep check: for Page 2+, items below threshold (50% or 40% for Staples) are dropped (unless price error) */
+    if (!isPriceError && minKeep && disc < minKeep) return false;
+
+    /* Brand-specific high thresholds (e.g. 95% for J K INTERNATIONAL, 89% for noise brands) */
     var isSearchMode = !!(st.searchQuery && st.searchQuery.trim().length > 0);
-    if (!isSearchMode) {{
+    if (!isSearchMode && !isPriceError) {{
       for (var bt in BRAND_THRESHOLDS) {{
-        if (tLower.startsWith(bt + " ") || tLower.includes(" by " + bt) || tLower === bt || tLower.includes(" " + bt + " ")) {{
+        var escapedBt = bt.replace(/[-/\\\\^$*+?.()|[\\]{{}}]/g, "\\\\$&");
+        if (new RegExp("\\\\b" + escapedBt + "\\\\b", "i").test(tLower)) {{
           if (disc < BRAND_THRESHOLDS[bt]) return false;
           break;
         }}
@@ -1800,7 +1892,7 @@ def build_bookmarklet():
 
     if (!st.seen.has(uid)) {{
       st.seen.add(uid);
-      st.items.push({{ t: title, f: fsp, m: mrp, d: disc, i: img, l: lnk, oos: !!isOos }});
+      st.items.push({{ t: title, f: fsp, m: mrp, d: disc, i: img, l: lnk, oos: !!isOos, isPriceError: isPriceError }});
       return true;
     }}
     return false;
@@ -1810,8 +1902,8 @@ def build_bookmarklet():
   function parseProducts(json, minKeep) {{
     var count = 0;
     var pageDiscounts = [];
-    var count = 0;
-    if (!json) return count;
+    var pagePrices = [];
+    if (!json) return {{ count: 0, tailDiscount: 0, tailPrice: 999999, totalFound: 0 }};
     var slots = json.RESPONSE?.slots || json.slots || json.pageData?.slots || json.multiWidgetState?.widgetsData?.slots || json.multiWidgetState?.pageDataResponse?.slots || [];
     slots.forEach(function(s){{
       var slotObj = s.slotData || s;
@@ -1850,7 +1942,10 @@ def build_bookmarklet():
                         (v.action?.params?.isAvailable === false) ||
                         (v.availability && v.availability.displayState && v.availability.displayState !== "IN_STOCK");
 
-            pageDiscounts.push(disc || 0); if (addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep)) count++;
+            var normDisc = normalizeDiscount(fsp, mrp, disc);
+            pageDiscounts.push(normDisc);
+            if (fsp) pagePrices.push(fsp);
+            if (addProduct(title, fsp, mrp, normDisc, img, lnk, isOos, minKeep)) count++;
           }}
         }} catch (e) {{}}
       }});
@@ -1912,7 +2007,45 @@ def build_bookmarklet():
                   }}
                   img = img.replace("{{@width}}", "200").replace("{{@height}}", "200").replace("?q={{@quality}}", "?q=80");
 
-                  pageDiscounts.push(disc || 0); if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep)) count++;
+                  var normDisc = normalizeDiscount(fsp, mrp, disc);
+                  pageDiscounts.push(normDisc);
+                  if (fsp) pagePrices.push(fsp);
+                  if (fsp && addProduct(title, fsp, mrp, normDisc, img, lnk, isOos, minKeep)) count++;
+
+                  /* Parse embedded multi-variant swatches (scrollToListData_0) */
+                  var swatchList = stepper?.params?.widgetData?.data?.dlsData?.swatch_list_0_0?.value?.scrollToListData_0?.value;
+                  if (Array.isArray(swatchList)) {{
+                    swatchList.forEach(function(sw) {{
+                      try {{
+                        var sv = sw?.value || {{}};
+                        var swAction = sv.stepperData_0?.action || {{}};
+                        var swParams = swAction.params || {{}};
+                        var swFsp = extractPrice(swParams.fspUnlocked || swParams.fspLocked || sv.label_3 || swParams.price);
+                        var swMrp = extractPrice(swParams.mrp || sv.label_2) || swFsp;
+                        var swDiscStr = String(swParams.discountPercentage || "");
+                        var swDiscMatch = swDiscStr.match(/(\\d+)%/);
+                        var swDisc = swDiscMatch ? parseInt(swDiscMatch[1], 10) : 0;
+                        var swAttr = swParams.attributeValue || sv.label_0?.value?.text || "";
+                        var swPid = swParams.productId || "";
+                        var swLid = swParams.listingId || "";
+                        var swTitle = swAttr ? (title + " (" + swAttr + ")") : title;
+                        var swImg = (swParams.imageUrl || swParams.productImage || img || "")
+                          .replace("{{@width}}", "200").replace("{{@height}}", "200").replace("?q={{@quality}}", "?q=80");
+                        var swLnk = lnk;
+                        if (swLnk && swPid) {{
+                          swLnk = swLnk.replace(/([?&]pid=)[^&]+/, "$1" + swPid);
+                          if (swLid) swLnk = swLnk.replace(/([?&]lid=)[^&]+/, "$1" + swLid);
+                        }}
+                        var swOos = (swAction.enabled === false) || (swAction.tracking?.isAvailable === "false");
+                        if (swFsp) {{
+                          var swNormDisc = normalizeDiscount(swFsp, swMrp, swDisc);
+                          pageDiscounts.push(swNormDisc);
+                          pagePrices.push(swFsp);
+                          if (addProduct(swTitle, swFsp, swMrp, swNormDisc, swImg, swLnk, swOos, minKeep)) count++;
+                        }}
+                      }} catch (swErr) {{}}
+                    }});
+                  }}
                   return;
                 }}
 
@@ -1969,7 +2102,7 @@ def build_bookmarklet():
                   img = img.replace("{{@width}}", "200").replace("{{@height}}", "200").replace("?q={{@quality}}", "?q=80");
 
                   var isOos = (stepperAction.enabled === false) || (pcard.button_0?.value?.actionType === "NOTIFY_ME") || (pcard.button_0?.value?.text && /notify/i.test(pcard.button_0.value.text));
-                  pageDiscounts.push(disc || 0); if (fsp && addProduct(title, fsp, mrp, disc, img, lnk, isOos, minKeep)) count++;
+                  var normDisc = normalizeDiscount(fsp, mrp, disc); pageDiscounts.push(normDisc); if (fsp) pagePrices.push(fsp); if (fsp && addProduct(title, fsp, mrp, normDisc, img, lnk, isOos, minKeep)) count++;
                 }}
               }} catch (err) {{}}
             }});
@@ -1978,7 +2111,8 @@ def build_bookmarklet():
       }}
     }});
     var tailDisc = pageDiscounts.length ? pageDiscounts[pageDiscounts.length - 1] : 0;
-    return {{ count: count, tailDiscount: tailDisc, totalFound: pageDiscounts.length }};
+    var tailPrice = pagePrices.length ? pagePrices[pagePrices.length - 1] : 999999;
+    return {{ count: count, tailDiscount: tailDisc, tailPrice: tailPrice, totalFound: pageDiscounts.length }};
   }}
 
   /* Scrape items from DOM */
@@ -1986,8 +2120,7 @@ def build_bookmarklet():
     var doc = rootDoc || document;
     var count = 0;
     var pageDiscounts = [];
-    var doc = rootDoc || document;
-    var count = 0;
+    var pagePrices = [];
     var anchors = doc.querySelectorAll('a[href*="/p/itm"], a[href*="/p/"], a[href*="pid="]');
     var processedCards = new Set();
 
@@ -2092,11 +2225,17 @@ def build_bookmarklet():
         var isOos = /currently\\s*unavailable|unavailable|out\\s*of\\s*stock|sold\\s*out|notify\\s*me/i.test((card ? card.innerText : a.innerText) || "") ||
                     !!(card && card.querySelector('button[disabled], [class*="unavailable" i], [class*="outOfStock" i], [class*="notify" i], [aria-label*="notify" i]'));
 
-        if (addProduct(title, fsp, mrp, disc, img, href, isOos)) count++;
+        if (fsp) {{
+          var normDisc = normalizeDiscount(fsp, mrp, disc);
+          pageDiscounts.push(normDisc);
+          pagePrices.push(fsp);
+          if (addProduct(title, fsp, mrp, normDisc, img, href, isOos, minKeep)) count++;
+        }}
       }} catch (e) {{}}
     }});
     var tailDisc = pageDiscounts.length ? pageDiscounts[pageDiscounts.length - 1] : 0;
-    return {{ count: count, tailDiscount: tailDisc, totalFound: pageDiscounts.length }};
+    var tailPrice = pagePrices.length ? pagePrices[pagePrices.length - 1] : 999999;
+    return {{ count: count, tailDiscount: tailDisc, tailPrice: tailPrice, totalFound: pageDiscounts.length }};
   }}
 
   /* Safe URI sanitizer */
@@ -2162,16 +2301,17 @@ def build_bookmarklet():
     if (redirectCount > 2) return null;
 
     var cleanUri = sanitizePageUri(pageUri);
+    var isBrowse = cleanUri.includes("/pr") || cleanUri.includes("/search");
     var bodyPayload = {{
       pageUri: cleanUri,
       pageContext: {{
         trackingContext: {{
           context: {{
-            eVar51: "neo/merchandising",
-            eVar61: "creative_card"
+            eVar51: isBrowse ? "direct_browse" : "neo/merchandising",
+            eVar61: isBrowse ? "atlas_filter_footer_default" : "creative_card"
           }}
         }},
-        networkSpeed: 1700
+        networkSpeed: 5450
       }},
       requestContext: getRequestContext(),
       locationContext: {{
@@ -2198,8 +2338,12 @@ def build_bookmarklet():
         var json = await resp.json();
         var slots = json.RESPONSE?.slots || json.slots || [];
         var redir = json.RESPONSE?.pageMeta?.redirectionObject || json.pageMeta?.redirectionObject;
-        if ((!slots || slots.length === 0) && redir && redir.url) {{
-          var targetPath = redir.url;
+        var redirUrl = redir && (redir.url || redir.redirectionAction?.url || redir.params?.url || "");
+        if ((!slots || slots.length === 0) && redirUrl) {{
+          if (cleanUri.includes("/pr") && redirUrl.includes("hyperlocal-preview-page")) {{
+            return null;
+          }}
+          var targetPath = redirUrl;
           if (targetPath.startsWith("http")) {{
             try {{
               var parsedUrl = new URL(targetPath);
@@ -2255,7 +2399,7 @@ def build_bookmarklet():
 
   /* Parse products from raw HTML text */
   function parseHtmlString(html, minKeep) {{
-    if (!html) return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
+    if (!html) return {{ count: 0, tailDiscount: 0, tailPrice: 999999, totalFound: 0 }};
     try {{
       var json = extractStateJsonFromHtml(html);
       if (json) {{
@@ -2270,26 +2414,26 @@ def build_bookmarklet():
       return parseDomProducts(doc, minKeep);
     }} catch(e) {{}}
 
-    return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
+    return {{ count: 0, tailDiscount: 0, tailPrice: 999999, totalFound: 0 }};
   }}
 
   /* Unified page fetcher */
   async function fetchAndParsePage(uri, minKeep) {{
-    if (!uri) return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
+    if (!uri) return {{ count: 0, tailDiscount: 0, tailPrice: 999999, totalFound: 0 }};
     minKeep = minKeep || 0;
-    // 1. Same-origin HTML fetch with session cookies
-    var html = await fetchCategoryHtml(uri);
-    if (html) {{
-      var r1 = parseHtmlString(html, minKeep);
-      if (r1 && r1.totalFound > 0) return r1;
-    }}
-    // 2. Fallback: Rome API with credentials included
+    // 1. Rome API with credentials included (hyperlocal pincode & mobile headers)
     var json = await fetchRomePage(uri);
     if (json) {{
-      var r2 = parseProducts(json, minKeep);
+      var r1 = parseProducts(json, minKeep);
+      if (r1 && r1.totalFound > 0) return r1;
+    }}
+    // 2. Fallback: Same-origin HTML fetch
+    var html = await fetchCategoryHtml(uri);
+    if (html) {{
+      var r2 = parseHtmlString(html, minKeep);
       if (r2 && r2.totalFound > 0) return r2;
     }}
-    return {{ count: 0, tailDiscount: 0, totalFound: 0 }};
+    return {{ count: 0, tailDiscount: 0, tailPrice: 999999, totalFound: 0 }};
   }}
 
   /* Search Flipkart Minutes via unified fetcher */
@@ -2341,9 +2485,10 @@ def build_bookmarklet():
     renderGrid();
 
     // Check if phone cases allowed (opt-in)
-    st.allowPhoneCases = Array.from(selectedSubIds).some(function(id){{
-      return id.includes("0040") || id.includes("sgh_jaa");
-    }});
+    st.allowPhoneCases = (customEndpoints && customEndpoints.some(function(ep){{ return ep.allowPhoneCases; }})) ||
+      Array.from(selectedSubIds).some(function(id){{
+        return id.includes("0040") || id.includes("sgh_jaa");
+      }});
 
     var isQuick = !!forceQuickScan || (!customEndpoints && selectedSubIds.size === 0);
     var actionType = isQuick ? "QUICK_SCAN" : "FETCH";
@@ -2369,7 +2514,8 @@ def build_bookmarklet():
             endpoints.push({{
               name: grp.name + " › " + sub.name,
               uri: sub.uri,
-              isStaples: (grp.group === "Staples")
+              isStaples: (grp.group === "Staples"),
+              allowPhoneCases: (sub.id.includes("0040") || sub.id.includes("sgh_jaa"))
             }});
           }}
         }});
@@ -2393,36 +2539,45 @@ def build_bookmarklet():
         if (st.mode !== "RUN" || window.fkDealsStop) break;
         var myIdx = epIndex++;
         var ep = endpoints[myIdx];
-        setStatus(`[${{completedCount + 1}}/${{totalEps}}] ${{ep.name.trim()}}...`);
+        setStatus(`[${{myIdx + 1}}/${{totalEps}}] ${{ep.name.trim()}}...`);
         var pUri = ep.uri;
-        if (!pUri.includes("sort=discount")) {{
+        if (!pUri.includes("sort=")) {{
           pUri += (pUri.includes("?") ? "&" : "?") + "sort=discount";
         }}
 
         // Requirements 5 & 6:
         // Staples threshold = 40%
         // Other departments threshold = 50%
+        var isPriceAsc = pUri.includes("sort=price_asc");
         var threshold = ep.isStaples ? 40 : 50;
 
-        // Page 1 is ALWAYS fetched and displayed (minDiscKeep = 0)
-        var res1 = await fetchAndParsePage(pUri, 0);
-        completedCount++;
+        // For price_asc, enforce threshold (50%) even on Page 1 so regular ₹9-₹10 (0-10% off) items are dropped,
+        // while addProduct() automatically keeps all isPriceError items regardless of minKeep!
+        var res1 = await fetchAndParsePage(pUri, isPriceAsc ? threshold : 0);
         renderGrid();
 
-        // If Page 1 ends with discount >= threshold, fetch Page 2!
-        // Stop when the last row items of the page is less than threshold
-        if (st.mode === "RUN" && !window.fkDealsStop && res1 && res1.totalFound >= 6 && res1.tailDiscount >= threshold) {{
-          var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2&sort=discount";
+        // If Page 1 ends with discount >= threshold (or tailPrice <= 5 for price_asc), fetch Page 2!
+        var canPage2 = isPriceAsc
+          ? (res1 && res1.totalFound >= 6 && res1.tailPrice <= 5)
+          : (res1 && res1.totalFound >= 6 && res1.tailDiscount >= threshold);
+
+        if (st.mode === "RUN" && !window.fkDealsStop && canPage2) {{
+          var p2Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=2";
           var res2 = await fetchAndParsePage(p2Uri, threshold);
           renderGrid();
 
-          // If Page 2 also ends with discount >= threshold, can fetch Page 3
-          if (st.mode === "RUN" && !window.fkDealsStop && res2 && res2.totalFound >= 6 && res2.tailDiscount >= threshold) {{
-            var p3Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=3&sort=discount";
+          // If Page 2 also ends with discount >= threshold (or tailPrice <= 5 for price_asc), can fetch Page 3 (mobile cases capped at 2 pages)
+          var canPage3 = isPriceAsc
+            ? (res2 && res2.totalFound >= 6 && res2.tailPrice <= 5)
+            : (res2 && res2.totalFound >= 6 && res2.tailDiscount >= threshold);
+
+          if (!ep.allowPhoneCases && st.mode === "RUN" && !window.fkDealsStop && canPage3) {{
+            var p3Uri = pUri + (pUri.includes("?") ? "&" : "?") + "page=3";
             await fetchAndParsePage(p3Uri, threshold);
             renderGrid();
           }}
         }}
+        completedCount++;
         await new Promise(function(r){{ setTimeout(r, 100); }});
       }}
     }}
@@ -2435,7 +2590,11 @@ def build_bookmarklet():
 
     stopAll();
     var finalIn = st.items.filter(function(x){{ return !x.oos; }}).length;
-    setStatus(`Done! Found ${{st.items.length}} deals (${{finalIn}} in stock)`);
+    var caseNote = st.allowPhoneCases ? " • 📱 Mobile cases capped at 2 pages" : "";
+    setStatus(`Done! Found ${{st.items.length}} deals (${{finalIn}} in stock)${{caseNote}}`);
+    if (st.allowPhoneCases) {{
+      showToast("📱 Mobile cases were capped at 2 pages to prevent flooding");
+    }}
   }}
 
     /* Initialize */
